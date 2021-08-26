@@ -352,6 +352,12 @@ public class MongoDBConnectorDeserializationSchema
         if (docObj.isBoolean()) {
             return docObj.asBoolean().getValue() ? 1L : 0L;
         }
+        if (docObj.isDateTime()) {
+            return docObj.asDateTime().getValue();
+        }
+        if (docObj.isTimestamp()) {
+            return docObj.asTimestamp().getTime() * 1000L;
+        }
         if (docObj.isString()) {
             return Long.parseLong(docObj.asString().getValue());
         }
