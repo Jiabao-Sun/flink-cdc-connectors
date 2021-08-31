@@ -87,7 +87,7 @@ public class MongoDBConnectorDeserializationSchema
 
     private static final String OPERATION_TYPE_FIELD = "operationType";
 
-    private static final ZoneId SYSTEM_DEFAULT_ZONE = ZoneId.systemDefault();
+    private static final ZoneId TIME_ZONE = ZoneId.of("UTC");
 
     /** TypeInformation of the produced {@link RowData}. */
     private final TypeInformation<RowData> resultTypeInfo;
@@ -443,7 +443,7 @@ public class MongoDBConnectorDeserializationSchema
     }
 
     private LocalDateTime convertInstantToLocalDateTime(Instant instant) {
-        return instant.atZone(SYSTEM_DEFAULT_ZONE).toLocalDateTime();
+        return instant.atZone(TIME_ZONE).toLocalDateTime();
     }
 
     private Instant convertToInstant(BsonTimestamp bsonTimestamp) {

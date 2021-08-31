@@ -301,17 +301,17 @@ public class MongoDBConnectorITCase extends MongoDBTestBase {
         List<String> expected =
                 Arrays.asList(
                         "+I(5d505646cf6d4fe581014ab2,hello,0bd1e27e-2829-4b47-8e21-dfef93da44e1,"
-                                + "2078693f4c61ce3073b01be69ab76428,2019-08-12,1960-08-12,"
+                                + "2078693f4c61ce3073b01be69ab76428,2019-08-11,1960-08-11,"
                                 + "2019-08-11T17:47:44,true,11,10.5,10,50,hello,50,{inner_map={key=234}},"
                                 + "[hello, world],[1.0, 1.1, null],[hello0,51, hello1,53],MIN_KEY,MAX_KEY,"
                                 + "/^H/i,null,null,[1, 2, 3],function () { x++; },ref_doc,5d505646cf6d4fe581014ab3)",
                         "-U(5d505646cf6d4fe581014ab2,hello,0bd1e27e-2829-4b47-8e21-dfef93da44e1,"
-                                + "2078693f4c61ce3073b01be69ab76428,2019-08-12,1960-08-12,"
+                                + "2078693f4c61ce3073b01be69ab76428,2019-08-11,1960-08-11,"
                                 + "2019-08-11T17:47:44,true,11,10.5,10,50,hello,50,{inner_map={key=234}},"
                                 + "[hello, world],[1.0, 1.1, null],[hello0,51, hello1,53],MIN_KEY,MAX_KEY,"
                                 + "/^H/i,null,null,[1, 2, 3],function () { x++; },ref_doc,5d505646cf6d4fe581014ab3)",
                         "+U(5d505646cf6d4fe581014ab2,hello,0bd1e27e-2829-4b47-8e21-dfef93da44e1,"
-                                + "2078693f4c61ce3073b01be69ab76428,2019-08-12,1960-08-12,"
+                                + "2078693f4c61ce3073b01be69ab76428,2019-08-11,1960-08-11,"
                                 + "2019-08-11T17:47:44,true,11,10.5,10,510,hello,50,{inner_map={key=234}},"
                                 + "[hello, world],[1.0, 1.1, null],[hello0,51, hello1,53],MIN_KEY,MAX_KEY,"
                                 + "/^H/i,null,null,[1, 2, 3],function () { x++; },ref_doc,5d505646cf6d4fe581014ab3)");
