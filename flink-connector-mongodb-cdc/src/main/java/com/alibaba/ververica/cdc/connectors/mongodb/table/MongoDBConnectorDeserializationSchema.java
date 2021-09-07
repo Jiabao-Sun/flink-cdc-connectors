@@ -443,11 +443,11 @@ public class MongoDBConnectorDeserializationSchema
     }
 
     private LocalDateTime convertInstantToLocalDateTime(Instant instant) {
-        return instant.atZone(TIME_ZONE).toLocalDateTime();
+        return LocalDateTime.ofInstant(instant, TIME_ZONE);
     }
 
     private Instant convertToInstant(BsonTimestamp bsonTimestamp) {
-        return Instant.ofEpochSecond(bsonTimestamp.getTime() * 1000L);
+        return Instant.ofEpochSecond(bsonTimestamp.getTime());
     }
 
     private Instant convertToInstant(BsonDateTime bsonDateTime) {
@@ -498,10 +498,12 @@ public class MongoDBConnectorDeserializationSchema
 
     private TimestampData convertToTimestamp(BsonValue docObj) {
         if (docObj.isDateTime()) {
-            return TimestampData.fromEpochMillis(docObj.asDateTime().getValue());
+            return TimestampData.fromLocalDateTime(
+                    convertInstantToLocalDateTime(convertToInstant(docObj.asDateTime())));
         }
         if (docObj.isTimestamp()) {
-            return TimestampData.fromEpochMillis(docObj.asTimestamp().getTime() * 1000L);
+            return TimestampData.fromLocalDateTime(
+                    convertInstantToLocalDateTime(convertToInstant(docObj.asTimestamp())));
         }
         throw new IllegalArgumentException(
                 "Unable to convert to timestamp from unexpected value '"
