@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.ververica.cdc.connectors.mongodb.internal;
+package com.alibaba.ververica.cdc.connectors.mongodb.internal;
 
 import com.mongodb.kafka.connect.source.MongoSourceTask;
 import io.debezium.connector.AbstractSourceInfo;
@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Source Task that proxies mongodb kafka connector's {@link MongoSourceTask} to adapt to {@link
- * com.ververica.cdc.debezium.internal.DebeziumChangeFetcher}.
+ * com.alibaba.ververica.cdc.debezium.internal.DebeziumChangeConsumer}.
  */
 public class MongoDBConnectorSourceTask extends SourceTask {
 

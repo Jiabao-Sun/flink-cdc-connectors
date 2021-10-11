@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.ververica.cdc.connectors.mongodb.table;
+package com.alibaba.ververica.cdc.connectors.mongodb.table;
 
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.table.api.DataTypes;
@@ -39,9 +39,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.ververica.cdc.connectors.mongodb.MongoDBSource.ERROR_TOLERANCE_ALL;
-import static com.ververica.cdc.connectors.mongodb.MongoDBSource.POLL_AWAIT_TIME_MILLIS_DEFAULT;
-import static com.ververica.cdc.connectors.mongodb.MongoDBSource.POLL_MAX_BATCH_SIZE_DEFAULT;
+import static com.alibaba.ververica.cdc.connectors.mongodb.MongoDBSource.ERROR_TOLERANCE_ALL;
+import static com.alibaba.ververica.cdc.connectors.mongodb.MongoDBSource.POLL_AWAIT_TIME_MILLIS_DEFAULT;
+import static com.alibaba.ververica.cdc.connectors.mongodb.MongoDBSource.POLL_MAX_BATCH_SIZE_DEFAULT;
 import static org.apache.flink.table.api.TableSchema.fromResolvedSchema;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

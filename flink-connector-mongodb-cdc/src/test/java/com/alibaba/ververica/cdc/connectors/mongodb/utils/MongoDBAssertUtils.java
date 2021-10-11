@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.ververica.cdc.connectors.mongodb.utils;
+package com.alibaba.ververica.cdc.connectors.mongodb.utils;
 
 import com.jayway.jsonpath.JsonPath;
 import com.mongodb.client.model.changestream.OperationType;

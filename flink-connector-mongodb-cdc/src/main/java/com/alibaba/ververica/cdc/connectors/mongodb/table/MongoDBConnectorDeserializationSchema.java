@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ververica.cdc.connectors.mongodb.table;
+package com.alibaba.ververica.cdc.connectors.mongodb.table;
 
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.table.data.DecimalData;
@@ -33,9 +33,9 @@ import org.apache.flink.table.types.logical.utils.LogicalTypeUtils;
 import org.apache.flink.types.RowKind;
 import org.apache.flink.util.Collector;
 
+import com.alibaba.ververica.cdc.debezium.DebeziumDeserializationSchema;
 import com.mongodb.client.model.changestream.OperationType;
 import com.mongodb.internal.HexUtils;
-import com.ververica.cdc.debezium.DebeziumDeserializationSchema;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.Struct;
 import org.apache.kafka.connect.source.SourceRecord;

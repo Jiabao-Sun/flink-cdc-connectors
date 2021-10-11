@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.ververica.cdc.connectors.mongodb;
+package com.alibaba.ververica.cdc.connectors.mongodb;
 
 import org.apache.flink.api.common.state.BroadcastState;
 import org.apache.flink.api.common.state.KeyedStateStore;
@@ -34,13 +34,13 @@ import org.apache.flink.streaming.util.MockStreamingRuntimeContext;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.Preconditions;
 
+import com.alibaba.ververica.cdc.connectors.utils.TestSourceContext;
+import com.alibaba.ververica.cdc.debezium.DebeziumDeserializationSchema;
+import com.alibaba.ververica.cdc.debezium.DebeziumSourceFunction;
 import com.jayway.jsonpath.JsonPath;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
-import com.ververica.cdc.connectors.utils.TestSourceContext;
-import com.ververica.cdc.debezium.DebeziumDeserializationSchema;
-import com.ververica.cdc.debezium.DebeziumSourceFunction;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -57,11 +57,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-import static com.ververica.cdc.connectors.mongodb.utils.MongoDBAssertUtils.assertDelete;
-import static com.ververica.cdc.connectors.mongodb.utils.MongoDBAssertUtils.assertInsert;
-import static com.ververica.cdc.connectors.mongodb.utils.MongoDBAssertUtils.assertObjectIdEquals;
-import static com.ververica.cdc.connectors.mongodb.utils.MongoDBAssertUtils.assertReplace;
-import static com.ververica.cdc.connectors.mongodb.utils.MongoDBAssertUtils.assertUpdate;
+import static com.alibaba.ververica.cdc.connectors.mongodb.utils.MongoDBAssertUtils.assertDelete;
+import static com.alibaba.ververica.cdc.connectors.mongodb.utils.MongoDBAssertUtils.assertInsert;
+import static com.alibaba.ververica.cdc.connectors.mongodb.utils.MongoDBAssertUtils.assertObjectIdEquals;
+import static com.alibaba.ververica.cdc.connectors.mongodb.utils.MongoDBAssertUtils.assertReplace;
+import static com.alibaba.ververica.cdc.connectors.mongodb.utils.MongoDBAssertUtils.assertUpdate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

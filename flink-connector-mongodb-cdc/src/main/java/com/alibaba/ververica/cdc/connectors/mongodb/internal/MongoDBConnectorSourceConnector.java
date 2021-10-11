@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.ververica.cdc.connectors.mongodb.internal;
+package com.alibaba.ververica.cdc.connectors.mongodb.internal;
 
 import com.mongodb.kafka.connect.MongoSourceConnector;
 import org.apache.kafka.connect.connector.Task;

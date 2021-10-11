@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.ververica.cdc.connectors.mongodb.table;
+package com.alibaba.ververica.cdc.connectors.mongodb.table;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;
@@ -25,10 +25,10 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.table.planner.factories.TestValuesTableFactory;
 import org.apache.flink.table.utils.LegacyRowResource;
 
+import com.alibaba.ververica.cdc.connectors.mongodb.MongoDBTestBase;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
-import com.ververica.cdc.connectors.mongodb.MongoDBTestBase;
 import org.bson.BsonDateTime;
 import org.bson.BsonTimestamp;
 import org.bson.Document;

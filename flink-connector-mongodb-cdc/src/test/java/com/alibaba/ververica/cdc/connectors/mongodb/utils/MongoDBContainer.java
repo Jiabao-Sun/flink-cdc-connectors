@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.ververica.cdc.connectors.mongodb.utils;
+package com.alibaba.ververica.cdc.connectors.mongodb.utils;
 
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import org.slf4j.Logger;

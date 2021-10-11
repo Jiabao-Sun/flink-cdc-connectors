@@ -16,18 +16,17 @@
  * limitations under the License.
  */
 
-package com.ververica.cdc.connectors.mongodb;
+package com.alibaba.ververica.cdc.connectors.mongodb;
 
 import org.apache.flink.annotation.PublicEvolving;
 
+import com.alibaba.ververica.cdc.connectors.mongodb.internal.MongoDBConnectorSourceConnector;
+import com.alibaba.ververica.cdc.debezium.DebeziumDeserializationSchema;
+import com.alibaba.ververica.cdc.debezium.DebeziumSourceFunction;
 import com.mongodb.client.model.changestream.FullDocument;
 import com.mongodb.kafka.connect.source.MongoSourceConfig;
 import com.mongodb.kafka.connect.source.MongoSourceConfig.ErrorTolerance;
 import com.mongodb.kafka.connect.source.MongoSourceConfig.OutputFormat;
-import com.ververica.cdc.connectors.mongodb.internal.MongoDBConnectorSourceConnector;
-import com.ververica.cdc.debezium.DebeziumDeserializationSchema;
-import com.ververica.cdc.debezium.DebeziumSourceFunction;
-import com.ververica.cdc.debezium.Validator;
 import io.debezium.heartbeat.Heartbeat;
 
 import java.io.UnsupportedEncodingException;
@@ -431,8 +430,7 @@ public class MongoDBSource {
             props.setProperty(
                     Heartbeat.HEARTBEAT_TOPICS_PREFIX.name(), HEARTBEAT_TOPIC_NAME_DEFAULT);
 
-            return new DebeziumSourceFunction<>(
-                    deserializer, props, null, Validator.getDefaultValidator());
+            return new DebeziumSourceFunction<>(deserializer, props, null);
         }
     }
 }

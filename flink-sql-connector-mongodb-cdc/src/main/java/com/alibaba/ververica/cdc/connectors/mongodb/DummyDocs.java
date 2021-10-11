@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.ververica.cdc.connectors.mongodb;
+package com.alibaba.ververica.cdc.connectors.mongodb;
 
 /** This is used to generate a dummy docs jar for this module to pass OSS repository rule. */
 public class DummyDocs {}

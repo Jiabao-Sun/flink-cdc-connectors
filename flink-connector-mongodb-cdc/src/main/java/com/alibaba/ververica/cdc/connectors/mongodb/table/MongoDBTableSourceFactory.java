@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.ververica.cdc.connectors.mongodb.table;
+package com.alibaba.ververica.cdc.connectors.mongodb.table;
 
 import org.apache.flink.configuration.ConfigOption;
 import org.apache.flink.configuration.ConfigOptions;
@@ -33,9 +33,9 @@ import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.ververica.cdc.connectors.mongodb.MongoDBSource.ERROR_TOLERANCE_NONE;
-import static com.ververica.cdc.connectors.mongodb.MongoDBSource.POLL_AWAIT_TIME_MILLIS_DEFAULT;
-import static com.ververica.cdc.connectors.mongodb.MongoDBSource.POLL_MAX_BATCH_SIZE_DEFAULT;
+import static com.alibaba.ververica.cdc.connectors.mongodb.MongoDBSource.ERROR_TOLERANCE_NONE;
+import static com.alibaba.ververica.cdc.connectors.mongodb.MongoDBSource.POLL_AWAIT_TIME_MILLIS_DEFAULT;
+import static com.alibaba.ververica.cdc.connectors.mongodb.MongoDBSource.POLL_MAX_BATCH_SIZE_DEFAULT;
 import static org.apache.flink.util.Preconditions.checkArgument;
 
 /** Factory for creating configured instance of {@link MongoDBTableSource}. */
