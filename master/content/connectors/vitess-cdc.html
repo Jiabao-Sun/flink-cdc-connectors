@@ -1,0 +1,625 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Vitess CDC Connector &mdash; CDC Connectors for Apache Flink®  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/theme_overrides.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Pipeline Connectors" href="../pipelines/index.html" />
+    <link rel="prev" title="Db2 CDC Connector" href="db2-cdc.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> CDC Connectors for Apache Flink®
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                master
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview/index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B/index.html">快速上手</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Connectors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mongodb-cdc.html">MongoDB CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mongodb-cdc%28ZH%29.html">MongoDB CDC 连接器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mysql-cdc.html">MySQL CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mysql-cdc%28ZH%29.html">MySQL CDC 连接器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oceanbase-cdc.html">OceanBase CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oceanbase-cdc%28ZH%29.html">OceanBase CDC 连接器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oracle-cdc.html">Oracle CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postgres-cdc.html">Postgres CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlserver-cdc.html">SQLServer CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tidb-cdc.html">TiDB CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="db2-cdc.html">Db2 CDC Connector</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Vitess CDC Connector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#maven-dependency">Maven dependency</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sql-client-jar">SQL Client JAR</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#setup-vitess-server">Setup Vitess server</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#checklist">Checklist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#grpc-authentication">gRPC authentication</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-create-a-vitess-cdc-table">How to create a Vitess CDC table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#connector-options">Connector Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#features">Features</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#incremental-reading">Incremental Reading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exactly-once-processing">Exactly-Once Processing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#datastream-source">DataStream Source</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#data-type-mapping">Data Type Mapping</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pipelines/index.html">Pipeline Connectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../formats/index.html">Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../downloads.html">Downloads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../githublink.html"><a class="github-button" href="https://github.com/ververica/flink-cdc-connectors" data-color-scheme="no-preference: dark_high_contrast; light: dark_high_contrast; dark: dark_high_contrast;" data-size="large" data-show-count="true" aria-label="Star ververica/flink-cdc-connectors on GitHub">Star</a></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CDC Connectors for Apache Flink®</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+<!-- Extend the RTD template to support user defined "Edit on Github" URL -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Connectors</a> &raquo;</li>
+        
+      <li>Vitess CDC Connector</li>
+    
+    
+            <li class="wy-breadcrumbs-aside">
+                
+                    
+                        <a href="http://github.com/ververica/flink-cdc-connectors/blob/master/docs/content/connectors/vitess-cdc.md" class="fa fa-github"> Edit on GitHub</a>
+                    
+                
+            </li>
+        
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="vitess-cdc-connector">
+<h1>Vitess CDC Connector<a class="headerlink" href="#vitess-cdc-connector" title="Permalink to this headline">¶</a></h1>
+<p>The Vitess CDC connector allows for reading of incremental data from Vitess cluster. The connector does not support snapshot feature at the moment. This document describes how to setup the Vitess CDC connector to run SQL queries against Vitess databases.
+<a class="reference external" href="https://debezium.io/documentation/reference/connectors/vitess.html">Vitess debezium documentation</a></p>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p>In order to setup the Vitess CDC connector, the following table provides dependency information for both projects using a build automation tool (such as Maven or SBT) and SQL Client with SQL JAR bundles.</p>
+<section id="maven-dependency">
+<h3>Maven dependency<a class="headerlink" href="#maven-dependency" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">ververica</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">flink</span><span class="o">-</span><span class="n">connector</span><span class="o">-</span><span class="n">vitess</span><span class="o">-</span><span class="n">cdc</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">3.0</span><span class="o">-</span><span class="n">SNAPSHOT</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="sql-client-jar">
+<h3>SQL Client JAR<a class="headerlink" href="#sql-client-jar" title="Permalink to this headline">¶</a></h3>
+<p>Download <a class="reference external" href="https://repo1.maven.org/maven2/com/ververica/flink-sql-connector-vitess-cdc/3.0-SNAPSHOT/flink-sql-connector-vitess-cdc-3.0-SNAPSHOT.jar">flink-sql-connector-vitess-cdc-3.0-SNAPSHOT.jar</a> and put it under <code class="docutils literal notranslate"><span class="pre">&lt;FLINK_HOME&gt;/lib/</span></code>.</p>
+</section>
+</section>
+<section id="setup-vitess-server">
+<h2>Setup Vitess server<a class="headerlink" href="#setup-vitess-server" title="Permalink to this headline">¶</a></h2>
+<p>You can follow the Local Install via <a class="reference external" href="https://vitess.io/docs/get-started/local-docker/">Docker guide</a>, or the Vitess Operator for <a class="reference external" href="https://vitess.io/docs/get-started/operator/">Kubernetes guide</a> to install Vitess. No special setup is needed to support Vitess connector.</p>
+<section id="checklist">
+<h3>Checklist<a class="headerlink" href="#checklist" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Make sure that the VTGate host and its gRPC port (default is 15991) is accessible from the machine where the Vitess connector is installed</p></li>
+</ul>
+</section>
+<section id="grpc-authentication">
+<h3>gRPC authentication<a class="headerlink" href="#grpc-authentication" title="Permalink to this headline">¶</a></h3>
+<p>Because Vitess connector reads change events from the VTGate VStream gRPC server, it does not need to connect directly to MySQL instances.
+Therefore, no special database user and permissions are needed. At the moment, Vitess connector only supports unauthenticated access to the VTGate gRPC server.</p>
+</section>
+</section>
+<section id="how-to-create-a-vitess-cdc-table">
+<h2>How to create a Vitess CDC table<a class="headerlink" href="#how-to-create-a-vitess-cdc-table" title="Permalink to this headline">¶</a></h2>
+<p>The Vitess CDC table can be defined as following:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- checkpoint every 3000 milliseconds</span>
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">SET</span> <span class="s1">&#39;execution.checkpointing.interval&#39;</span> <span class="o">=</span> <span class="s1">&#39;3s&#39;</span><span class="p">;</span>   
+
+<span class="c1">-- register a Vitess table &#39;orders&#39; in Flink SQL</span>
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">orders</span> <span class="p">(</span>
+     <span class="n">order_id</span> <span class="nb">INT</span><span class="p">,</span>
+     <span class="n">order_date</span> <span class="k">TIMESTAMP</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+     <span class="n">customer_name</span> <span class="n">STRING</span><span class="p">,</span>
+     <span class="n">price</span> <span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+     <span class="n">product_id</span> <span class="nb">INT</span><span class="p">,</span>
+     <span class="n">order_status</span> <span class="nb">BOOLEAN</span><span class="p">,</span>
+     <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">(</span><span class="n">order_id</span><span class="p">)</span> <span class="k">NOT</span> <span class="n">ENFORCED</span>
+     <span class="p">)</span> <span class="k">WITH</span> <span class="p">(</span>
+     <span class="s1">&#39;connector&#39;</span> <span class="o">=</span> <span class="s1">&#39;vitess-cdc&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;hostname&#39;</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;port&#39;</span> <span class="o">=</span> <span class="s1">&#39;3306&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;keyspace&#39;</span> <span class="o">=</span> <span class="s1">&#39;mydb&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;table-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;orders&#39;</span><span class="p">);</span>
+
+<span class="c1">-- read snapshot and binlogs from orders table</span>
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">orders</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="connector-options">
+<h2>Connector Options<a class="headerlink" href="#connector-options" title="Permalink to this headline">¶</a></h2>
+<div class="highlight">
+    <table class="colwidths-auto">
+        <thead>
+            <tr>
+                <th class="text-left">Option</th>
+                <th class="text-left">Required</th>
+                <th class="text-left">Default</th>
+                <th class="text-left">Type</th>
+                <th class="text-left">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>connector</td>
+                <td>required</td>
+                <td>(none)</td>
+                <td>String</td>
+                <td>Specify what connector to use, here should be <code>&lsquo;vitess-cdc&rsquo;</code>.</td>
+            </tr>
+            <tr>
+                <td>hostname</td>
+                <td>required</td>
+                <td>(none)</td>
+                <td>String</td>
+                <td>IP address or hostname of the Vitess database server (VTGate).</td>
+            </tr>
+            <tr>
+                <td>keyspace</td>
+                <td>required</td>
+                <td>(none)</td>
+                <td>String</td>
+                <td>The name of the keyspace from which to stream the changes.</td>
+            </tr>
+            <tr>
+                <td>username</td>
+                <td>optional</td>
+                <td>(none)</td>
+                <td>String</td>
+                <td>An optional username of the Vitess database server (VTGate). If not configured, unauthenticated VTGate gRPC is used.</td>
+            </tr>
+            <tr>
+                <td>password</td>
+                <td>optional</td>
+                <td>(none)</td>
+                <td>String</td>
+                <td>An optional password of the Vitess database server (VTGate). If not configured, unauthenticated VTGate gRPC is used.</td>
+            </tr>
+            <tr>
+                <td>shard</td>
+                <td>optional</td>
+                <td>(none)</td>
+                <td>String</td>
+                <td>An optional name of the shard from which to stream the changes. If not configured, in case of unsharded keyspace, the connector streams changes from the only shard, in case of sharded keyspace, the connector streams changes from all shards in the keyspace.</td>
+            </tr>
+            <tr>
+                <td>gtid</td>
+                <td>optional</td>
+                <td>current</td>
+                <td>String</td>
+                <td>An optional GTID position for a shard to stream from.</td>
+            </tr>
+            <tr>
+                <td>stopOnReshard</td>
+                <td>optional</td>
+                <td>false</td>
+                <td>Boolean</td>
+                <td>Controls Vitess flag stop_on_reshard.</td>
+            </tr>
+            <tr>
+                <td>tombstonesOnDelete</td>
+                <td>optional</td>
+                <td>true</td>
+                <td>Boolean</td>
+                <td>Controls whether a delete event is followed by a tombstone event.</td>
+            </tr>
+            <tr>
+                <td>tombstonesOnDelete</td>
+                <td>optional</td>
+                <td>true</td>
+                <td>Boolean</td>
+                <td>Controls whether a delete event is followed by a tombstone event.</td>
+            </tr>
+            <tr>
+                <td>schemaNameAdjustmentMode</td>
+                <td>optional</td>
+                <td>avro</td>
+                <td>String</td>
+                <td>Specifies how schema names should be adjusted for compatibility with the message converter used by the connector.</td>
+            </tr>
+            <tr>
+                <td>table-name</td>
+                <td>required</td>
+                <td>(none)</td>
+                <td>String</td>
+                <td>Table name of the MySQL database to monitor.</td>
+            </tr>
+            <tr>
+                <td>tablet.type</td>
+                <td>optional</td>
+                <td>RDONLY</td>
+                <td>String</td>
+                <td>The type of Tablet (hence MySQL) from which to stream the changes: MASTER represents streaming from the master MySQL instance REPLICA represents streaming from the replica slave MySQL instance RDONLY represents streaming from the read-only slave MySQL instance.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</section>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<section id="incremental-reading">
+<h3>Incremental Reading<a class="headerlink" href="#incremental-reading" title="Permalink to this headline">¶</a></h3>
+<p>The Vitess connector spends all its time streaming changes from the VTGate’s VStream gRPC service to which it is subscribed. The client receives changes from VStream as they are committed in the underlying MySQL server’s binlog at certain positions, which are referred to as VGTID.</p>
+<p>The VGTID in Vitess is the equivalent of GTID in MySQL, it describes the position in the VStream in which a change event happens. Typically, A VGTID has multiple shard GTIDs, each shard GTID is a tuple of (Keyspace, Shard, GTID), which describes the GTID position of a given shard.</p>
+<p>When subscribing to a VStream service, the connector needs to provide a VGTID and a Tablet Type (e.g. MASTER, REPLICA). The VGTID describes the position from which VStream should starts sending change events; the Tablet type describes which underlying MySQL instance (master or replica) in each shard do we read change events from.</p>
+<p>The first time the connector connects to a Vitess cluster, it gets and provides the current VGTID to VStream.</p>
+<p>The Debezium Vitess connector acts as a gRPC client of VStream. When the connector receives changes it transforms the events into Debezium create, update, or delete events that include the VGTID of the event. The Vitess connector forwards these change events in records to the Kafka Connect framework, which is running in the same process. The Kafka Connect process asynchronously writes the change event records in the same order in which they were generated to the appropriate Kafka topic.</p>
+<section id="checkpoint">
+<h4>Checkpoint<a class="headerlink" href="#checkpoint" title="Permalink to this headline">¶</a></h4>
+<p>Incremental snapshot reading provides the ability to perform checkpoint in chunk level. It resolves the checkpoint timeout problem in previous version with old snapshot reading mechanism.</p>
+</section>
+</section>
+<section id="exactly-once-processing">
+<h3>Exactly-Once Processing<a class="headerlink" href="#exactly-once-processing" title="Permalink to this headline">¶</a></h3>
+<p>The Vitess CDC connector is a Flink Source connector which will read table snapshot chunks first and then continues to read binlog,
+both snapshot phase and binlog phase, Vitess CDC connector read with <strong>exactly-once processing</strong> even failures happen.</p>
+</section>
+<section id="datastream-source">
+<h3>DataStream Source<a class="headerlink" href="#datastream-source" title="Permalink to this headline">¶</a></h3>
+<p>The Incremental Reading feature of Vitess CDC Source only exposes in SQL currently, if you’re using DataStream, please use Vitess Source:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">org.apache.flink.streaming.api.environment.StreamExecutionEnvironment</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.streaming.api.functions.source.SourceFunction</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">com.ververica.cdc.debezium.JsonDebeziumDeserializationSchema</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">com.ververica.cdc.connectors.vitess.VitessSource</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">VitessSourceExample</span> <span class="p">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+    <span class="n">SourceFunction</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">sourceFunction</span> <span class="o">=</span> <span class="n">VitessSource</span><span class="p">.</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="n">builder</span><span class="p">()</span>
+      <span class="p">.</span><span class="na">hostname</span><span class="p">(</span><span class="s">&quot;localhost&quot;</span><span class="p">)</span>
+      <span class="p">.</span><span class="na">port</span><span class="p">(</span><span class="mi">15991</span><span class="p">)</span>
+      <span class="p">.</span><span class="na">keyspace</span><span class="p">(</span><span class="s">&quot;inventory&quot;</span><span class="p">)</span>
+      <span class="p">.</span><span class="na">username</span><span class="p">(</span><span class="s">&quot;flinkuser&quot;</span><span class="p">)</span>
+      <span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">&quot;flinkpw&quot;</span><span class="p">)</span>
+      <span class="p">.</span><span class="na">deserializer</span><span class="p">(</span><span class="k">new</span> <span class="n">JsonDebeziumDeserializationSchema</span><span class="p">())</span> <span class="c1">// converts SourceRecord to JSON String</span>
+      <span class="p">.</span><span class="na">build</span><span class="p">();</span>
+
+    <span class="n">StreamExecutionEnvironment</span> <span class="n">env</span> <span class="o">=</span> <span class="n">StreamExecutionEnvironment</span><span class="p">.</span><span class="na">getExecutionEnvironment</span><span class="p">();</span>
+
+    <span class="n">env</span>
+      <span class="p">.</span><span class="na">addSource</span><span class="p">(</span><span class="n">sourceFunction</span><span class="p">)</span>
+      <span class="p">.</span><span class="na">print</span><span class="p">().</span><span class="na">setParallelism</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// use parallelism 1 for sink to keep message ordering</span>
+
+    <span class="n">env</span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Note:</strong> Please refer <a class="reference external" href="../about.html#deserialization">Deserialization</a> for more details about the JSON deserialization.</p>
+</section>
+</section>
+<section id="data-type-mapping">
+<h2>Data Type Mapping<a class="headerlink" href="#data-type-mapping" title="Permalink to this headline">¶</a></h2>
+<div class="wy-table-responsive">
+<table class="colwidths-auto docutils">
+    <thead>
+      <tr>
+        <th class="text-left">MySQL type<a href="https://dev.mysql.com/doc/man/8.0/en/data-types.html"></a></th>
+        <th class="text-left">Flink SQL type<a href="{% link dev/table/types.md %}"></a></th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>TINYINT</td>
+      <td>TINYINT</td>
+    </tr>
+    <tr>
+      <td>
+        SMALLINT<br>
+        TINYINT UNSIGNED</td>
+      <td>SMALLINT</td>
+    </tr>
+    <tr>
+      <td>
+        INT<br>
+        MEDIUMINT<br>
+        SMALLINT UNSIGNED</td>
+      <td>INT</td>
+    </tr>
+    <tr>
+      <td>
+        BIGINT<br>
+        INT UNSIGNED</td>
+      <td>BIGINT</td>
+    </tr>
+   <tr>
+      <td>BIGINT UNSIGNED</td>
+      <td>DECIMAL(20, 0)</td>
+    </tr>
+    <tr>
+      <td>BIGINT</td>
+      <td>BIGINT</td>
+    </tr>
+    <tr>
+      <td>FLOAT</td>
+      <td>FLOAT</td>
+    </tr>
+    <tr>
+      <td>
+        DOUBLE<br>
+        DOUBLE PRECISION</td>
+      <td>DOUBLE</td>
+    </tr>
+    <tr>
+      <td>
+        NUMERIC(p, s)<br>
+         DECIMAL(p, s)</td>
+      <td>DECIMAL(p, s)</td>
+    </tr>
+    <tr>
+      <td>
+        BOOLEAN<br>
+         TINYINT(1)</td>
+      <td>BOOLEAN</td>
+    </tr>
+    <tr>
+      <td>
+        CHAR(n)<br>
+        VARCHAR(n)<br>
+        TEXT</td>
+      <td>STRING</td>
+    </tr>
+    </tbody>
+</table>
+</div>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../pipelines/index.html" class="btn btn-neutral float-right" title="Pipeline Connectors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="db2-cdc.html" class="btn btn-neutral float-left" title="Db2 CDC Connector" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2024, Ververica GmbH; Apache Flink, Flink®, Apache®, the squirrel logo, and the Apache feather logo are either registered trademarks or trademarks of The Apache Software Foundation.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+
+
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      version: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        
+        <dl>
+            <dt>Versions</dt>
+            
+             <strong> 
+            <dd><a href="/flink-cdc-connectors/master/">master</a></dd>
+             </strong> 
+            
+            
+            <dd><a href="/flink-cdc-connectors/release-1.4.0-mongodb/">release-1.4.0-mongodb</a></dd>
+            
+            
+        </dl>
+        
+        
+        <hr/>
+        Free document hosting provided by <a href="http://www.readthedocs.org">Read the
+        Docs</a>.
+
+    </div>
+</div>
+
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer
+        src="https://ververica.github.io/flink-cdc-connectors/master/_static/button.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

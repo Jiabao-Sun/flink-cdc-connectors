@@ -1,0 +1,493 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>演示: Oracle CDC 导入 Elasticsearch &mdash; CDC Connectors for Apache Flink®  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/theme_overrides.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="演示: PolarDB-X CDC 导入 Elasticsearch" href="polardbx-tutorial-zh.html" />
+    <link rel="prev" title="演示: OceanBase CDC 导入 Elasticsearch" href="oceanbase-tutorial-zh.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> CDC Connectors for Apache Flink®
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                master
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview/index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">快速上手</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mysql-doris-pipeline-tutorial-zh.html">基于 Flink CDC 3.0 构建 MySQL 到 Doris 的 Streaming ELT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mysql-starrocks-pipeline-tutorial-zh.html">基于 Flink CDC 3.0 构建 MySQL 到 StarRocks 的 Streaming ELT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mysql-postgres-tutorial-zh.html">基于 Flink CDC 构建 MySQL 和 Postgres 的 Streaming ETL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mongodb-tutorial-zh.html">演示: MongoDB CDC 导入 Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oceanbase-tutorial-zh.html">演示: OceanBase CDC 导入 Elasticsearch</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">演示: Oracle CDC 导入 Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polardbx-tutorial-zh.html">演示: PolarDB-X CDC 导入 Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlserver-tutorial-zh.html">演示: SqlServer CDC 导入 Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tidb-tutorial-zh.html">演示: TiDB CDC 导入 Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build-real-time-data-lake-tutorial-zh.html">基于 Flink CDC 同步 MySQL 分库分表构建实时数据湖</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datastream-api-package-guidance-zh.html">DataStream api 打包指南</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../connectors/index.html">Connectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pipelines/index.html">Pipeline Connectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../formats/index.html">Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../downloads.html">Downloads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../githublink.html"><a class="github-button" href="https://github.com/ververica/flink-cdc-connectors" data-color-scheme="no-preference: dark_high_contrast; light: dark_high_contrast; dark: dark_high_contrast;" data-size="large" data-show-count="true" aria-label="Star ververica/flink-cdc-connectors on GitHub">Star</a></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CDC Connectors for Apache Flink®</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+<!-- Extend the RTD template to support user defined "Edit on Github" URL -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">快速上手</a> &raquo;</li>
+        
+      <li>演示: Oracle CDC 导入 Elasticsearch</li>
+    
+    
+            <li class="wy-breadcrumbs-aside">
+                
+                    
+                        <a href="http://github.com/ververica/flink-cdc-connectors/blob/master/docs/content/快速上手/oracle-tutorial-zh.md" class="fa fa-github"> Edit on GitHub</a>
+                    
+                
+            </li>
+        
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="oracle-cdc-elasticsearch">
+<h1>演示: Oracle CDC 导入 Elasticsearch<a class="headerlink" href="#oracle-cdc-elasticsearch" title="Permalink to this headline">¶</a></h1>
+<p><strong>创建<code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code>文件，内容如下所示:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">version</span><span class="p">:</span> <span class="s1">&#39;2.1&#39;</span>
+<span class="n">services</span><span class="p">:</span>
+  <span class="n">oracle</span><span class="p">:</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">goodboy008</span><span class="o">/</span><span class="n">oracle</span><span class="o">-</span><span class="mf">19.3.0</span><span class="o">-</span><span class="n">ee</span><span class="p">:</span><span class="n">non</span><span class="o">-</span><span class="n">cdb</span>
+    <span class="n">ports</span><span class="p">:</span>
+      <span class="o">-</span> <span class="s2">&quot;1521:1521&quot;</span>
+  <span class="n">elasticsearch</span><span class="p">:</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">elastic</span><span class="o">/</span><span class="n">elasticsearch</span><span class="p">:</span><span class="mf">7.6.0</span>
+    <span class="n">environment</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">cluster</span><span class="o">.</span><span class="n">name</span><span class="o">=</span><span class="n">docker</span><span class="o">-</span><span class="n">cluster</span>
+      <span class="o">-</span> <span class="n">bootstrap</span><span class="o">.</span><span class="n">memory_lock</span><span class="o">=</span><span class="n">true</span>
+      <span class="o">-</span> <span class="s2">&quot;ES_JAVA_OPTS=-Xms512m -Xmx512m&quot;</span>
+      <span class="o">-</span> <span class="n">discovery</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="n">single</span><span class="o">-</span><span class="n">node</span>
+    <span class="n">ports</span><span class="p">:</span>
+      <span class="o">-</span> <span class="s2">&quot;9200:9200&quot;</span>
+      <span class="o">-</span> <span class="s2">&quot;9300:9300&quot;</span>
+    <span class="n">ulimits</span><span class="p">:</span>
+      <span class="n">memlock</span><span class="p">:</span>
+        <span class="n">soft</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">hard</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span>
+      <span class="n">nofile</span><span class="p">:</span>
+        <span class="n">soft</span><span class="p">:</span> <span class="mi">65536</span>
+        <span class="n">hard</span><span class="p">:</span> <span class="mi">65536</span>
+  <span class="n">kibana</span><span class="p">:</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">elastic</span><span class="o">/</span><span class="n">kibana</span><span class="p">:</span><span class="mf">7.6.0</span>
+    <span class="n">ports</span><span class="p">:</span>
+      <span class="o">-</span> <span class="s2">&quot;5601:5601&quot;</span>
+    <span class="n">volumes</span><span class="p">:</span>
+      <span class="o">-</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">docker</span><span class="o">.</span><span class="n">sock</span><span class="p">:</span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">docker</span><span class="o">.</span><span class="n">sock</span>
+</pre></div>
+</div>
+<p>该 Docker Compose 中包含的容器有:</p>
+<ul class="simple">
+<li><p>Oracle: Oracle 19c 数据库</p></li>
+<li><p>Elasticsearch: <code class="docutils literal notranslate"><span class="pre">orders</span></code> 表将和 <code class="docutils literal notranslate"><span class="pre">products</span></code> 表进行join，join的结果写入Elasticsearch中</p></li>
+<li><p>Kibana: 可视化 Elasticsearch 中的数据</p></li>
+</ul>
+<p>在 docker-compose.yml 所在目录下运行如下命令以启动所有容器：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose up -d
+</pre></div>
+</div>
+<p>该命令会以 detached 模式自动启动 Docker Compose 配置中定义的所有容器。
+你可以通过 docker ps 来观察上述的容器是否正常启动了。 也可以访问 http://localhost:5601/ 来查看 Kibana 是否运行正常。
+另外可以通过如下命令停止所有的容器：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose down
+</pre></div>
+</div>
+<p><strong>下载以下 jar 包到 <code class="docutils literal notranslate"><span class="pre">&lt;FLINK_HOME&gt;/lib/</span></code>:</strong></p>
+<p><em>下载链接只对已发布的版本有效, SNAPSHOT 版本需要本地基于 master 或 release- 分支编译</em></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://repo.maven.apache.org/maven2/org/apache/flink/flink-sql-connector-elasticsearch7/3.0.1-1.17/flink-sql-connector-elasticsearch7-3.0.1-1.17.jar">flink-sql-connector-elasticsearch7-3.0.1-1.17.jar</a></p></li>
+<li><p><a class="reference external" href="https://repo1.maven.org/maven2/com/ververica/flink-sql-connector-oracle-cdc/2.5-SNAPSHOT/flink-sql-connector-oracle-cdc-2.5-SNAPSHOT.jar">flink-sql-connector-oracle-cdc-2.5-SNAPSHOT.jar</a></p></li>
+</ul>
+<p><strong>在 Oracle 数据库中准备数据</strong></p>
+<p>创建数据库和表 <code class="docutils literal notranslate"><span class="pre">products</span></code>，<code class="docutils literal notranslate"><span class="pre">orders</span></code>，并插入数据：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose <span class="nb">exec</span> oracle sqlplus debezium/dbz@localhost:1521/ORCLCDB
+</pre></div>
+</div>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">BEGIN</span>
+<span class="k">EXECUTE</span> <span class="k">IMMEDIATE</span> <span class="s1">&#39;DROP TABLE DEBEZIUM.PRODUCTS&#39;</span><span class="p">;</span>
+<span class="k">EXCEPTION</span>
+   <span class="k">WHEN</span> <span class="n">OTHERS</span> <span class="k">THEN</span>
+      <span class="k">IF</span> <span class="k">SQLCODE</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">942</span> <span class="k">THEN</span>
+         <span class="n">RAISE</span><span class="p">;</span>
+<span class="k">END</span> <span class="k">IF</span><span class="p">;</span>
+<span class="k">END</span><span class="p">;</span>
+<span class="o">/</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">PRODUCTS</span> <span class="p">(</span>
+  <span class="n">ID</span> <span class="nb">NUMBER</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">NAME</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">DESCRIPTION</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">512</span><span class="p">),</span>
+  <span class="n">WEIGHT</span> <span class="nb">FLOAT</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">(</span><span class="n">ID</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="k">BEGIN</span>
+<span class="k">EXECUTE</span> <span class="k">IMMEDIATE</span> <span class="s1">&#39;DROP TABLE DEBEZIUM.ORDERS&#39;</span><span class="p">;</span>
+<span class="k">EXCEPTION</span>
+   <span class="k">WHEN</span> <span class="n">OTHERS</span> <span class="k">THEN</span>
+      <span class="k">IF</span> <span class="k">SQLCODE</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">942</span> <span class="k">THEN</span>
+         <span class="n">RAISE</span><span class="p">;</span>
+<span class="k">END</span> <span class="k">IF</span><span class="p">;</span>
+<span class="k">END</span><span class="p">;</span>
+<span class="o">/</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">ORDERS</span> <span class="p">(</span>
+  <span class="n">ID</span> <span class="nb">NUMBER</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">ORDER_DATE</span> <span class="k">TIMESTAMP</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">PURCHASER</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">QUANTITY</span> <span class="nb">NUMBER</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">PRODUCT_ID</span> <span class="nb">NUMBER</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">(</span><span class="n">ID</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">PRODUCTS</span> <span class="k">ADD</span> <span class="n">SUPPLEMENTAL</span> <span class="n">LOG</span> <span class="k">DATA</span> <span class="p">(</span><span class="k">ALL</span><span class="p">)</span> <span class="n">COLUMNS</span><span class="p">;</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">ORDERS</span> <span class="k">ADD</span> <span class="n">SUPPLEMENTAL</span> <span class="n">LOG</span> <span class="k">DATA</span> <span class="p">(</span><span class="k">ALL</span><span class="p">)</span> <span class="n">COLUMNS</span><span class="p">;</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">PRODUCTS</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">101</span><span class="p">,</span> <span class="s1">&#39;scooter&#39;</span><span class="p">,</span> <span class="s1">&#39;Small 2-wheel scooter&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">.</span><span class="mi">14</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">PRODUCTS</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">102</span><span class="p">,</span> <span class="s1">&#39;car battery&#39;</span><span class="p">,</span> <span class="s1">&#39;12V car battery&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">.</span><span class="mi">1</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">PRODUCTS</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">103</span><span class="p">,</span> <span class="s1">&#39;12-pack drill bits&#39;</span><span class="p">,</span> <span class="s1">&#39;12-pack of drill bits with sizes ranging from #40 to #3&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">PRODUCTS</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">104</span><span class="p">,</span> <span class="s1">&#39;hammer&#39;</span><span class="p">,</span> <span class="s1">&#39;12oz carpenter&#39;&#39;s hammer&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">75</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">PRODUCTS</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">105</span><span class="p">,</span> <span class="s1">&#39;hammer&#39;</span><span class="p">,</span> <span class="s1">&#39;14oz carpenter&#39;&#39;s hammer&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">875</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">PRODUCTS</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">106</span><span class="p">,</span> <span class="s1">&#39;hammer&#39;</span><span class="p">,</span> <span class="s1">&#39;16oz carpenter&#39;&#39;s hammer&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">PRODUCTS</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">107</span><span class="p">,</span> <span class="s1">&#39;rocks&#39;</span><span class="p">,</span> <span class="s1">&#39;box of assorted rocks&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">.</span><span class="mi">3</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">PRODUCTS</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">108</span><span class="p">,</span> <span class="s1">&#39;jacket&#39;</span><span class="p">,</span> <span class="s1">&#39;water resistent black wind breaker&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">1</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">PRODUCTS</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">109</span><span class="p">,</span> <span class="s1">&#39;spare tire&#39;</span><span class="p">,</span> <span class="s1">&#39;24 inch spare tire&#39;</span><span class="p">,</span> <span class="mi">22</span><span class="p">.</span><span class="mi">2</span><span class="p">);</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">ORDERS</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">1001</span><span class="p">,</span> <span class="n">TO_TIMESTAMP</span><span class="p">(</span><span class="s1">&#39;2020-07-30 10:08:22.001000&#39;</span><span class="p">,</span> <span class="s1">&#39;YYYY-MM-DD HH24:MI:SS.FF&#39;</span><span class="p">),</span> <span class="s1">&#39;Jark&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">101</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">ORDERS</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">1002</span><span class="p">,</span> <span class="n">TO_TIMESTAMP</span><span class="p">(</span><span class="s1">&#39;2020-07-30 10:11:09.001000&#39;</span><span class="p">,</span> <span class="s1">&#39;YYYY-MM-DD HH24:MI:SS.FF&#39;</span><span class="p">),</span> <span class="s1">&#39;Sally&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">102</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">ORDERS</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">1003</span><span class="p">,</span> <span class="n">TO_TIMESTAMP</span><span class="p">(</span><span class="s1">&#39;2020-07-30 12:00:30.001000&#39;</span><span class="p">,</span> <span class="s1">&#39;YYYY-MM-DD HH24:MI:SS.FF&#39;</span><span class="p">),</span> <span class="s1">&#39;Edward&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">103</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">ORDERS</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">1004</span><span class="p">,</span> <span class="n">TO_TIMESTAMP</span><span class="p">(</span><span class="s1">&#39;2020-07-30 15:22:00.001000&#39;</span><span class="p">,</span> <span class="s1">&#39;YYYY-MM-DD HH24:MI:SS.FF&#39;</span><span class="p">),</span> <span class="s1">&#39;Jark&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">104</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><strong>然后启动 Flink 集群，再启动 SQL CLI:</strong></p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Flink SQL</span>
+<span class="c1">-- checkpoint every 3000 milliseconds                       </span>
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">SET</span> <span class="n">execution</span><span class="p">.</span><span class="n">checkpointing</span><span class="p">.</span><span class="nb">interval</span> <span class="o">=</span> <span class="mi">3</span><span class="n">s</span><span class="p">;</span>
+
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">products</span> <span class="p">(</span>
+    <span class="n">ID</span> <span class="nb">INT</span><span class="p">,</span>
+    <span class="n">NAME</span> <span class="n">STRING</span><span class="p">,</span>
+    <span class="n">DESCRIPTION</span> <span class="n">STRING</span><span class="p">,</span>
+    <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">ID</span><span class="p">)</span> <span class="k">NOT</span> <span class="n">ENFORCED</span>
+  <span class="p">)</span> <span class="k">WITH</span> <span class="p">(</span>
+    <span class="s1">&#39;connector&#39;</span> <span class="o">=</span> <span class="s1">&#39;oracle-cdc&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;hostname&#39;</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;port&#39;</span> <span class="o">=</span> <span class="s1">&#39;1521&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;username&#39;</span> <span class="o">=</span> <span class="s1">&#39;dbzuser&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;password&#39;</span> <span class="o">=</span> <span class="s1">&#39;dbz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;database-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;ORCLCDB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;schema-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;DEBEZIUM&#39;</span><span class="p">,</span>  
+    <span class="s1">&#39;table-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;products&#39;</span>
+  <span class="p">);</span>
+
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">orders</span> <span class="p">(</span>
+   <span class="n">ID</span> <span class="nb">INT</span><span class="p">,</span>
+   <span class="n">ORDER_DATE</span> <span class="k">TIMESTAMP</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>
+   <span class="n">PURCHASER</span> <span class="n">STRING</span><span class="p">,</span>
+   <span class="n">QUANTITY</span> <span class="nb">INT</span><span class="p">,</span>
+   <span class="n">PRODUCT_ID</span> <span class="nb">INT</span><span class="p">,</span>
+   <span class="n">ORDER_STATUS</span> <span class="nb">BOOLEAN</span>
+ <span class="p">)</span> <span class="k">WITH</span> <span class="p">(</span>
+   <span class="s1">&#39;connector&#39;</span> <span class="o">=</span> <span class="s1">&#39;oracle-cdc&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;hostname&#39;</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;port&#39;</span> <span class="o">=</span> <span class="s1">&#39;1521&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;username&#39;</span> <span class="o">=</span> <span class="s1">&#39;dbzuser&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;password&#39;</span> <span class="o">=</span> <span class="s1">&#39;dbz&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;database-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;ORCLCDB&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;schema-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;DEBEZIUM&#39;</span><span class="p">,</span>  
+   <span class="s1">&#39;table-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;orders&#39;</span>
+ <span class="p">);</span>
+
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">enriched_orders</span> <span class="p">(</span>
+   <span class="n">ORDER_ID</span> <span class="nb">INT</span><span class="p">,</span>
+   <span class="n">ORDER_DATE</span> <span class="k">TIMESTAMP</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>
+   <span class="n">PURCHASER</span> <span class="n">STRING</span><span class="p">,</span>
+   <span class="n">QUANTITY</span> <span class="nb">INT</span><span class="p">,</span>
+   <span class="n">PRODUCT_NAME</span> <span class="n">STRING</span><span class="p">,</span>
+   <span class="n">PRODUCT_DESCRIPTION</span> <span class="n">STRING</span><span class="p">,</span>
+   <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">ORDER_ID</span><span class="p">)</span> <span class="k">NOT</span> <span class="n">ENFORCED</span>
+ <span class="p">)</span> <span class="k">WITH</span> <span class="p">(</span>
+     <span class="s1">&#39;connector&#39;</span> <span class="o">=</span> <span class="s1">&#39;elasticsearch-7&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;hosts&#39;</span> <span class="o">=</span> <span class="s1">&#39;http://localhost:9200&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;index&#39;</span> <span class="o">=</span> <span class="s1">&#39;enriched_orders_1&#39;</span>
+ <span class="p">);</span>
+
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">enriched_orders</span>
+ <span class="k">SELECT</span> <span class="n">o</span><span class="p">.</span><span class="n">ID</span><span class="p">,</span><span class="n">o</span><span class="p">.</span><span class="n">ORDER_DATE</span><span class="p">,</span><span class="n">o</span><span class="p">.</span><span class="n">PURCHASER</span><span class="p">,</span><span class="n">o</span><span class="p">.</span><span class="n">QUANTITY</span><span class="p">,</span> <span class="n">p</span><span class="p">.</span><span class="n">NAME</span><span class="p">,</span> <span class="n">p</span><span class="p">.</span><span class="n">DESCRIPTION</span>
+ <span class="k">FROM</span> <span class="n">orders</span> <span class="k">AS</span> <span class="n">o</span>
+ <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">products</span> <span class="k">AS</span> <span class="n">p</span> <span class="k">ON</span> <span class="n">o</span><span class="p">.</span><span class="n">PRODUCT_ID</span> <span class="o">=</span> <span class="n">p</span><span class="p">.</span><span class="n">ID</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><strong>检查 ElasticSearch 中的结果</strong></p>
+<p>检查最终的结果是否写入ElasticSearch中, 可以在<a class="reference external" href="http://localhost:5601/">Kibana</a>看到ElasticSearch中的数据</p>
+<p><strong>在 Oracle 制造一些变更，观察 ElasticSearch 中的结果</strong></p>
+<p>进入Oracle容器中并通过如下的SQL语句对Oracle数据库进行一些修改, 然后就可以看到每执行一条SQL语句，Elasticsearch中的数据都会实时更新。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose <span class="nb">exec</span> oracle sqlplus debezium/dbz@localhost:1521/ORCLCDB
+</pre></div>
+</div>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">ORDERS</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">1005</span><span class="p">,</span> <span class="n">TO_TIMESTAMP</span><span class="p">(</span><span class="s1">&#39;2020-07-30 15:22:00.001000&#39;</span><span class="p">,</span> <span class="s1">&#39;YYYY-MM-DD HH24:MI:SS.FF&#39;</span><span class="p">),</span> <span class="s1">&#39;Jark&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">105</span><span class="p">);</span>
+
+<span class="k">UPDATE</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">ORDERS</span> <span class="k">SET</span> <span class="n">QUANTITY</span> <span class="o">=</span> <span class="mi">10</span> <span class="k">WHERE</span> <span class="n">ID</span> <span class="o">=</span> <span class="mi">1002</span><span class="p">;</span>
+
+<span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">DEBEZIUM</span><span class="p">.</span><span class="n">ORDERS</span> <span class="k">WHERE</span> <span class="n">ID</span> <span class="o">=</span> <span class="mi">1004</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="polardbx-tutorial-zh.html" class="btn btn-neutral float-right" title="演示: PolarDB-X CDC 导入 Elasticsearch" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="oceanbase-tutorial-zh.html" class="btn btn-neutral float-left" title="演示: OceanBase CDC 导入 Elasticsearch" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2024, Ververica GmbH; Apache Flink, Flink®, Apache®, the squirrel logo, and the Apache feather logo are either registered trademarks or trademarks of The Apache Software Foundation.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+
+
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      version: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        
+        <dl>
+            <dt>Versions</dt>
+            
+             <strong> 
+            <dd><a href="/flink-cdc-connectors/master/">master</a></dd>
+             </strong> 
+            
+            
+            <dd><a href="/flink-cdc-connectors/release-1.4.0-mongodb/">release-1.4.0-mongodb</a></dd>
+            
+            
+        </dl>
+        
+        
+        <hr/>
+        Free document hosting provided by <a href="http://www.readthedocs.org">Read the
+        Docs</a>.
+
+    </div>
+</div>
+
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer
+        src="https://ververica.github.io/flink-cdc-connectors/master/_static/button.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

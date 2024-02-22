@@ -1,0 +1,608 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>基于 Flink CDC 同步 MySQL 分库分表构建实时数据湖 &mdash; CDC Connectors for Apache Flink®  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/theme_overrides.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="DataStream api 打包指南" href="datastream-api-package-guidance-zh.html" />
+    <link rel="prev" title="演示: TiDB CDC 导入 Elasticsearch" href="tidb-tutorial-zh.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> CDC Connectors for Apache Flink®
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                master
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview/index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">快速上手</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mysql-doris-pipeline-tutorial-zh.html">基于 Flink CDC 3.0 构建 MySQL 到 Doris 的 Streaming ELT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mysql-starrocks-pipeline-tutorial-zh.html">基于 Flink CDC 3.0 构建 MySQL 到 StarRocks 的 Streaming ELT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mysql-postgres-tutorial-zh.html">基于 Flink CDC 构建 MySQL 和 Postgres 的 Streaming ETL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mongodb-tutorial-zh.html">演示: MongoDB CDC 导入 Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oceanbase-tutorial-zh.html">演示: OceanBase CDC 导入 Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oracle-tutorial-zh.html">演示: Oracle CDC 导入 Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polardbx-tutorial-zh.html">演示: PolarDB-X CDC 导入 Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlserver-tutorial-zh.html">演示: SqlServer CDC 导入 Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tidb-tutorial-zh.html">演示: TiDB CDC 导入 Elasticsearch</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">基于 Flink CDC 同步 MySQL 分库分表构建实时数据湖</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">准备阶段</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">下载所需要的依赖包</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">准备教程所需要的组件</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">准备数据</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#flink-sql-cli-flink-ddl">在 Flink SQL CLI 中使用 Flink DDL 创建表</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#iceberg">流式写入 Iceberg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">环境清理</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="datastream-api-package-guidance-zh.html">DataStream api 打包指南</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../connectors/index.html">Connectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pipelines/index.html">Pipeline Connectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../formats/index.html">Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../downloads.html">Downloads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../githublink.html"><a class="github-button" href="https://github.com/ververica/flink-cdc-connectors" data-color-scheme="no-preference: dark_high_contrast; light: dark_high_contrast; dark: dark_high_contrast;" data-size="large" data-show-count="true" aria-label="Star ververica/flink-cdc-connectors on GitHub">Star</a></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CDC Connectors for Apache Flink®</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+<!-- Extend the RTD template to support user defined "Edit on Github" URL -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">快速上手</a> &raquo;</li>
+        
+      <li>基于 Flink CDC 同步 MySQL 分库分表构建实时数据湖</li>
+    
+    
+            <li class="wy-breadcrumbs-aside">
+                
+                    
+                        <a href="http://github.com/ververica/flink-cdc-connectors/blob/master/docs/content/快速上手/build-real-time-data-lake-tutorial-zh.md" class="fa fa-github"> Edit on GitHub</a>
+                    
+                
+            </li>
+        
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="flink-cdc-mysql">
+<h1>基于 Flink CDC 同步 MySQL 分库分表构建实时数据湖<a class="headerlink" href="#flink-cdc-mysql" title="Permalink to this headline">¶</a></h1>
+<p>在 OLTP 系统中，为了解决单表数据量大的问题，通常采用分库分表的方式将单个大表进行拆分以提高系统的吞吐量。
+但是为了方便数据分析，通常需要将分库分表拆分出的表在同步到数据仓库、数据湖时，再合并成一个大表。</p>
+<p>这篇教程将展示如何使用 Flink CDC 构建实时数据湖来应对这种场景，本教程的演示基于 Docker，只涉及 SQL，无需一行 Java/Scala 代码，也无需安装 IDE，你可以很方便地在自己的电脑上完成本教程的全部内容。</p>
+<p>接下来将以数据从 MySQL 同步到 <a class="reference external" href="https://iceberg.apache.org/">Iceberg</a> 为例展示整个流程，架构图如下所示：</p>
+<p><img alt="Architecture of Real-Time Data Lake" src="../../_images/real-time-data-lake-tutorial.png" /></p>
+<p>你也可以使用不同的 source 比如 Oracle/Postgres 和 sink 比如 Hudi 来构建自己的 ETL 流程。</p>
+<section id="id1">
+<h2>准备阶段<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>准备一台已经安装了 Docker 的 Linux 或者 MacOS 电脑。</p>
+<section id="id2">
+<h3>下载所需要的依赖包<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p><strong>下载链接只对已发布的版本有效, SNAPSHOT 版本需要本地基于 master 或 release- 分支编译</strong></p>
+<ul class="simple">
+<li><p>flink-sql-connector-mysql-cdc-2.5-SNAPSHOT.jar</p></li>
+<li><p><a class="reference external" href="https://repo.maven.apache.org/maven2/org/apache/flink/flink-shaded-hadoop-2-uber/2.7.5-10.0/flink-shaded-hadoop-2-uber-2.7.5-10.0.jar">flink-shaded-hadoop-2-uber-2.7.5-10.0.jar</a></p></li>
+<li><p><a class="reference external" href="https://repo.maven.apache.org/maven2/org/apache/iceberg/iceberg-flink-runtime-1.16/1.3.1/iceberg-flink-runtime-1.16-1.3.1.jar">iceberg-flink-runtime-1.16-1.3.1.jar</a></p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>准备教程所需要的组件<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>接下来的教程将以 <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> 的方式准备所需要的组件。</p>
+<ol>
+<li><p>使用下面的内容创建一个 <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> 文件:</p>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span> <span class="s">flink:1.16.0-scala_2.12</span>
+<span class="c"># Place the downloaded jar packages in the lib directory at the same level.</span>
+<span class="k">COPY</span> ./lib /opt/flink/lib
+<span class="k">RUN</span> apt-get update <span class="o">&amp;&amp;</span> apt-get install tree
+</pre></div>
+</div>
+</li>
+<li><p>使用下面的内容创建一个<code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> 文件:</p>
+<div class="highlight-yml notranslate"><div class="highlight"><pre><span></span>version: &#39;2.1&#39;
+services:
+   sql-client:
+      user: flink:flink
+      build: .
+      command: bin/sql-client.sh
+      depends_on:
+         - jobmanager
+         - mysql
+      environment:
+         - MYSQL_HOST=mysql
+         - |
+            FLINK_PROPERTIES=
+            jobmanager.rpc.address: jobmanager
+            rest.address: jobmanager           
+      volumes:
+         - shared-tmpfs:/tmp/iceberg
+   jobmanager:
+      user: flink:flink
+      build: .
+      ports:
+         - &quot;8081:8081&quot;
+      command: jobmanager
+      environment:
+         - |
+            FLINK_PROPERTIES=
+            jobmanager.rpc.address: jobmanager
+      volumes:
+         - shared-tmpfs:/tmp/iceberg
+   taskmanager:
+      user: flink:flink
+      build: .
+      depends_on:
+         - jobmanager
+      command: taskmanager
+      environment:
+         - |
+            FLINK_PROPERTIES=
+            jobmanager.rpc.address: jobmanager
+            taskmanager.numberOfTaskSlots: 2
+      volumes:
+         - shared-tmpfs:/tmp/iceberg
+   mysql:
+      image: debezium/example-mysql:1.1
+      ports:
+         - &quot;3306:3306&quot;
+      environment:
+         - MYSQL_ROOT_PASSWORD=123456
+         - MYSQL_USER=mysqluser
+         - MYSQL_PASSWORD=mysqlpw
+
+volumes:
+   shared-tmpfs:
+      driver: local
+      driver_opts:
+         type: &quot;tmpfs&quot;
+         device: &quot;tmpfs&quot;
+</pre></div>
+</div>
+<p>该 Docker Compose 中包含的容器有：</p>
+<ul class="simple">
+<li><p>SQL-Client: Flink SQL Client, 用来提交 SQL 查询和查看 SQL 的执行结果</p></li>
+<li><p>Flink Cluster：包含 Flink JobManager 和 Flink TaskManager，用来执行 Flink SQL</p></li>
+<li><p>MySQL：作为分库分表的数据源，存储本教程的 <code class="docutils literal notranslate"><span class="pre">user</span></code> 表</p></li>
+</ul>
+</li>
+<li><p>在 <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> 所在目录下执行下面的命令来启动本教程需要的组件：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose up -d
+</pre></div>
+</div>
+<p>该命令将以 detached 模式自动启动 Docker Compose 配置中定义的所有容器。你可以通过 <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">ps</span></code> 来观察上述的容器是否正常启动了，也可以通过访问 <a class="reference external" href="http://localhost:8081//">http://localhost:8081/</a> 来查看 Flink 是否运行正常。</p>
+</li>
+</ol>
+<p><em><strong>注意：</strong></em></p>
+<ul class="simple">
+<li><p>本教程接下来用到的容器相关的命令都需要在 <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> 所在目录下执行</p></li>
+<li><p>如果你想要在自己的 Flink 环境运行本教程，需要下载下面列出的包并且把它们放在 Flink 所在目录的 lib 目录下，即 FLINK_HOME/lib/</p></li>
+</ul>
+<p><img alt="Flink UI" src="../../_images/flink-ui.png" /></p>
+</section>
+<section id="id4">
+<h3>准备数据<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<ol>
+<li><p>进入 MySQL 容器中</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose <span class="nb">exec</span> mysql mysql -uroot -p123456
+</pre></div>
+</div>
+</li>
+<li><p>创建数据和表，并填充数据</p>
+<p>创建两个不同的数据库，并在每个数据库中创建两个表，作为 <code class="docutils literal notranslate"><span class="pre">user</span></code> 表分库分表下拆分出的表。</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span> <span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">db_1</span><span class="p">;</span>
+ <span class="n">USE</span> <span class="n">db_1</span><span class="p">;</span>
+ <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">user_1</span> <span class="p">(</span>
+   <span class="n">id</span> <span class="nb">INTEGER</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+   <span class="n">name</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="s1">&#39;flink&#39;</span><span class="p">,</span>
+   <span class="n">address</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">1024</span><span class="p">),</span>
+   <span class="n">phone_number</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">512</span><span class="p">),</span>
+   <span class="n">email</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span>
+ <span class="p">);</span>
+ <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">user_1</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">110</span><span class="p">,</span><span class="ss">&quot;user_110&quot;</span><span class="p">,</span><span class="ss">&quot;Shanghai&quot;</span><span class="p">,</span><span class="ss">&quot;123567891234&quot;</span><span class="p">,</span><span class="ss">&quot;user_110@foo.com&quot;</span><span class="p">);</span>
+
+ <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">user_2</span> <span class="p">(</span>
+   <span class="n">id</span> <span class="nb">INTEGER</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+   <span class="n">name</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="s1">&#39;flink&#39;</span><span class="p">,</span>
+   <span class="n">address</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">1024</span><span class="p">),</span>
+   <span class="n">phone_number</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">512</span><span class="p">),</span>
+   <span class="n">email</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span>
+ <span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">user_2</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">120</span><span class="p">,</span><span class="ss">&quot;user_120&quot;</span><span class="p">,</span><span class="ss">&quot;Shanghai&quot;</span><span class="p">,</span><span class="ss">&quot;123567891234&quot;</span><span class="p">,</span><span class="ss">&quot;user_120@foo.com&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">db_2</span><span class="p">;</span>
+<span class="n">USE</span> <span class="n">db_2</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">user_1</span> <span class="p">(</span>
+  <span class="n">id</span> <span class="nb">INTEGER</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+  <span class="n">name</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="s1">&#39;flink&#39;</span><span class="p">,</span>
+  <span class="n">address</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">1024</span><span class="p">),</span>
+  <span class="n">phone_number</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">512</span><span class="p">),</span>
+  <span class="n">email</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span>
+<span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">user_1</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">110</span><span class="p">,</span><span class="ss">&quot;user_110&quot;</span><span class="p">,</span><span class="ss">&quot;Shanghai&quot;</span><span class="p">,</span><span class="ss">&quot;123567891234&quot;</span><span class="p">,</span> <span class="k">NULL</span><span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">user_2</span> <span class="p">(</span>
+  <span class="n">id</span> <span class="nb">INTEGER</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+  <span class="n">name</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="s1">&#39;flink&#39;</span><span class="p">,</span>
+  <span class="n">address</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">1024</span><span class="p">),</span>
+  <span class="n">phone_number</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">512</span><span class="p">),</span>
+  <span class="n">email</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span>
+<span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">user_2</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">220</span><span class="p">,</span><span class="ss">&quot;user_220&quot;</span><span class="p">,</span><span class="ss">&quot;Shanghai&quot;</span><span class="p">,</span><span class="ss">&quot;123567891234&quot;</span><span class="p">,</span><span class="ss">&quot;user_220@foo.com&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+<section id="flink-sql-cli-flink-ddl">
+<h2>在 Flink SQL CLI 中使用 Flink DDL 创建表<a class="headerlink" href="#flink-sql-cli-flink-ddl" title="Permalink to this headline">¶</a></h2>
+<p>首先，使用如下的命令进入 Flink SQL CLI 容器中：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose run sql-client
+</pre></div>
+</div>
+<p>我们可以看到如下界面：</p>
+<p><img alt="Flink SQL Client" src="../../_images/flink-sql-client.png" /></p>
+<p>然后，进行如下步骤：</p>
+<ol>
+<li><p>开启 checkpoint，每隔3秒做一次 checkpoint</p>
+<p>Checkpoint 默认是不开启的，我们需要开启 Checkpoint 来让 Iceberg 可以提交事务。
+并且，mysql-cdc 在 binlog 读取阶段开始前，需要等待一个完整的 checkpoint 来避免 binlog 记录乱序的情况。</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Flink SQL                   </span>
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">SET</span> <span class="n">execution</span><span class="p">.</span><span class="n">checkpointing</span><span class="p">.</span><span class="nb">interval</span> <span class="o">=</span> <span class="mi">3</span><span class="n">s</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+<li><p>创建 MySQL 分库分表 source 表</p>
+<p>创建 source 表 <code class="docutils literal notranslate"><span class="pre">user_source</span></code> 来捕获MySQL中所有 <code class="docutils literal notranslate"><span class="pre">user</span></code> 表的数据，在表的配置项 <code class="docutils literal notranslate"><span class="pre">database-name</span></code> , <code class="docutils literal notranslate"><span class="pre">table-name</span></code> 使用正则表达式来匹配这些表。
+并且，<code class="docutils literal notranslate"><span class="pre">user_source</span></code> 表也定义了 metadata 列来区分数据是来自哪个数据库和表。</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Flink SQL</span>
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">user_source</span> <span class="p">(</span>
+    <span class="n">database_name</span> <span class="n">STRING</span> <span class="n">METADATA</span> <span class="n">VIRTUAL</span><span class="p">,</span>
+    <span class="k">table_name</span> <span class="n">STRING</span> <span class="n">METADATA</span> <span class="n">VIRTUAL</span><span class="p">,</span>
+    <span class="o">`</span><span class="n">id</span><span class="o">`</span> <span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="n">name</span> <span class="n">STRING</span><span class="p">,</span>
+    <span class="n">address</span> <span class="n">STRING</span><span class="p">,</span>
+    <span class="n">phone_number</span> <span class="n">STRING</span><span class="p">,</span>
+    <span class="n">email</span> <span class="n">STRING</span><span class="p">,</span>
+    <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">)</span> <span class="k">NOT</span> <span class="n">ENFORCED</span>
+  <span class="p">)</span> <span class="k">WITH</span> <span class="p">(</span>
+    <span class="s1">&#39;connector&#39;</span> <span class="o">=</span> <span class="s1">&#39;mysql-cdc&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;hostname&#39;</span> <span class="o">=</span> <span class="s1">&#39;mysql&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;port&#39;</span> <span class="o">=</span> <span class="s1">&#39;3306&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;username&#39;</span> <span class="o">=</span> <span class="s1">&#39;root&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;password&#39;</span> <span class="o">=</span> <span class="s1">&#39;123456&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;database-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;db_[0-9]+&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;table-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;user_[0-9]+&#39;</span>
+  <span class="p">);</span>
+</pre></div>
+</div>
+</li>
+<li><p>创建 Iceberg sink 表</p>
+<p>创建 sink 表 <code class="docutils literal notranslate"><span class="pre">all_users_sink</span></code>，用来将数据加载至 Iceberg 中。
+在这个 sink 表，考虑到不同的 MySQL 数据库表的 <code class="docutils literal notranslate"><span class="pre">id</span></code> 字段的值可能相同，我们定义了复合主键 (<code class="docutils literal notranslate"><span class="pre">database_name</span></code>, <code class="docutils literal notranslate"><span class="pre">table_name</span></code>, <code class="docutils literal notranslate"><span class="pre">id</span></code>)。</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Flink SQL</span>
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">all_users_sink</span> <span class="p">(</span>
+    <span class="n">database_name</span> <span class="n">STRING</span><span class="p">,</span>
+    <span class="k">table_name</span>    <span class="n">STRING</span><span class="p">,</span>
+    <span class="o">`</span><span class="n">id</span><span class="o">`</span>          <span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="n">name</span>          <span class="n">STRING</span><span class="p">,</span>
+    <span class="n">address</span>       <span class="n">STRING</span><span class="p">,</span>
+    <span class="n">phone_number</span>  <span class="n">STRING</span><span class="p">,</span>
+    <span class="n">email</span>         <span class="n">STRING</span><span class="p">,</span>
+    <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">database_name</span><span class="p">,</span> <span class="k">table_name</span><span class="p">,</span> <span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">)</span> <span class="k">NOT</span> <span class="n">ENFORCED</span>
+  <span class="p">)</span> <span class="k">WITH</span> <span class="p">(</span>
+    <span class="s1">&#39;connector&#39;</span><span class="o">=</span><span class="s1">&#39;iceberg&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;catalog-name&#39;</span><span class="o">=</span><span class="s1">&#39;iceberg_catalog&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;catalog-type&#39;</span><span class="o">=</span><span class="s1">&#39;hadoop&#39;</span><span class="p">,</span>  
+    <span class="s1">&#39;warehouse&#39;</span><span class="o">=</span><span class="s1">&#39;file:///tmp/iceberg/warehouse&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;format-version&#39;</span><span class="o">=</span><span class="s1">&#39;2&#39;</span>
+  <span class="p">);</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="iceberg">
+<h2>流式写入 Iceberg<a class="headerlink" href="#iceberg" title="Permalink to this headline">¶</a></h2>
+<ol>
+<li><p>使用下面的 Flink SQL 语句将数据从 MySQL 写入 Iceberg 中</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Flink SQL</span>
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">all_users_sink</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">user_source</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>上述命令将会启动一个流式作业，源源不断将 MySQL 数据库中的全量和增量数据同步到 Iceberg 中。
+在 <a class="reference external" href="http://localhost:8081/#/job/running">Flink UI</a> 上可以看到这个运行的作业：</p>
+<p><img alt="CDC to Iceberg Running Job" src="../../_images/flink-cdc-iceberg-running-job.png" /></p>
+<p>然后我们就可以使用如下的命令看到 Iceberg 中的写入的文件：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose <span class="nb">exec</span> sql-client tree /tmp/iceberg/warehouse/default_database/
+</pre></div>
+</div>
+<p>如下所示：</p>
+<p><img alt="Files in Iceberg" src="../../_images/files-in-iceberg.png" /></p>
+<p>在你的运行环境中，实际的文件可能与上面的截图不相同，但是整体的目录结构应该相似。</p>
+</li>
+<li><p>使用下面的 Flink SQL 语句查询表 <code class="docutils literal notranslate"><span class="pre">all_users_sink</span></code> 中的数据</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Flink SQL</span>
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">all_users_sink</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>在 Flink SQL CLI 中我们可以看到如下查询结果：</p>
+<p><img alt="Data in Iceberg" src="../../_images/data_in_iceberg.png" /></p>
+</li>
+<li><p>修改 MySQL 中表的数据，Iceberg 中的表 <code class="docutils literal notranslate"><span class="pre">all_users_sink</span></code> 中的数据也将实时更新：</p>
+<p>(3.1) 在 <code class="docutils literal notranslate"><span class="pre">db_1.user_1</span></code> 表中插入新的一行</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">--- db_1</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">db_1</span><span class="p">.</span><span class="n">user_1</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">111</span><span class="p">,</span><span class="ss">&quot;user_111&quot;</span><span class="p">,</span><span class="ss">&quot;Shanghai&quot;</span><span class="p">,</span><span class="ss">&quot;123567891234&quot;</span><span class="p">,</span><span class="ss">&quot;user_111@foo.com&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>(3.2) 更新 <code class="docutils literal notranslate"><span class="pre">db_1.user_2</span></code> 表的数据</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">--- db_1</span>
+<span class="k">UPDATE</span> <span class="n">db_1</span><span class="p">.</span><span class="n">user_2</span> <span class="k">SET</span> <span class="n">address</span><span class="o">=</span><span class="s1">&#39;Beijing&#39;</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">120</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>(3.3) 在 <code class="docutils literal notranslate"><span class="pre">db_2.user_2</span></code> 表中删除一行</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">--- db_2</span>
+<span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">db_2</span><span class="p">.</span><span class="n">user_2</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">220</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>每执行一步，我们就可以在 Flink Client CLI 中使用 <code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">*</span> <span class="pre">FROM</span> <span class="pre">all_users_sink</span></code> 查询表 <code class="docutils literal notranslate"><span class="pre">all_users_sink</span></code> 来看到数据的变化。</p>
+<p>最后的查询结果如下所示：</p>
+<p><img alt="Final Data in Iceberg" src="../../_images/final-data-in-iceberg.png" /></p>
+<p>从 Iceberg 的最新结果中可以看到新增了<code class="docutils literal notranslate"><span class="pre">(db_1,</span> <span class="pre">user_1,</span> <span class="pre">111)</span></code>的记录，<code class="docutils literal notranslate"><span class="pre">(db_1,</span> <span class="pre">user_2,</span> <span class="pre">120)</span></code>的地址更新成了 <code class="docutils literal notranslate"><span class="pre">Beijing</span></code>，且<code class="docutils literal notranslate"><span class="pre">(db_2,</span> <span class="pre">user_2,</span> <span class="pre">220)</span></code>的记录被删除了，与我们在 MySQL 做的数据更新完全一致。</p>
+</li>
+</ol>
+</section>
+<section id="id5">
+<h2>环境清理<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>本教程结束后，在 <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> 文件所在的目录下执行如下命令停止所有容器：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose down
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="datastream-api-package-guidance-zh.html" class="btn btn-neutral float-right" title="DataStream api 打包指南" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="tidb-tutorial-zh.html" class="btn btn-neutral float-left" title="演示: TiDB CDC 导入 Elasticsearch" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2024, Ververica GmbH; Apache Flink, Flink®, Apache®, the squirrel logo, and the Apache feather logo are either registered trademarks or trademarks of The Apache Software Foundation.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+
+
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      version: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        
+        <dl>
+            <dt>Versions</dt>
+            
+             <strong> 
+            <dd><a href="/flink-cdc-connectors/master/">master</a></dd>
+             </strong> 
+            
+            
+            <dd><a href="/flink-cdc-connectors/release-1.4.0-mongodb/">release-1.4.0-mongodb</a></dd>
+            
+            
+        </dl>
+        
+        
+        <hr/>
+        Free document hosting provided by <a href="http://www.readthedocs.org">Read the
+        Docs</a>.
+
+    </div>
+</div>
+
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer
+        src="https://ververica.github.io/flink-cdc-connectors/master/_static/button.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

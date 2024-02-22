@@ -1,0 +1,1011 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Oracle CDC Connector &mdash; CDC Connectors for Apache Flink®  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/theme_overrides.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Postgres CDC Connector" href="postgres-cdc.html" />
+    <link rel="prev" title="OceanBase CDC 连接器" href="oceanbase-cdc%28ZH%29.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> CDC Connectors for Apache Flink®
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                master
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview/index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B/index.html">快速上手</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Connectors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mongodb-cdc.html">MongoDB CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mongodb-cdc%28ZH%29.html">MongoDB CDC 连接器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mysql-cdc.html">MySQL CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mysql-cdc%28ZH%29.html">MySQL CDC 连接器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oceanbase-cdc.html">OceanBase CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oceanbase-cdc%28ZH%29.html">OceanBase CDC 连接器</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Oracle CDC Connector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#maven-dependency">Maven dependency</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sql-client-jar">SQL Client JAR</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#setup-oracle">Setup Oracle</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#for-non-cdb-database">For Non-CDB database</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#for-cdb-database">For CDB database</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-create-an-oracle-cdc-table">How to create an Oracle CDC table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#connector-options">Connector Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#limitation">Limitation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#can-t-perform-checkpoint-during-scanning-snapshot-of-tables">Can’t perform checkpoint during scanning snapshot of tables</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#available-metadata">Available Metadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#features">Features</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#exactly-once-processing">Exactly-Once Processing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#startup-reading-position">Startup Reading Position</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#single-thread-reading">Single Thread Reading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#datastream-source">DataStream Source</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#data-type-mapping">Data Type Mapping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#faq">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="postgres-cdc.html">Postgres CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlserver-cdc.html">SQLServer CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tidb-cdc.html">TiDB CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="db2-cdc.html">Db2 CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vitess-cdc.html">Vitess CDC Connector</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pipelines/index.html">Pipeline Connectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../formats/index.html">Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../downloads.html">Downloads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../githublink.html"><a class="github-button" href="https://github.com/ververica/flink-cdc-connectors" data-color-scheme="no-preference: dark_high_contrast; light: dark_high_contrast; dark: dark_high_contrast;" data-size="large" data-show-count="true" aria-label="Star ververica/flink-cdc-connectors on GitHub">Star</a></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CDC Connectors for Apache Flink®</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+<!-- Extend the RTD template to support user defined "Edit on Github" URL -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Connectors</a> &raquo;</li>
+        
+      <li>Oracle CDC Connector</li>
+    
+    
+            <li class="wy-breadcrumbs-aside">
+                
+                    
+                        <a href="http://github.com/ververica/flink-cdc-connectors/blob/master/docs/content/connectors/oracle-cdc.md" class="fa fa-github"> Edit on GitHub</a>
+                    
+                
+            </li>
+        
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="oracle-cdc-connector">
+<h1>Oracle CDC Connector<a class="headerlink" href="#oracle-cdc-connector" title="Permalink to this headline">¶</a></h1>
+<p>The Oracle CDC connector allows for reading snapshot data and incremental data from Oracle database. This document describes how to setup the Oracle CDC connector to run SQL queries against Oracle databases.</p>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p>In order to setup the Oracle CDC connector, the following table provides dependency information for both projects using a build automation tool (such as Maven or SBT) and SQL Client with SQL JAR bundles.</p>
+<section id="maven-dependency">
+<h3>Maven dependency<a class="headerlink" href="#maven-dependency" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>com.ververica<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>flink-connector-oracle-cdc<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="c">&lt;!-- The dependency is available only for stable releases, SNAPSHOT dependencies need to be built based on master or release- branches by yourself. --&gt;</span>
+  <span class="nt">&lt;version&gt;</span>3.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="sql-client-jar">
+<h3>SQL Client JAR<a class="headerlink" href="#sql-client-jar" title="Permalink to this headline">¶</a></h3>
+<p><strong>Download link is available only for stable releases.</strong></p>
+<p>Download <a class="reference external" href="https://repo1.maven.org/maven2/com/ververica/flink-sql-connector-oracle-cdc/3.0-SNAPSHOT/flink-sql-connector-oracle-cdc-3.0-SNAPSHOT.jar">flink-sql-connector-oracle-cdc-3.0-SNAPSHOT.jar</a> and put it under <code class="docutils literal notranslate"><span class="pre">&lt;FLINK_HOME&gt;/lib/</span></code>.</p>
+<p><strong>Note:</strong> flink-sql-connector-oracle-cdc-XXX-SNAPSHOT version is the code corresponding to the development branch. Users need to download the source code and compile the corresponding jar. Users should use the released version, such as <a class="reference external" href="https://mvnrepository.com/artifact/com.ververica/flink-sql-connector-oracle-cdc">flink-sql-connector-oracle-cdc-2.3.0.jar</a>, the released version will be available in the Maven central warehouse.</p>
+</section>
+</section>
+<section id="setup-oracle">
+<h2>Setup Oracle<a class="headerlink" href="#setup-oracle" title="Permalink to this headline">¶</a></h2>
+<p>You have to enable log archiving for Oracle database and define an Oracle user with appropriate permissions on all databases that the Debezium Oracle connector monitors.</p>
+<section id="for-non-cdb-database">
+<h3>For Non-CDB database<a class="headerlink" href="#for-non-cdb-database" title="Permalink to this headline">¶</a></h3>
+<ol>
+<li><p>Enable log archiving</p>
+<p>(1.1). Connect to the database as DBA</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">ORACLE_SID</span><span class="o">=</span><span class="n">SID</span>
+<span class="n">export</span> <span class="n">ORACLE_SID</span>
+<span class="n">sqlplus</span> <span class="o">/</span><span class="n">nolog</span>
+  <span class="k">CONNECT</span> <span class="n">sys</span><span class="o">/</span><span class="n">password</span> <span class="k">AS</span> <span class="n">SYSDBA</span>
+</pre></div>
+</div>
+<p>(1.2). Enable log archiving</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">alter</span> <span class="k">system</span> <span class="k">set</span> <span class="n">db_recovery_file_dest_size</span> <span class="o">=</span> <span class="mi">10</span><span class="k">G</span><span class="p">;</span>
+<span class="k">alter</span> <span class="k">system</span> <span class="k">set</span> <span class="n">db_recovery_file_dest</span> <span class="o">=</span> <span class="s1">&#39;/opt/oracle/oradata/recovery_area&#39;</span> <span class="k">scope</span><span class="o">=</span><span class="n">spfile</span><span class="p">;</span>
+<span class="n">shutdown</span> <span class="k">immediate</span><span class="p">;</span>
+<span class="n">startup</span> <span class="n">mount</span><span class="p">;</span>
+<span class="k">alter</span> <span class="k">database</span> <span class="n">archivelog</span><span class="p">;</span>
+<span class="k">alter</span> <span class="k">database</span> <span class="k">open</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><strong>Note:</strong></p>
+<ul class="simple">
+<li><p>Enable log archiving requires database restart, pay attention when try to do it</p></li>
+<li><p>The archived logs will occupy a large amount of disk space, so consider clean the expired logs the periodically</p></li>
+</ul>
+<p>(1.3). Check whether log archiving is enabled</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Should now &quot;Database log mode: Archive Mode&quot;</span>
+<span class="n">archive</span> <span class="n">log</span> <span class="n">list</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><strong>Note:</strong></p>
+<p>Supplemental logging must be enabled for captured tables or the database in order for data changes to capture the <em>before</em> state of changed database rows.
+The following illustrates how to configure this on the table/database level.</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Enable supplemental logging for a specific table:</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">inventory</span><span class="p">.</span><span class="n">customers</span> <span class="k">ADD</span> <span class="n">SUPPLEMENTAL</span> <span class="n">LOG</span> <span class="k">DATA</span> <span class="p">(</span><span class="k">ALL</span><span class="p">)</span> <span class="n">COLUMNS</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Enable supplemental logging for database</span>
+<span class="k">ALTER</span> <span class="k">DATABASE</span> <span class="k">ADD</span> <span class="n">SUPPLEMENTAL</span> <span class="n">LOG</span> <span class="k">DATA</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Create an Oracle user with permissions</p>
+<p>(2.1). Create Tablespace</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">sqlplus</span> <span class="n">sys</span><span class="o">/</span><span class="n">password</span><span class="o">@</span><span class="k">host</span><span class="p">:</span><span class="n">port</span><span class="o">/</span><span class="n">SID</span> <span class="k">AS</span> <span class="n">SYSDBA</span><span class="p">;</span>
+  <span class="k">CREATE</span> <span class="n">TABLESPACE</span> <span class="n">logminer_tbs</span> <span class="n">DATAFILE</span> <span class="s1">&#39;/opt/oracle/oradata/SID/logminer_tbs.dbf&#39;</span> <span class="k">SIZE</span> <span class="mi">25</span><span class="n">M</span> <span class="n">REUSE</span> <span class="n">AUTOEXTEND</span> <span class="k">ON</span> <span class="n">MAXSIZE</span> <span class="n">UNLIMITED</span><span class="p">;</span>
+  <span class="n">exit</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>(2.2). Create a user and grant permissions</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">sqlplus</span> <span class="n">sys</span><span class="o">/</span><span class="n">password</span><span class="o">@</span><span class="k">host</span><span class="p">:</span><span class="n">port</span><span class="o">/</span><span class="n">SID</span> <span class="k">AS</span> <span class="n">SYSDBA</span><span class="p">;</span>
+  <span class="k">CREATE</span> <span class="k">USER</span> <span class="n">flinkuser</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="n">flinkpw</span> <span class="k">DEFAULT</span> <span class="n">TABLESPACE</span> <span class="n">LOGMINER_TBS</span> <span class="n">QUOTA</span> <span class="n">UNLIMITED</span> <span class="k">ON</span> <span class="n">LOGMINER_TBS</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">CREATE</span> <span class="k">SESSION</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SET</span> <span class="n">CONTAINER</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ON</span> <span class="n">V_$DATABASE</span> <span class="k">to</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="n">FLASHBACK</span> <span class="k">ANY</span> <span class="k">TABLE</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ANY</span> <span class="k">TABLE</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="n">SELECT_CATALOG_ROLE</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="n">EXECUTE_CATALOG_ROLE</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ANY</span> <span class="k">TRANSACTION</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="n">LOGMINING</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">ANALYZE</span> <span class="k">ANY</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+
+  <span class="k">GRANT</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="c1">-- need not to execute if set scan.incremental.snapshot.enabled=true(default)</span>
+  <span class="k">GRANT</span> <span class="k">LOCK</span> <span class="k">ANY</span> <span class="k">TABLE</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">ALTER</span> <span class="k">ANY</span> <span class="k">TABLE</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">CREATE</span> <span class="n">SEQUENCE</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+
+  <span class="k">GRANT</span> <span class="k">EXECUTE</span> <span class="k">ON</span> <span class="n">DBMS_LOGMNR</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">EXECUTE</span> <span class="k">ON</span> <span class="n">DBMS_LOGMNR_D</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ON</span> <span class="n">V_$LOG</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ON</span> <span class="n">V_$LOG_HISTORY</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ON</span> <span class="n">V_$LOGMNR_LOGS</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ON</span> <span class="n">V_$LOGMNR_CONTENTS</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ON</span> <span class="n">V_$LOGMNR_PARAMETERS</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ON</span> <span class="n">V_$LOGFILE</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ON</span> <span class="n">V_$ARCHIVED_LOG</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ON</span> <span class="n">V_$ARCHIVE_DEST_STATUS</span> <span class="k">TO</span> <span class="n">flinkuser</span><span class="p">;</span>
+  <span class="n">exit</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="for-cdb-database">
+<h3>For CDB database<a class="headerlink" href="#for-cdb-database" title="Permalink to this headline">¶</a></h3>
+<p>Overall, the steps for configuring CDB database is quite similar to non-CDB database, but the commands may be different.</p>
+<ol>
+<li><p>Enable log archiving</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">ORACLE_SID</span><span class="o">=</span><span class="n">ORCLCDB</span>
+<span class="n">export</span> <span class="n">ORACLE_SID</span>
+<span class="n">sqlplus</span> <span class="o">/</span><span class="n">nolog</span>
+  <span class="k">CONNECT</span> <span class="n">sys</span><span class="o">/</span><span class="n">password</span> <span class="k">AS</span> <span class="n">SYSDBA</span>
+  <span class="k">alter</span> <span class="k">system</span> <span class="k">set</span> <span class="n">db_recovery_file_dest_size</span> <span class="o">=</span> <span class="mi">10</span><span class="k">G</span><span class="p">;</span>
+  <span class="c1">-- should exist</span>
+  <span class="k">alter</span> <span class="k">system</span> <span class="k">set</span> <span class="n">db_recovery_file_dest</span> <span class="o">=</span> <span class="s1">&#39;/opt/oracle/oradata/recovery_area&#39;</span> <span class="k">scope</span><span class="o">=</span><span class="n">spfile</span><span class="p">;</span>
+  <span class="n">shutdown</span> <span class="k">immediate</span>
+  <span class="n">startup</span> <span class="n">mount</span>
+  <span class="k">alter</span> <span class="k">database</span> <span class="n">archivelog</span><span class="p">;</span>
+  <span class="k">alter</span> <span class="k">database</span> <span class="k">open</span><span class="p">;</span>
+  <span class="c1">-- Should show &quot;Database log mode: Archive Mode&quot;</span>
+  <span class="n">archive</span> <span class="n">log</span> <span class="n">list</span>
+  <span class="n">exit</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><strong>Note:</strong>
+You can also use the following commands to enable supplemental logging:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Enable supplemental logging for a specific table:</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">inventory</span><span class="p">.</span><span class="n">customers</span> <span class="k">ADD</span> <span class="n">SUPPLEMENTAL</span> <span class="n">LOG</span> <span class="k">DATA</span> <span class="p">(</span><span class="k">ALL</span><span class="p">)</span> <span class="n">COLUMNS</span><span class="p">;</span>
+<span class="c1">-- Enable supplemental logging for database</span>
+<span class="k">ALTER</span> <span class="k">DATABASE</span> <span class="k">ADD</span> <span class="n">SUPPLEMENTAL</span> <span class="n">LOG</span> <span class="k">DATA</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Create an Oracle user with permissions</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">sqlplus</span> <span class="n">sys</span><span class="o">/</span><span class="n">password</span><span class="o">@//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">1521</span><span class="o">/</span><span class="n">ORCLCDB</span> <span class="k">as</span> <span class="n">sysdba</span>
+  <span class="k">CREATE</span> <span class="n">TABLESPACE</span> <span class="n">logminer_tbs</span> <span class="n">DATAFILE</span> <span class="s1">&#39;/opt/oracle/oradata/ORCLCDB/logminer_tbs.dbf&#39;</span> <span class="k">SIZE</span> <span class="mi">25</span><span class="n">M</span> <span class="n">REUSE</span> <span class="n">AUTOEXTEND</span> <span class="k">ON</span> <span class="n">MAXSIZE</span> <span class="n">UNLIMITED</span><span class="p">;</span>
+  <span class="n">exit</span>
+</pre></div>
+</div>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">sqlplus</span> <span class="n">sys</span><span class="o">/</span><span class="n">password</span><span class="o">@//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">1521</span><span class="o">/</span><span class="n">ORCLPDB1</span> <span class="k">as</span> <span class="n">sysdba</span>
+  <span class="k">CREATE</span> <span class="n">TABLESPACE</span> <span class="n">logminer_tbs</span> <span class="n">DATAFILE</span> <span class="s1">&#39;/opt/oracle/oradata/ORCLCDB/ORCLPDB1/logminer_tbs.dbf&#39;</span> <span class="k">SIZE</span> <span class="mi">25</span><span class="n">M</span> <span class="n">REUSE</span> <span class="n">AUTOEXTEND</span> <span class="k">ON</span> <span class="n">MAXSIZE</span> <span class="n">UNLIMITED</span><span class="p">;</span>
+  <span class="n">exit</span>
+</pre></div>
+</div>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">sqlplus</span> <span class="n">sys</span><span class="o">/</span><span class="n">password</span><span class="o">@//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">1521</span><span class="o">/</span><span class="n">ORCLCDB</span> <span class="k">as</span> <span class="n">sysdba</span>
+  <span class="k">CREATE</span> <span class="k">USER</span> <span class="n">flinkuser</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="n">flinkpw</span> <span class="k">DEFAULT</span> <span class="n">TABLESPACE</span> <span class="n">logminer_tbs</span> <span class="n">QUOTA</span> <span class="n">UNLIMITED</span> <span class="k">ON</span> <span class="n">logminer_tbs</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">CREATE</span> <span class="k">SESSION</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SET</span> <span class="n">CONTAINER</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ON</span> <span class="n">V_$DATABASE</span> <span class="k">to</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="n">FLASHBACK</span> <span class="k">ANY</span> <span class="k">TABLE</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ANY</span> <span class="k">TABLE</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="n">SELECT_CATALOG_ROLE</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="n">EXECUTE_CATALOG_ROLE</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ANY</span> <span class="k">TRANSACTION</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="n">LOGMINING</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="c1">-- need not to execute if set scan.incremental.snapshot.enabled=true(default)</span>
+  <span class="k">GRANT</span> <span class="k">LOCK</span> <span class="k">ANY</span> <span class="k">TABLE</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">CREATE</span> <span class="n">SEQUENCE</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+
+  <span class="k">GRANT</span> <span class="k">EXECUTE</span> <span class="k">ON</span> <span class="n">DBMS_LOGMNR</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">EXECUTE</span> <span class="k">ON</span> <span class="n">DBMS_LOGMNR_D</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ON</span> <span class="n">V_$LOG</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ON</span> <span class="n">V_$LOG_HISTORY</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ON</span> <span class="n">V_$LOGMNR_LOGS</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ON</span> <span class="n">V_$LOGMNR_CONTENTS</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ON</span> <span class="n">V_$LOGMNR_PARAMETERS</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ON</span> <span class="n">V_$LOGFILE</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ON</span> <span class="n">V_$ARCHIVED_LOG</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ON</span> <span class="n">V_$ARCHIVE_DEST_STATUS</span> <span class="k">TO</span> <span class="n">flinkuser</span> <span class="n">CONTAINER</span><span class="o">=</span><span class="k">ALL</span><span class="p">;</span>
+  <span class="n">exit</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>See more about the <a class="reference external" href="https://debezium.io/documentation/reference/1.9/connectors/oracle.html#setting-up-oracle">Setting up Oracle</a></p>
+</section>
+</section>
+<section id="how-to-create-an-oracle-cdc-table">
+<h2>How to create an Oracle CDC table<a class="headerlink" href="#how-to-create-an-oracle-cdc-table" title="Permalink to this headline">¶</a></h2>
+<p>The Oracle CDC table can be defined as following:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- register an Oracle table &#39;products&#39; in Flink SQL</span>
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">products</span> <span class="p">(</span>
+     <span class="n">ID</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+     <span class="n">NAME</span> <span class="n">STRING</span><span class="p">,</span>
+     <span class="n">DESCRIPTION</span> <span class="n">STRING</span><span class="p">,</span>
+     <span class="n">WEIGHT</span> <span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+     <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">(</span><span class="n">id</span><span class="p">)</span> <span class="k">NOT</span> <span class="n">ENFORCED</span>
+     <span class="p">)</span> <span class="k">WITH</span> <span class="p">(</span>
+     <span class="s1">&#39;connector&#39;</span> <span class="o">=</span> <span class="s1">&#39;oracle-cdc&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;hostname&#39;</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;port&#39;</span> <span class="o">=</span> <span class="s1">&#39;1521&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;username&#39;</span> <span class="o">=</span> <span class="s1">&#39;flinkuser&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;password&#39;</span> <span class="o">=</span> <span class="s1">&#39;flinkpw&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;database-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;ORCLCDB&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;schema-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;inventory&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;table-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;products&#39;</span><span class="p">);</span>
+  
+<span class="c1">-- read snapshot and redo logs from products table</span>
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">products</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><strong>Note:</strong>
+When working with the CDB + PDB model, you are expected to add an extra option <code class="docutils literal notranslate"><span class="pre">'debezium.database.pdb.name'</span> <span class="pre">=</span> <span class="pre">'xxx'</span></code> in Flink DDL to specific the name of the PDB to connect to.</p>
+<p><strong>Note:</strong>
+While the connector might work with a variety of Oracle versions and editions, only Oracle 9i, 10g, 11g and 12c have been tested.</p>
+</section>
+<section id="connector-options">
+<h2>Connector Options<a class="headerlink" href="#connector-options" title="Permalink to this headline">¶</a></h2>
+<div class="highlight">
+<table class="colwidths-auto docutils">
+   <thead>
+      <tr>
+        <th class="text-left" style="width: 25%">Option</th>
+        <th class="text-left" style="width: 8%">Required</th>
+        <th class="text-left" style="width: 7%">Default</th>
+        <th class="text-left" style="width: 10%">Type</th>
+        <th class="text-left" style="width: 50%">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>connector</td>
+      <td>required</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>Specify what connector to use, here should be <code>'oracle-cdc'</code>.</td>
+    </tr>
+    <tr>
+      <td>hostname</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>IP address or hostname of the Oracle database server. If the url is not empty, hostname may not be configured, otherwise hostname can not be empty</td>
+    </tr>
+    <tr>
+      <td>username</td>
+      <td>required</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>Name of the Oracle database to use when connecting to the Oracle database server.</td>
+    </tr>
+    <tr>
+      <td>password</td>
+      <td>required</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>Password to use when connecting to the Oracle database server.</td>
+    </tr>
+    <tr>
+      <td>database-name</td>
+      <td>required</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>Database name of the Oracle server to monitor.</td>
+    </tr>
+    <tr>
+      <td>schema-name</td>
+      <td>required</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>Schema name of the Oracle database to monitor.</td>
+    </tr>
+    <tr>
+      <td>table-name</td>
+      <td>required</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>Table name of the Oracle database to monitor.</td>
+    </tr>
+    <tr>
+      <td>port</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">1521</td>
+      <td>Integer</td>
+      <td>Integer port number of the Oracle database server.</td>
+    </tr>
+  <tr>
+      <td>url</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">jdbc:oracle:thin:@{hostname}:{port}:{database-name}</td>
+      <td>String</td>
+      <td>JdbcUrl of the oracle database server . If the hostname and port parameter is configured, the URL is concatenated by hostname port database-name in SID format by default. Otherwise, you need to configure the URL parameter</td>
+    </tr>
+    <tr>
+      <td>scan.startup.mode</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">initial</td>
+      <td>String</td>
+      <td>Optional startup mode for Oracle CDC consumer, valid enumerations are "initial"
+           and "latest-offset". 
+           Please see <a href="#startup-reading-position">Startup Reading Position</a> section for more detailed information.</td>
+    </tr>
+    <tr>
+          <td>scan.incremental.snapshot.enabled</td>
+          <td>optional</td>
+          <td style="word-wrap: break-word;">true</td>
+          <td>Boolean</td>
+          <td>Incremental snapshot is a new mechanism to read snapshot of a table. Compared to the old snapshot mechanism,
+              the incremental snapshot has many advantages, including:
+                (1) source can be parallel during snapshot reading, 
+                (2) source can perform checkpoints in the chunk granularity during snapshot reading, 
+                (3) source doesn't need to acquire ROW SHARE MODE lock before snapshot reading.
+          </td>
+    </tr>
+    <tr>
+          <td>scan.incremental.snapshot.chunk.size</td>
+          <td>optional</td>
+          <td style="word-wrap: break-word;">8096</td>
+          <td>Integer</td>
+          <td>The chunk size (number of rows) of table snapshot, captured tables are split into multiple chunks when read the snapshot of table.</td>
+    </tr>
+    <tr>
+          <td>scan.snapshot.fetch.size</td>
+          <td>optional</td>
+          <td style="word-wrap: break-word;">1024</td>
+          <td>Integer</td>
+          <td>The maximum fetch size for per poll when read table snapshot.</td>
+    </tr>
+    <tr>
+          <td>connect.max-retries</td>
+          <td>optional</td>
+          <td style="word-wrap: break-word;">3</td>
+          <td>Integer</td>
+          <td>The max retry times that the connector should retry to build Oracle database server connection.</td>
+    </tr>
+    <tr>
+          <td>connection.pool.size</td>
+          <td>optional</td>
+          <td style="word-wrap: break-word;">20</td>
+          <td>Integer</td>
+          <td>The connection pool size.</td>
+    </tr>
+    <tr>
+      <td>debezium.*</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>Pass-through Debezium's properties to Debezium Embedded Engine which is used to capture data changes from Oracle server.
+          For example: <code>'debezium.snapshot.mode' = 'never'</code>.
+          See more about the <a href="https://debezium.io/documentation/reference/1.9/connectors/oracle.html#oracle-connector-properties">Debezium's Oracle Connector properties</a></td> 
+    </tr>
+    <tr>
+      <td>scan.incremental.close-idle-reader.enabled</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">false</td>
+      <td>Boolean</td>
+      <td>Whether to close idle readers at the end of the snapshot phase. <br>
+          The flink version is required to be greater than or equal to 1.14 when 'execution.checkpointing.checkpoints-after-tasks-finish.enabled' is set to true.<br>
+          If the flink version is greater than or equal to 1.15, the default value of 'execution.checkpointing.checkpoints-after-tasks-finish.enabled' has been changed to true,
+          so it does not need to be explicitly configured 'execution.checkpointing.checkpoints-after-tasks-finish.enabled' = 'true'
+      </td>
+    </tr>
+    <tr>
+          <td>scan.incremental.snapshot.chunk.key-column</td>
+          <td>optional</td>
+          <td style="word-wrap: break-word;">(none)</td>
+          <td>String</td>
+          <td>The chunk key of table snapshot, captured tables are split into multiple chunks by a chunk key when read the snapshot of table.
+            By default, the chunk key is 'ROWID'. This column must be a column of the primary key.</td>
+    </tr>
+    </tbody>
+</table>    
+</div>
+</section>
+<section id="limitation">
+<h2>Limitation<a class="headerlink" href="#limitation" title="Permalink to this headline">¶</a></h2>
+<section id="can-t-perform-checkpoint-during-scanning-snapshot-of-tables">
+<h3>Can’t perform checkpoint during scanning snapshot of tables<a class="headerlink" href="#can-t-perform-checkpoint-during-scanning-snapshot-of-tables" title="Permalink to this headline">¶</a></h3>
+<p>During scanning snapshot of database tables, since there is no recoverable position, we can’t perform checkpoints. In order to not perform checkpoints, Oracle CDC source will keep the checkpoint waiting to timeout. The timeout checkpoint will be recognized as failed checkpoint, by default, this will trigger a failover for the Flink job. So if the database table is large, it is recommended to add following Flink configurations to avoid failover because of the timeout checkpoints:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">execution</span><span class="o">.</span><span class="n">checkpointing</span><span class="o">.</span><span class="n">interval</span><span class="p">:</span> <span class="mi">10</span><span class="nb">min</span>
+<span class="n">execution</span><span class="o">.</span><span class="n">checkpointing</span><span class="o">.</span><span class="n">tolerable</span><span class="o">-</span><span class="n">failed</span><span class="o">-</span><span class="n">checkpoints</span><span class="p">:</span> <span class="mi">100</span>
+<span class="n">restart</span><span class="o">-</span><span class="n">strategy</span><span class="p">:</span> <span class="n">fixed</span><span class="o">-</span><span class="n">delay</span>
+<span class="n">restart</span><span class="o">-</span><span class="n">strategy</span><span class="o">.</span><span class="n">fixed</span><span class="o">-</span><span class="n">delay</span><span class="o">.</span><span class="n">attempts</span><span class="p">:</span> <span class="mi">2147483647</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="available-metadata">
+<h2>Available Metadata<a class="headerlink" href="#available-metadata" title="Permalink to this headline">¶</a></h2>
+<p>The following format metadata can be exposed as read-only (VIRTUAL) columns in a table definition.</p>
+<table class="colwidths-auto docutils">
+  <thead>
+     <tr>
+       <th class="text-left" style="width: 15%">Key</th>
+       <th class="text-left" style="width: 30%">DataType</th>
+       <th class="text-left" style="width: 55%">Description</th>
+     </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>table_name</td>
+      <td>STRING NOT NULL</td>
+      <td>Name of the table that contain the row.</td>
+    </tr>
+    <tr>
+      <td>schema_name</td>
+      <td>STRING NOT NULL</td>
+      <td>Name of the schema that contain the row.</td>
+    </tr>
+    <tr>
+      <td>database_name</td>
+      <td>STRING NOT NULL</td>
+      <td>Name of the database that contain the row.</td>
+    </tr>
+    <tr>
+      <td>op_ts</td>
+      <td>TIMESTAMP_LTZ(3) NOT NULL</td>
+      <td>It indicates the time that the change was made in the database. <br>If the record is read from snapshot of the table instead of the change stream, the value is always 0.</td>
+    </tr>
+  </tbody>
+</table>
+<p>The extended CREATE TABLE example demonstrates the syntax for exposing these metadata fields:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">products</span> <span class="p">(</span>
+    <span class="n">db_name</span> <span class="n">STRING</span> <span class="n">METADATA</span> <span class="k">FROM</span> <span class="s1">&#39;database_name&#39;</span> <span class="n">VIRTUAL</span><span class="p">,</span>
+    <span class="k">schema_name</span> <span class="n">STRING</span> <span class="n">METADATA</span> <span class="k">FROM</span> <span class="s1">&#39;schema_name&#39;</span> <span class="n">VIRTUAL</span><span class="p">,</span> 
+    <span class="k">table_name</span> <span class="n">STRING</span> <span class="n">METADATA</span>  <span class="k">FROM</span> <span class="s1">&#39;table_name&#39;</span> <span class="n">VIRTUAL</span><span class="p">,</span>
+    <span class="n">operation_ts</span> <span class="n">TIMESTAMP_LTZ</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="n">METADATA</span> <span class="k">FROM</span> <span class="s1">&#39;op_ts&#39;</span> <span class="n">VIRTUAL</span><span class="p">,</span>
+    <span class="n">ID</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="n">NAME</span> <span class="n">STRING</span><span class="p">,</span>
+    <span class="n">DESCRIPTION</span> <span class="n">STRING</span><span class="p">,</span>
+    <span class="n">WEIGHT</span> <span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+    <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">(</span><span class="n">id</span><span class="p">)</span> <span class="k">NOT</span> <span class="n">ENFORCED</span>
+<span class="p">)</span> <span class="k">WITH</span> <span class="p">(</span>
+    <span class="s1">&#39;connector&#39;</span> <span class="o">=</span> <span class="s1">&#39;oracle-cdc&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;hostname&#39;</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;port&#39;</span> <span class="o">=</span> <span class="s1">&#39;1521&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;username&#39;</span> <span class="o">=</span> <span class="s1">&#39;flinkuser&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;password&#39;</span> <span class="o">=</span> <span class="s1">&#39;flinkpw&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;database-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;ORCLCDB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;schema-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;inventory&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;table-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;products&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;debezium.log.mining.strategy&#39;</span> <span class="o">=</span> <span class="s1">&#39;online_catalog&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;debezium.log.mining.continuous.mine&#39;</span> <span class="o">=</span> <span class="s1">&#39;true&#39;</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<p><strong>Note</strong> : The Oracle dialect is case-sensitive, it converts field name to uppercase if the field name is not quoted, Flink SQL doesn’t convert the field name. Thus for physical columns from oracle database, we should use its converted field name in Oracle when define an <code class="docutils literal notranslate"><span class="pre">oracle-cdc</span></code> table in Flink SQL.</p>
+</section>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<section id="exactly-once-processing">
+<h3>Exactly-Once Processing<a class="headerlink" href="#exactly-once-processing" title="Permalink to this headline">¶</a></h3>
+<p>The Oracle CDC connector is a Flink Source connector which will read database snapshot first and then continues to read change events with <strong>exactly-once processing</strong> even failures happen. Please read <a class="reference external" href="https://debezium.io/documentation/reference/1.9/connectors/oracle.html#how-the-oracle-connector-works">How the connector works</a>.</p>
+</section>
+<section id="startup-reading-position">
+<h3>Startup Reading Position<a class="headerlink" href="#startup-reading-position" title="Permalink to this headline">¶</a></h3>
+<p>The config option <code class="docutils literal notranslate"><span class="pre">scan.startup.mode</span></code> specifies the startup mode for Oracle CDC consumer. The valid enumerations are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">initial</span></code> (default): Performs an initial snapshot on the monitored database tables upon first startup, and continue to read the latest redo log.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">latest-offset</span></code>: Never to perform a snapshot on the monitored database tables upon first startup, just read from
+the change since the connector was started.</p></li>
+</ul>
+<p><em>Note: the mechanism of <code class="docutils literal notranslate"><span class="pre">scan.startup.mode</span></code> option relying on Debezium’s <code class="docutils literal notranslate"><span class="pre">snapshot.mode</span></code> configuration. So please do not use them together. If you specific both <code class="docutils literal notranslate"><span class="pre">scan.startup.mode</span></code> and <code class="docutils literal notranslate"><span class="pre">debezium.snapshot.mode</span></code> options in the table DDL, it may make <code class="docutils literal notranslate"><span class="pre">scan.startup.mode</span></code> doesn’t work.</em></p>
+</section>
+<section id="single-thread-reading">
+<h3>Single Thread Reading<a class="headerlink" href="#single-thread-reading" title="Permalink to this headline">¶</a></h3>
+<p>The Oracle CDC source can’t work in parallel reading, because there is only one task can receive change events.</p>
+</section>
+<section id="datastream-source">
+<h3>DataStream Source<a class="headerlink" href="#datastream-source" title="Permalink to this headline">¶</a></h3>
+<p>The Oracle CDC connector can also be a DataStream source. There are two modes for the DataStream source:</p>
+<ul class="simple">
+<li><p>incremental snapshot based, which allows parallel reading</p></li>
+<li><p>SourceFunction based, which only supports single thread reading</p></li>
+</ul>
+<section id="incremental-snapshot-based-datastream-experimental">
+<h4>Incremental Snapshot based DataStream (Experimental)<a class="headerlink" href="#incremental-snapshot-based-datastream-experimental" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">com.ververica.cdc.connectors.base.options.StartupOptions</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">com.ververica.cdc.connectors.base.source.jdbc.JdbcIncrementalSource</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">com.ververica.cdc.connectors.oracle.source.OracleSourceBuilder</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">com.ververica.cdc.debezium.JsonDebeziumDeserializationSchema</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.api.common.eventtime.WatermarkStrategy</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.streaming.api.environment.StreamExecutionEnvironment</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Properties</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OracleParallelSourceExample</span> <span class="p">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">Properties</span> <span class="n">debeziumProperties</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Properties</span><span class="p">();</span>
+        <span class="n">debeziumProperties</span><span class="p">.</span><span class="na">setProperty</span><span class="p">(</span><span class="s">&quot;log.mining.strategy&quot;</span><span class="p">,</span> <span class="s">&quot;online_catalog&quot;</span><span class="p">);</span>
+
+        <span class="n">JdbcIncrementalSource</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">oracleChangeEventSource</span> <span class="o">=</span>
+                <span class="k">new</span> <span class="n">OracleSourceBuilder</span><span class="p">()</span>
+                        <span class="p">.</span><span class="na">hostname</span><span class="p">(</span><span class="s">&quot;host&quot;</span><span class="p">)</span>
+                        <span class="p">.</span><span class="na">port</span><span class="p">(</span><span class="mi">1521</span><span class="p">)</span>
+                        <span class="p">.</span><span class="na">databaseList</span><span class="p">(</span><span class="s">&quot;ORCLCDB&quot;</span><span class="p">)</span>
+                        <span class="p">.</span><span class="na">schemaList</span><span class="p">(</span><span class="s">&quot;DEBEZIUM&quot;</span><span class="p">)</span>
+                        <span class="p">.</span><span class="na">tableList</span><span class="p">(</span><span class="s">&quot;DEBEZIUM.PRODUCTS&quot;</span><span class="p">)</span>
+                        <span class="p">.</span><span class="na">username</span><span class="p">(</span><span class="s">&quot;username&quot;</span><span class="p">)</span>
+                        <span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">&quot;password&quot;</span><span class="p">)</span>
+                        <span class="p">.</span><span class="na">deserializer</span><span class="p">(</span><span class="k">new</span> <span class="n">JsonDebeziumDeserializationSchema</span><span class="p">())</span>
+                        <span class="p">.</span><span class="na">includeSchemaChanges</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="c1">// output the schema changes as well</span>
+                        <span class="p">.</span><span class="na">startupOptions</span><span class="p">(</span><span class="n">StartupOptions</span><span class="p">.</span><span class="na">initial</span><span class="p">())</span>
+                        <span class="p">.</span><span class="na">debeziumProperties</span><span class="p">(</span><span class="n">debeziumProperties</span><span class="p">)</span>
+                        <span class="p">.</span><span class="na">splitSize</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                        <span class="p">.</span><span class="na">build</span><span class="p">();</span>
+
+        <span class="n">StreamExecutionEnvironment</span> <span class="n">env</span> <span class="o">=</span> <span class="n">StreamExecutionEnvironment</span><span class="p">.</span><span class="na">getExecutionEnvironment</span><span class="p">();</span>
+        <span class="c1">// enable checkpoint</span>
+        <span class="n">env</span><span class="p">.</span><span class="na">enableCheckpointing</span><span class="p">(</span><span class="mi">3000L</span><span class="p">);</span>
+        <span class="c1">// set the source parallelism to 4</span>
+        <span class="n">env</span><span class="p">.</span><span class="na">fromSource</span><span class="p">(</span>
+                        <span class="n">oracleChangeEventSource</span><span class="p">,</span>
+                        <span class="n">WatermarkStrategy</span><span class="p">.</span><span class="na">noWatermarks</span><span class="p">(),</span>
+                        <span class="s">&quot;OracleParallelSource&quot;</span><span class="p">)</span>
+                <span class="p">.</span><span class="na">setParallelism</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+                <span class="p">.</span><span class="na">print</span><span class="p">()</span>
+                <span class="p">.</span><span class="na">setParallelism</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+        <span class="n">env</span><span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="s">&quot;Print Oracle Snapshot + RedoLog&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="sourcefunction-based-datastream">
+<h4>SourceFunction-based DataStream<a class="headerlink" href="#sourcefunction-based-datastream" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">org.apache.flink.streaming.api.environment.StreamExecutionEnvironment</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.streaming.api.functions.source.SourceFunction</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">com.ververica.cdc.debezium.JsonDebeziumDeserializationSchema</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">com.ververica.cdc.connectors.oracle.OracleSource</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OracleSourceExample</span> <span class="p">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+     <span class="n">SourceFunction</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">sourceFunction</span> <span class="o">=</span> <span class="n">OracleSource</span><span class="p">.</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="n">builder</span><span class="p">()</span>
+             <span class="p">.</span><span class="na">url</span><span class="p">(</span><span class="s">&quot;jdbc:oracle:thin:@{hostname}:{port}:{database}&quot;</span><span class="p">)</span>
+             <span class="p">.</span><span class="na">port</span><span class="p">(</span><span class="mi">1521</span><span class="p">)</span>
+             <span class="p">.</span><span class="na">database</span><span class="p">(</span><span class="s">&quot;ORCLCDB&quot;</span><span class="p">)</span> <span class="c1">// monitor XE database</span>
+             <span class="p">.</span><span class="na">schemaList</span><span class="p">(</span><span class="s">&quot;inventory&quot;</span><span class="p">)</span> <span class="c1">// monitor inventory schema</span>
+             <span class="p">.</span><span class="na">tableList</span><span class="p">(</span><span class="s">&quot;inventory.products&quot;</span><span class="p">)</span> <span class="c1">// monitor products table</span>
+             <span class="p">.</span><span class="na">username</span><span class="p">(</span><span class="s">&quot;flinkuser&quot;</span><span class="p">)</span>
+             <span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">&quot;flinkpw&quot;</span><span class="p">)</span>
+             <span class="p">.</span><span class="na">deserializer</span><span class="p">(</span><span class="k">new</span> <span class="n">JsonDebeziumDeserializationSchema</span><span class="p">())</span> <span class="c1">// converts SourceRecord to JSON String</span>
+             <span class="p">.</span><span class="na">build</span><span class="p">();</span>
+
+     <span class="n">StreamExecutionEnvironment</span> <span class="n">env</span> <span class="o">=</span> <span class="n">StreamExecutionEnvironment</span><span class="p">.</span><span class="na">getExecutionEnvironment</span><span class="p">();</span>
+
+     <span class="n">env</span>
+        <span class="p">.</span><span class="na">addSource</span><span class="p">(</span><span class="n">sourceFunction</span><span class="p">)</span>
+        <span class="p">.</span><span class="na">print</span><span class="p">().</span><span class="na">setParallelism</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// use parallelism 1 for sink to keep message ordering   </span>
+     
+     <span class="n">env</span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Note:</strong> Please refer <a class="reference external" href="../about.html#deserialization">Deserialization</a> for more details about the JSON deserialization.</p>
+</section>
+</section>
+</section>
+<section id="data-type-mapping">
+<h2>Data Type Mapping<a class="headerlink" href="#data-type-mapping" title="Permalink to this headline">¶</a></h2>
+<div class="wy-table-responsive">
+<table class="colwidths-auto docutils">
+    <thead>
+      <tr>
+        <th class="text-left"><a href="https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/Data-Types.html">Oracle type</a></th>
+        <th class="text-left">Flink SQL type<a href="{% link dev/table/types.md %}"></a></th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>NUMBER(p, s <= 0), p - s < 3
+      </td>
+      <td>TINYINT</td>
+    </tr>
+    <tr>
+      <td>NUMBER(p, s <= 0), p - s < 5
+      </td>
+      <td>SMALLINT</td>
+    </tr>
+    <tr>
+      <td>NUMBER(p, s <= 0), p - s < 10
+      </td>
+      <td>INT</td>
+    </tr>
+    <tr>
+      <td>NUMBER(p, s <= 0), p - s < 19
+      </td>
+      <td>BIGINT</td>
+    </tr>
+    <tr>
+      <td>NUMBER(p, s <= 0), 19 <= p - s <= 38 <br>
+      </td>
+      <td>DECIMAL(p - s, 0)</td>
+    </tr>
+    <tr>
+      <td>NUMBER(p, s > 0)
+      </td>
+      <td>DECIMAL(p, s)</td>
+    </tr>
+    <tr>
+      <td>NUMBER(p, s <= 0), p - s > 38
+      </td>
+      <td>STRING</td>
+    </tr>
+    <tr>
+      <td> 
+        FLOAT<br>
+        BINARY_FLOAT
+      </td>
+      <td>FLOAT</td>
+    </tr>
+    <tr>
+      <td>
+        DOUBLE PRECISION<br>
+        BINARY_DOUBLE
+      </td>
+      <td>DOUBLE</td>
+    </tr>
+    <tr>
+      <td>NUMBER(1)</td>
+      <td>BOOLEAN</td>
+    </tr>
+    <tr>
+      <td>
+        DATE<br>
+        TIMESTAMP [(p)]
+      </td>
+      <td>TIMESTAMP [(p)] [WITHOUT TIMEZONE]</td>
+    </tr>
+    <tr>
+      <td>TIMESTAMP [(p)] WITH TIME ZONE</td>
+      <td>TIMESTAMP [(p)] WITH TIME ZONE</td>
+    </tr>
+    <tr>
+      <td>TIMESTAMP [(p)] WITH LOCAL TIME ZONE</td>
+      <td>TIMESTAMP_LTZ [(p)]</td>
+    </tr>
+    <tr>
+      <td>
+        CHAR(n)<br>
+        NCHAR(n)<br>
+        NVARCHAR2(n)<br>
+        VARCHAR(n)<br>
+        VARCHAR2(n)<br>
+        CLOB<br>
+        NCLOB<br>
+        XMLType<br>
+        SYS.XMLTYPE
+      </td>
+      <td>STRING</td>
+    </tr>
+    <tr>
+      <td>BLOB<br>
+      ROWID
+      </td>
+      <td>BYTES</td>
+    </tr>
+    <tr>
+      <td>
+      INTERVAL DAY TO SECOND<br>
+      INTERVAL YEAR TO MONTH
+      </td>
+      <td>BIGINT</td>
+    </tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="faq">
+<h2>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/ververica/flink-cdc-connectors/wiki/FAQ">FAQ(English)</a></p></li>
+<li><p><a class="reference external" href="https://github.com/ververica/flink-cdc-connectors/wiki/FAQ(ZH)">FAQ(中文)</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="postgres-cdc.html" class="btn btn-neutral float-right" title="Postgres CDC Connector" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="oceanbase-cdc%28ZH%29.html" class="btn btn-neutral float-left" title="OceanBase CDC 连接器" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2024, Ververica GmbH; Apache Flink, Flink®, Apache®, the squirrel logo, and the Apache feather logo are either registered trademarks or trademarks of The Apache Software Foundation.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+
+
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      version: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        
+        <dl>
+            <dt>Versions</dt>
+            
+             <strong> 
+            <dd><a href="/flink-cdc-connectors/master/">master</a></dd>
+             </strong> 
+            
+            
+            <dd><a href="/flink-cdc-connectors/release-1.4.0-mongodb/">release-1.4.0-mongodb</a></dd>
+            
+            
+        </dl>
+        
+        
+        <hr/>
+        Free document hosting provided by <a href="http://www.readthedocs.org">Read the
+        Docs</a>.
+
+    </div>
+</div>
+
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer
+        src="https://ververica.github.io/flink-cdc-connectors/master/_static/button.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

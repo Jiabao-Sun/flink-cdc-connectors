@@ -1,0 +1,596 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Streaming ELT from MySQL to StarRocks using Flink CDC 3.0 &mdash; CDC Connectors for Apache Flink®  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/theme_overrides.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Streaming ETL for MySQL and Postgres with Flink CDC" href="mysql-postgres-tutorial.html" />
+    <link rel="prev" title="Streaming ELT from MySQL to Doris using Flink CDC 3.0" href="mysql-doris-pipeline-tutorial.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> CDC Connectors for Apache Flink®
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                master
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview/index.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Getting Started</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mysql-doris-pipeline-tutorial.html">Streaming ELT from MySQL to Doris using Flink CDC 3.0</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Streaming ELT from MySQL to StarRocks using Flink CDC 3.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#preparation">Preparation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#prepare-flink-standalone-cluster">Prepare Flink Standalone cluster</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#prepare-docker-compose">Prepare docker compose</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#submit-job-using-flinkcdc-cli">Submit job using FlinkCDC cli</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#synchronize-schema-and-data-changes">Synchronize Schema and Data changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#route-the-changes">Route the changes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#clean-up">Clean up</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mysql-postgres-tutorial.html">Streaming ETL for MySQL and Postgres with Flink CDC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mongodb-tutorial.html">Demo: MongoDB CDC to Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oceanbase-tutorial.html">Demo: OceanBase CDC to ElasticSearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oracle-tutorial.html">Demo: Oracle CDC to Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="polardbx-tutorial.html">Demo: PolarDB-X CDC to Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlserver-tutorial.html">Demo: SqlServer CDC to Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tidb-tutorial.html">Demo: TiDB CDC to Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="db2-tutorial.html">Demo: Db2 CDC to Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build-real-time-data-lake-tutorial.html">Using Flink CDC to synchronize data from MySQL sharding tables and build real-time data lake</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datastream-api-package-guidance.html">DataStream api package guidance</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../connectors/index.html">Connectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pipelines/index.html">Pipeline Connectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../formats/index.html">Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../downloads.html">Downloads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../githublink.html"><a class="github-button" href="https://github.com/ververica/flink-cdc-connectors" data-color-scheme="no-preference: dark_high_contrast; light: dark_high_contrast; dark: dark_high_contrast;" data-size="large" data-show-count="true" aria-label="Star ververica/flink-cdc-connectors on GitHub">Star</a></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CDC Connectors for Apache Flink®</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+<!-- Extend the RTD template to support user defined "Edit on Github" URL -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Getting Started</a> &raquo;</li>
+        
+      <li>Streaming ELT from MySQL to StarRocks using Flink CDC 3.0</li>
+    
+    
+            <li class="wy-breadcrumbs-aside">
+                
+                    
+                        <a href="http://github.com/ververica/flink-cdc-connectors/blob/master/docs/content/quickstart/mysql-starrocks-pipeline-tutorial.md" class="fa fa-github"> Edit on GitHub</a>
+                    
+                
+            </li>
+        
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="streaming-elt-from-mysql-to-starrocks-using-flink-cdc-3-0">
+<h1>Streaming ELT from MySQL to StarRocks using Flink CDC 3.0<a class="headerlink" href="#streaming-elt-from-mysql-to-starrocks-using-flink-cdc-3-0" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial is to show how to quickly build a Streaming ELT job from MySQL to StarRocks using Flink CDC 3.0，including the feature of sync all table of one database, schema change evolution and sync sharding tables into one table.<br />
+All exercises in this tutorial are performed in the Flink CDC CLI, and the entire process uses standard SQL syntax, without a single line of Java/Scala code or IDE installation.</p>
+<section id="preparation">
+<h2>Preparation<a class="headerlink" href="#preparation" title="Permalink to this headline">¶</a></h2>
+<p>Prepare a Linux or MacOS computer with Docker installed.</p>
+<section id="prepare-flink-standalone-cluster">
+<h3>Prepare Flink Standalone cluster<a class="headerlink" href="#prepare-flink-standalone-cluster" title="Permalink to this headline">¶</a></h3>
+<ol>
+<li><p>Download <a class="reference external" href="https://archive.apache.org/dist/flink/flink-1.18.0/flink-1.18.0-bin-scala_2.12.tgz">Flink 1.18.0</a> ，unzip and get flink-1.18.0 directory.<br />
+Use the following command to navigate to the Flink directory and set FLINK_HOME to the directory where flink-1.18.0 is located.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> flink-1.18.0
+</pre></div>
+</div>
+</li>
+<li><p>Enable checkpointing by appending the following parameters to the conf/flink-conf.yaml configuration file to perform a checkpoint every 3 seconds.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">execution.checkpointing.interval</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3000</span>
+</pre></div>
+</div>
+</li>
+<li><p>Start the Flink cluster using the following command.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./bin/start-cluster.sh
+</pre></div>
+</div>
+</li>
+</ol>
+<p>If successfully started, you can access the Flink Web UI at <a class="reference external" href="http://localhost:8081/">http://localhost:8081/</a>, as shown below.</p>
+<p><img alt="Flink UI" src="../../_images/flink-ui3.png" /></p>
+<p>Executing <code class="docutils literal notranslate"><span class="pre">start-cluster.sh</span></code> multiple times can start multiple <code class="docutils literal notranslate"><span class="pre">TaskManager</span></code>s.</p>
+</section>
+<section id="prepare-docker-compose">
+<h3>Prepare docker compose<a class="headerlink" href="#prepare-docker-compose" title="Permalink to this headline">¶</a></h3>
+<p>The following tutorial will prepare the required components using <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code>.
+Create a <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> file using the content provided below:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;2.1&#39;</span>
+<span class="nt">services</span><span class="p">:</span>
+   <span class="nt">StarRocks</span><span class="p">:</span>
+      <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">registry.starrocks.io/starrocks/allin1-ubuntu</span>
+      <span class="nt">ports</span><span class="p">:</span>
+         <span class="p p-Indicator">-</span> <span class="s">&quot;8030:8030&quot;</span>
+         <span class="p p-Indicator">-</span> <span class="s">&quot;8040:8040&quot;</span>
+         <span class="p p-Indicator">-</span> <span class="s">&quot;9030:9030&quot;</span>
+   <span class="nt">MySQL</span><span class="p">:</span>
+      <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">debezium/example-mysql:1.1</span>
+      <span class="nt">ports</span><span class="p">:</span>
+         <span class="p p-Indicator">-</span> <span class="s">&quot;3306:3306&quot;</span>
+      <span class="nt">environment</span><span class="p">:</span>
+         <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">MYSQL_ROOT_PASSWORD=123456</span>
+         <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">MYSQL_USER=mysqluser</span>
+         <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">MYSQL_PASSWORD=mysqlpw</span>
+</pre></div>
+</div>
+<p>The Docker Compose should include the following services (containers):</p>
+<ul class="simple">
+<li><p>MySQL: include a database named <code class="docutils literal notranslate"><span class="pre">app_db</span></code></p></li>
+<li><p>StarRocks: to store tables from MySQL</p></li>
+</ul>
+<p>To start all containers, run the following command in the directory that contains the <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> file.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose up -d
+</pre></div>
+</div>
+<p>This command automatically starts all the containers defined in the Docker Compose configuration in a detached mode. Run docker ps to check whether these containers are running properly. You can also visit <a class="reference external" href="http://localhost:8030/">http://localhost:8030/</a> to check whether StarRocks is running.</p>
+<section id="prepare-records-for-mysql">
+<h4>Prepare records for MySQL<a class="headerlink" href="#prepare-records-for-mysql" title="Permalink to this headline">¶</a></h4>
+<ol>
+<li><p>Enter MySQL container</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose <span class="nb">exec</span> mysql mysql -uroot -p123456
+</pre></div>
+</div>
+</li>
+<li><p>create <code class="docutils literal notranslate"><span class="pre">app_db</span></code> database and <code class="docutils literal notranslate"><span class="pre">orders</span></code>,<code class="docutils literal notranslate"><span class="pre">products</span></code>,<code class="docutils literal notranslate"><span class="pre">shipments</span></code> tables, then insert records</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- create database</span>
+<span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">app_db</span><span class="p">;</span>
+
+<span class="n">USE</span> <span class="n">app_db</span><span class="p">;</span>
+
+<span class="c1">-- create orders table</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="o">`</span><span class="n">orders</span><span class="o">`</span> <span class="p">(</span>
+<span class="o">`</span><span class="n">id</span><span class="o">`</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+<span class="o">`</span><span class="n">price</span><span class="o">`</span> <span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+<span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="c1">-- insert records</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="o">`</span><span class="n">orders</span><span class="o">`</span> <span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">,</span> <span class="o">`</span><span class="n">price</span><span class="o">`</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">.</span><span class="mi">00</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="o">`</span><span class="n">orders</span><span class="o">`</span> <span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">,</span> <span class="o">`</span><span class="n">price</span><span class="o">`</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">100</span><span class="p">.</span><span class="mi">00</span><span class="p">);</span>
+
+<span class="c1">-- create shipments table</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="o">`</span><span class="n">shipments</span><span class="o">`</span> <span class="p">(</span>
+<span class="o">`</span><span class="n">id</span><span class="o">`</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+<span class="o">`</span><span class="n">city</span><span class="o">`</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+<span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="c1">-- insert records</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="o">`</span><span class="n">shipments</span><span class="o">`</span> <span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">,</span> <span class="o">`</span><span class="n">city</span><span class="o">`</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;beijing&#39;</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="o">`</span><span class="n">shipments</span><span class="o">`</span> <span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">,</span> <span class="o">`</span><span class="n">city</span><span class="o">`</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;xian&#39;</span><span class="p">);</span>
+
+<span class="c1">-- create products table</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="o">`</span><span class="n">products</span><span class="o">`</span> <span class="p">(</span>
+<span class="o">`</span><span class="n">id</span><span class="o">`</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+<span class="o">`</span><span class="n">product</span><span class="o">`</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+<span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="c1">-- insert records</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="o">`</span><span class="n">products</span><span class="o">`</span> <span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">,</span> <span class="o">`</span><span class="n">product</span><span class="o">`</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Beer&#39;</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="o">`</span><span class="n">products</span><span class="o">`</span> <span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">,</span> <span class="o">`</span><span class="n">product</span><span class="o">`</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Cap&#39;</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="o">`</span><span class="n">products</span><span class="o">`</span> <span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">,</span> <span class="o">`</span><span class="n">product</span><span class="o">`</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;Peanut&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+</section>
+<section id="submit-job-using-flinkcdc-cli">
+<h2>Submit job using FlinkCDC cli<a class="headerlink" href="#submit-job-using-flinkcdc-cli" title="Permalink to this headline">¶</a></h2>
+<ol>
+<li><p>Download the binary compressed packages listed below and extract them to the directory <code class="docutils literal notranslate"> <span class="pre">flink</span> <span class="pre">cdc-3.0.0</span> <span class="pre">'</span></code>：<br />
+<a class="reference external" href="https://github.com/ververica/flink-cdc-connectors/releases/download/release-3.0.0/flink-cdc-3.0.0-bin.tar.gz">flink-cdc-3.0.0-bin.tar.gz</a>
+flink-cdc-3.0.0 directory will contain four directory <code class="docutils literal notranslate"><span class="pre">bin</span></code>,<code class="docutils literal notranslate"><span class="pre">lib</span></code>,<code class="docutils literal notranslate"><span class="pre">log</span></code>,<code class="docutils literal notranslate"><span class="pre">conf</span></code>.</p></li>
+<li><p>Download the connector package listed below and move it to the <code class="docutils literal notranslate"><span class="pre">lib</span></code> directory<br />
+<strong>Download links are available only for stable releases, SNAPSHOT dependencies need to be built based on master or release- branches by yourself.</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://repo1.maven.org/maven2/com/ververica/flink-cdc-pipeline-connector-mysql/3.0.0/flink-cdc-pipeline-connector-mysql-3.0.0.jar">MySQL pipeline connector 3.0.0</a></p></li>
+<li><p><a class="reference external" href="https://repo1.maven.org/maven2/com/ververica/flink-cdc-pipeline-connector-starrocks/3.0.0/flink-cdc-pipeline-connector-starrocks-3.0.0.jar">StarRocks pipeline connector 3.0.0</a></p></li>
+</ul>
+</li>
+<li><p>Write task configuration yaml file.
+Here is an example file for synchronizing the entire database <code class="docutils literal notranslate"><span class="pre">mysql-to-starrocks.yaml</span></code>：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">################################################################################</span>
+<span class="c1"># Description: Sync MySQL all tables to StarRocks</span>
+<span class="c1">################################################################################</span>
+<span class="nt">source</span><span class="p">:</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mysql</span>
+  <span class="nt">hostname</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">localhost</span>
+  <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3306</span>
+  <span class="nt">username</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">root</span>
+  <span class="nt">password</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">123456</span>
+  <span class="nt">tables</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">app_db.\.*</span>
+  <span class="nt">server-id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5400-5404</span>
+  <span class="nt">server-time-zone</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">UTC</span>
+
+<span class="nt">sink</span><span class="p">:</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">starrocks</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">StarRocks Sink</span>
+  <span class="nt">jdbc-url</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">jdbc:mysql://127.0.0.1:9030</span>
+  <span class="nt">load-url</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">127.0.0.1:8030</span>
+  <span class="nt">username</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">root</span>
+  <span class="nt">password</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+  <span class="nt">table.create.properties.replication_num</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+
+<span class="nt">pipeline</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Sync MySQL Database to StarRocks</span>
+  <span class="nt">parallelism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>Notice that:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tables:</span> <span class="pre">app_db.\.*</span></code> in source synchronize all tables in <code class="docutils literal notranslate"><span class="pre">app_db</span></code> through Regular Matching.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">table.create.properties.replication_num</span></code> in sink is because there is only one StarRocks BE node in the Docker image.</p></li>
+</ul>
+<ol>
+<li><p>Finally, submit job to Flink Standalone cluster using Cli.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>bash bin/flink-cdc.sh mysql-to-starrocks.yaml
+</pre></div>
+</div>
+</li>
+</ol>
+<p>After successful submission, the return information is as follows：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Pipeline has been submitted to cluster.
+Job ID: 02a31c92f0e7bc9a1f4c0051980088a0
+Job Description: Sync MySQL Database to StarRocks
+</pre></div>
+</div>
+<p>We can find a job  named <code class="docutils literal notranslate"><span class="pre">Sync</span> <span class="pre">MySQL</span> <span class="pre">Database</span> <span class="pre">to</span> <span class="pre">StarRocks</span></code> is running through Flink Web UI.</p>
+<p><img alt="MySQL-to-StarRocks" src="../../_images/mysql-to-starrocks.png" /></p>
+<p>Connect to jdbc through database connection tools such as Dbeaver using <code class="docutils literal notranslate"><span class="pre">mysql://127.0.0.1:9030</span></code>. You can view the data written to three tables in StarRocks.</p>
+<p><img alt="StarRocks-display-data" src="../../_images/starrocks-display-data.png" /></p>
+<section id="synchronize-schema-and-data-changes">
+<h3>Synchronize Schema and Data changes<a class="headerlink" href="#synchronize-schema-and-data-changes" title="Permalink to this headline">¶</a></h3>
+<p>Enter MySQL container</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>```shell
+docker-compose exec mysql mysql -uroot -p123456
+```
+</pre></div>
+</div>
+<p>Then, modify schema and record in MySQL, and the tables of StarRocks will change the same in real time：</p>
+<ol>
+<li><p>insert one record in <code class="docutils literal notranslate"><span class="pre">orders</span></code> from MySQL:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">app_db</span><span class="p">.</span><span class="n">orders</span> <span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">price</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">100</span><span class="p">.</span><span class="mi">00</span><span class="p">);</span>
+</pre></div>
+</div>
+</li>
+<li><p>add one column in <code class="docutils literal notranslate"><span class="pre">orders</span></code> from MySQL:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">app_db</span><span class="p">.</span><span class="n">orders</span> <span class="k">ADD</span> <span class="n">amount</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="k">NULL</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+<li><p>update one record in <code class="docutils literal notranslate"><span class="pre">orders</span></code> from MySQL:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">UPDATE</span> <span class="n">app_db</span><span class="p">.</span><span class="n">orders</span> <span class="k">SET</span> <span class="n">price</span><span class="o">=</span><span class="mi">100</span><span class="p">.</span><span class="mi">00</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="mi">100</span><span class="p">.</span><span class="mi">00</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+<li><p>delete one record in <code class="docutils literal notranslate"><span class="pre">orders</span></code> from MySQL:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">app_db</span><span class="p">.</span><span class="n">orders</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>Refresh the Dbeaver every time you execute a step, and you can see that the <code class="docutils literal notranslate"><span class="pre">orders</span></code> table displayed in StarRocks will be updated in real-time, like the following：</p>
+<p><img alt="StarRockss-display-result" src="../../_images/starrocks-display-result.png" /></p>
+<p>Similarly, by modifying the <code class="docutils literal notranslate"><span class="pre">shipments</span></code> and <code class="docutils literal notranslate"><span class="pre">products</span></code> tables, you can also see the results of synchronized changes in real-time in StarRocks.</p>
+</section>
+<section id="route-the-changes">
+<h3>Route the changes<a class="headerlink" href="#route-the-changes" title="Permalink to this headline">¶</a></h3>
+<p>Flink CDC provides the configuration to route the table structure/data of the source table to other table names.<br />
+With this ability, we can achieve functions such as table name, database name replacement, and whole database synchronization.
+Here is an example file for using <code class="docutils literal notranslate"><span class="pre">route</span></code> feature:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">################################################################################</span>
+<span class="c1"># Description: Sync MySQL all tables to StarRocks</span>
+<span class="c1">################################################################################</span>
+<span class="nt">source</span><span class="p">:</span>
+   <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mysql</span>
+   <span class="nt">hostname</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">localhost</span>
+   <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3306</span>
+   <span class="nt">username</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">root</span>
+   <span class="nt">password</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">123456</span>
+   <span class="nt">tables</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">app_db.\.*</span>
+   <span class="nt">server-id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5400-5404</span>
+   <span class="nt">server-time-zone</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">UTC</span>
+
+<span class="nt">sink</span><span class="p">:</span>
+   <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">starrocks</span>
+   <span class="nt">jdbc-url</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">jdbc:mysql://127.0.0.1:9030</span>
+   <span class="nt">load-url</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">127.0.0.1:8030</span>
+   <span class="nt">username</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">root</span>
+   <span class="nt">password</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+   <span class="nt">table.create.properties.replication_num</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+
+<span class="nt">route</span><span class="p">:</span>
+   <span class="p p-Indicator">-</span> <span class="nt">source-table</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">app_db.orders</span>
+     <span class="nt">sink-table</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ods_db.ods_orders</span>
+   <span class="p p-Indicator">-</span> <span class="nt">source-table</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">app_db.shipments</span>
+     <span class="nt">sink-table</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ods_db.ods_shipments</span>
+   <span class="p p-Indicator">-</span> <span class="nt">source-table</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">app_db.products</span>
+     <span class="nt">sink-table</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ods_db.ods_products</span>
+
+<span class="nt">pipeline</span><span class="p">:</span>
+   <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Sync MySQL Database to StarRocks</span>
+   <span class="nt">parallelism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+</pre></div>
+</div>
+<p>Using the upper <code class="docutils literal notranslate"><span class="pre">route</span></code> configuration, we can synchronize the table schema and data of <code class="docutils literal notranslate"><span class="pre">app_db.orders</span></code> to <code class="docutils literal notranslate"><span class="pre">ods_db.ods_orders</span></code>, thus achieving the function of database migration.<br />
+Specifically, <code class="docutils literal notranslate"><span class="pre">source-table</span></code> support regular expression matching with multiple tables to synchronize sharding databases and tables. like the following：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">route</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">source-table</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">app_db.order\.*</span>
+    <span class="nt">sink-table</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ods_db.ods_orders</span>
+</pre></div>
+</div>
+<p>In this way, we can synchronize sharding tables like <code class="docutils literal notranslate"><span class="pre">app_db.order01</span></code>、<code class="docutils literal notranslate"><span class="pre">app_db.order02</span></code>、<code class="docutils literal notranslate"><span class="pre">app_db.order03</span></code> into one ods_db.ods_orders tables.<br />
+Warning that there is currently no support for scenarios where the same primary key data exists in multiple tables, which will be supported in future versions.</p>
+</section>
+</section>
+<section id="clean-up">
+<h2>Clean up<a class="headerlink" href="#clean-up" title="Permalink to this headline">¶</a></h2>
+<p>After finishing the tutorial, run the following command to stop all containers in the directory of <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose down
+</pre></div>
+</div>
+<p>Run the following command to stop the Flink cluster in the directory of Flink <code class="docutils literal notranslate"><span class="pre">flink-1.18.0</span></code>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./bin/stop-cluster.sh
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="mysql-postgres-tutorial.html" class="btn btn-neutral float-right" title="Streaming ETL for MySQL and Postgres with Flink CDC" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="mysql-doris-pipeline-tutorial.html" class="btn btn-neutral float-left" title="Streaming ELT from MySQL to Doris using Flink CDC 3.0" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2024, Ververica GmbH; Apache Flink, Flink®, Apache®, the squirrel logo, and the Apache feather logo are either registered trademarks or trademarks of The Apache Software Foundation.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+
+
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      version: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        
+        <dl>
+            <dt>Versions</dt>
+            
+             <strong> 
+            <dd><a href="/flink-cdc-connectors/master/">master</a></dd>
+             </strong> 
+            
+            
+            <dd><a href="/flink-cdc-connectors/release-1.4.0-mongodb/">release-1.4.0-mongodb</a></dd>
+            
+            
+        </dl>
+        
+        
+        <hr/>
+        Free document hosting provided by <a href="http://www.readthedocs.org">Read the
+        Docs</a>.
+
+    </div>
+</div>
+
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer
+        src="https://ververica.github.io/flink-cdc-connectors/master/_static/button.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

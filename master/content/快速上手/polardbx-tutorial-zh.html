@@ -1,0 +1,542 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>演示: PolarDB-X CDC 导入 Elasticsearch &mdash; CDC Connectors for Apache Flink®  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/theme_overrides.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="演示: SqlServer CDC 导入 Elasticsearch" href="sqlserver-tutorial-zh.html" />
+    <link rel="prev" title="演示: Oracle CDC 导入 Elasticsearch" href="oracle-tutorial-zh.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> CDC Connectors for Apache Flink®
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                master
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview/index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">快速上手</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mysql-doris-pipeline-tutorial-zh.html">基于 Flink CDC 3.0 构建 MySQL 到 Doris 的 Streaming ELT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mysql-starrocks-pipeline-tutorial-zh.html">基于 Flink CDC 3.0 构建 MySQL 到 StarRocks 的 Streaming ELT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mysql-postgres-tutorial-zh.html">基于 Flink CDC 构建 MySQL 和 Postgres 的 Streaming ETL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mongodb-tutorial-zh.html">演示: MongoDB CDC 导入 Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oceanbase-tutorial-zh.html">演示: OceanBase CDC 导入 Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oracle-tutorial-zh.html">演示: Oracle CDC 导入 Elasticsearch</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">演示: PolarDB-X CDC 导入 Elasticsearch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">准备教程所需要的组件</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">配置并启动容器</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">准备数据：</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#flink">下载 Flink 和所需要的依赖包</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#flink-sql-cli-flink-ddl">在 Flink SQL CLI 中使用 Flink DDL 创建表</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kibana">在 Kibana 中查看数据</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">修改监听表数据，查看增量数据变动</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">环境清理</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sqlserver-tutorial-zh.html">演示: SqlServer CDC 导入 Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tidb-tutorial-zh.html">演示: TiDB CDC 导入 Elasticsearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build-real-time-data-lake-tutorial-zh.html">基于 Flink CDC 同步 MySQL 分库分表构建实时数据湖</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datastream-api-package-guidance-zh.html">DataStream api 打包指南</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../connectors/index.html">Connectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pipelines/index.html">Pipeline Connectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../formats/index.html">Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../downloads.html">Downloads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../githublink.html"><a class="github-button" href="https://github.com/ververica/flink-cdc-connectors" data-color-scheme="no-preference: dark_high_contrast; light: dark_high_contrast; dark: dark_high_contrast;" data-size="large" data-show-count="true" aria-label="Star ververica/flink-cdc-connectors on GitHub">Star</a></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CDC Connectors for Apache Flink®</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+<!-- Extend the RTD template to support user defined "Edit on Github" URL -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">快速上手</a> &raquo;</li>
+        
+      <li>演示: PolarDB-X CDC 导入 Elasticsearch</li>
+    
+    
+            <li class="wy-breadcrumbs-aside">
+                
+                    
+                        <a href="http://github.com/ververica/flink-cdc-connectors/blob/master/docs/content/快速上手/polardbx-tutorial-zh.md" class="fa fa-github"> Edit on GitHub</a>
+                    
+                
+            </li>
+        
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="polardb-x-cdc-elasticsearch">
+<h1>演示: PolarDB-X CDC 导入 Elasticsearch<a class="headerlink" href="#polardb-x-cdc-elasticsearch" title="Permalink to this headline">¶</a></h1>
+<p>本示例我们通过演示 PolarDB-X 借助 Flink-CDC 将数据导入至 Elasticsearch 来介绍 PolarDB-X 的增量订阅能力，你可以前往:<a class="reference external" href="https://github.com/ApsaraDB/galaxysql">PolarDB-X</a> 了解更多细节。</p>
+<section id="id1">
+<h2>准备教程所需要的组件<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>我们假设你运行在一台 MacOS 或者 Linux 机器上，并且已经安装 docker.</p>
+<section id="id2">
+<h3>配置并启动容器<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>配置 <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code>。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;2.1&#39;</span>
+<span class="nt">services</span><span class="p">:</span>
+  <span class="nt">polardbx</span><span class="p">:</span>
+    <span class="nt">polardbx</span><span class="p">:</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">polardbx/polardb-x:2.0.1</span>
+    <span class="nt">container_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">polardbx</span>
+    <span class="nt">ports</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="s">&quot;8527:8527&quot;</span>
+  <span class="nt">elasticsearch</span><span class="p">:</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="s">&#39;elastic/elasticsearch:7.6.0&#39;</span>
+    <span class="nt">container_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">elasticsearch</span>
+    <span class="nt">environment</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cluster.name=docker-cluster</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">bootstrap.memory_lock=true</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ES_JAVA_OPTS=-Xms512m -Xmx512m</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">discovery.type=single-node</span>
+    <span class="nt">ports</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="s">&#39;9200:9200&#39;</span>
+      <span class="p p-Indicator">-</span> <span class="s">&#39;9300:9300&#39;</span>
+    <span class="nt">ulimits</span><span class="p">:</span>
+      <span class="nt">memlock</span><span class="p">:</span>
+        <span class="nt">soft</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">-1</span>
+        <span class="nt">hard</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">-1</span>
+      <span class="nt">nofile</span><span class="p">:</span>
+        <span class="nt">soft</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">65536</span>
+        <span class="nt">hard</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">65536</span>
+  <span class="nt">kibana</span><span class="p">:</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="s">&#39;elastic/kibana:7.6.0&#39;</span>
+    <span class="nt">container_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kibana</span>
+    <span class="nt">ports</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="s">&#39;5601:5601&#39;</span>
+    <span class="nt">volumes</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="s">&#39;/var/run/docker.sock:/var/run/docker.sock&#39;</span>
+</pre></div>
+</div>
+<p>该 Docker Compose 中包含的容器有：</p>
+<ul class="simple">
+<li><p>PolarDB-X: 商品表 <code class="docutils literal notranslate"><span class="pre">products</span></code> 和 订单表 <code class="docutils literal notranslate"><span class="pre">orders</span></code> 将存储在该数据库中， 这两张表将进行关联，得到一张包含更多信息的订单表 <code class="docutils literal notranslate"><span class="pre">enriched_orders</span></code></p></li>
+<li><p>Elasticsearch: 最终的订单表 <code class="docutils literal notranslate"><span class="pre">enriched_orders</span></code> 将写到 Elasticsearch</p></li>
+<li><p>Kibana: 用来可视化 ElasticSearch 的数据</p></li>
+</ul>
+<p>在 <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> 所在目录下执行下面的命令来启动本教程需要的组件：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose up -d
+</pre></div>
+</div>
+<p>该命令将以 detached 模式自动启动 Docker Compose 配置中定义的所有容器。你可以通过 docker ps 来观察上述的容器是否正常启动了，也可以通过访问 <a class="reference external" href="http://localhost:5601/">http://localhost:5601/</a> 来查看 Kibana 是否运行正常</p>
+</section>
+</section>
+<section id="id3">
+<h2>准备数据：<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>使用已创建的用户名和密码进行登陆PolarDB-X。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mysql -h127.0.0.1 -P8527 -upolardbx_root -p<span class="s2">&quot;123456&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">mydb</span><span class="p">;</span>
+<span class="n">USE</span> <span class="n">mydb</span><span class="p">;</span>
+
+<span class="c1">-- 创建一张产品表，并写入一些数据</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">products</span> <span class="p">(</span>
+                          <span class="n">id</span> <span class="nb">INTEGER</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+                          <span class="n">name</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+                          <span class="n">description</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">512</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">AUTO_INCREMENT</span> <span class="o">=</span> <span class="mi">101</span><span class="p">;</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">products</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="k">default</span><span class="p">,</span><span class="ss">&quot;scooter&quot;</span><span class="p">,</span><span class="ss">&quot;Small 2-wheel scooter&quot;</span><span class="p">),</span>
+       <span class="p">(</span><span class="k">default</span><span class="p">,</span><span class="ss">&quot;car battery&quot;</span><span class="p">,</span><span class="ss">&quot;12V car battery&quot;</span><span class="p">),</span>
+       <span class="p">(</span><span class="k">default</span><span class="p">,</span><span class="ss">&quot;12-pack drill bits&quot;</span><span class="p">,</span><span class="ss">&quot;12-pack of drill bits with sizes ranging from #40 to #3&quot;</span><span class="p">),</span>
+       <span class="p">(</span><span class="k">default</span><span class="p">,</span><span class="ss">&quot;hammer&quot;</span><span class="p">,</span><span class="ss">&quot;12oz carpenter&#39;s hammer&quot;</span><span class="p">),</span>
+       <span class="p">(</span><span class="k">default</span><span class="p">,</span><span class="ss">&quot;hammer&quot;</span><span class="p">,</span><span class="ss">&quot;14oz carpenter&#39;s hammer&quot;</span><span class="p">),</span>
+       <span class="p">(</span><span class="k">default</span><span class="p">,</span><span class="ss">&quot;hammer&quot;</span><span class="p">,</span><span class="ss">&quot;16oz carpenter&#39;s hammer&quot;</span><span class="p">),</span>
+       <span class="p">(</span><span class="k">default</span><span class="p">,</span><span class="ss">&quot;rocks&quot;</span><span class="p">,</span><span class="ss">&quot;box of assorted rocks&quot;</span><span class="p">),</span>
+       <span class="p">(</span><span class="k">default</span><span class="p">,</span><span class="ss">&quot;jacket&quot;</span><span class="p">,</span><span class="ss">&quot;water resistent black wind breaker&quot;</span><span class="p">),</span>
+       <span class="p">(</span><span class="k">default</span><span class="p">,</span><span class="ss">&quot;spare tire&quot;</span><span class="p">,</span><span class="ss">&quot;24 inch spare tire&quot;</span><span class="p">);</span>
+
+
+<span class="c1">-- 创建一张订单表，并写入一些数据</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">orders</span> <span class="p">(</span>
+                        <span class="n">order_id</span> <span class="nb">INTEGER</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+                        <span class="n">order_date</span> <span class="n">DATETIME</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+                        <span class="n">customer_name</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+                        <span class="n">price</span> <span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+                        <span class="n">product_id</span> <span class="nb">INTEGER</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+                        <span class="n">order_status</span> <span class="nb">BOOLEAN</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="c1">-- Whether order has been placed</span>
+<span class="p">)</span> <span class="n">AUTO_INCREMENT</span> <span class="o">=</span> <span class="mi">10001</span><span class="p">;</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">orders</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="k">default</span><span class="p">,</span> <span class="s1">&#39;2020-07-30 10:08:22&#39;</span><span class="p">,</span> <span class="s1">&#39;Jark&#39;</span><span class="p">,</span> <span class="mi">50</span><span class="p">.</span><span class="mi">50</span><span class="p">,</span> <span class="mi">102</span><span class="p">,</span> <span class="k">false</span><span class="p">),</span>
+       <span class="p">(</span><span class="k">default</span><span class="p">,</span> <span class="s1">&#39;2020-07-30 10:11:09&#39;</span><span class="p">,</span> <span class="s1">&#39;Sally&#39;</span><span class="p">,</span> <span class="mi">15</span><span class="p">.</span><span class="mi">00</span><span class="p">,</span> <span class="mi">105</span><span class="p">,</span> <span class="k">false</span><span class="p">),</span>
+       <span class="p">(</span><span class="k">default</span><span class="p">,</span> <span class="s1">&#39;2020-07-30 12:00:30&#39;</span><span class="p">,</span> <span class="s1">&#39;Edward&#39;</span><span class="p">,</span> <span class="mi">25</span><span class="p">.</span><span class="mi">25</span><span class="p">,</span> <span class="mi">106</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="flink">
+<h2>下载 Flink 和所需要的依赖包<a class="headerlink" href="#flink" title="Permalink to this headline">¶</a></h2>
+<ol class="simple">
+<li><p>下载 <a class="reference external" href="https://archive.apache.org/dist/flink/flink-1.18.0/flink-1.18.0-bin-scala_2.12.tgz">Flink 1.18.0</a> 并将其解压至目录 <code class="docutils literal notranslate"><span class="pre">flink-1.18.0</span></code></p></li>
+<li><p>下载下面列出的依赖包，并将它们放到目录 <code class="docutils literal notranslate"><span class="pre">flink-1.18.0/lib/</span></code> 下</p></li>
+</ol>
+<p><code class="docutils literal notranslate"><span class="pre">下载链接只对已发布的版本有效,</span> <span class="pre">SNAPSHOT</span> <span class="pre">版本需要本地基于</span> <span class="pre">master</span> <span class="pre">或</span> <span class="pre">release-</span> <span class="pre">分支编译</span></code></p>
+<ul class="simple">
+<li><p>用于订阅PolarDB-X Binlog: flink-sql-connector-mysql-cdc-2.5-SNAPSHOT.jar</p></li>
+<li><p>用于写入Elasticsearch: <a class="reference external" href="https://repo.maven.apache.org/maven2/org/apache/flink/flink-sql-connector-elasticsearch7/3.0.1-1.17/flink-sql-connector-elasticsearch7-3.0.1-1.17.jar">flink-sql-connector-elasticsearch7-3.0.1-1.17.jar</a></p></li>
+</ul>
+<ol class="simple">
+<li><p>启动flink服务:</p></li>
+</ol>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./bin/start-cluster.sh
+</pre></div>
+</div>
+<p>我们可以访问 <a class="reference external" href="http://localhost:8081/">http://localhost:8081/</a> 看到Flink正常运行:</p>
+<p><img alt="Flink UI" src="../../_images/flink-ui2.png" /></p>
+<ol class="simple">
+<li><p>启动Flink SQL CLI:</p></li>
+</ol>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./bin/sql-client.sh
+</pre></div>
+</div>
+</section>
+<section id="flink-sql-cli-flink-ddl">
+<h2>在 Flink SQL CLI 中使用 Flink DDL 创建表<a class="headerlink" href="#flink-sql-cli-flink-ddl" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- 设置间隔时间为3秒                       </span>
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">SET</span> <span class="n">execution</span><span class="p">.</span><span class="n">checkpointing</span><span class="p">.</span><span class="nb">interval</span> <span class="o">=</span> <span class="mi">3</span><span class="n">s</span><span class="p">;</span>
+
+<span class="c1">-- 创建source1 -订单表</span>
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">orders</span> <span class="p">(</span>
+   <span class="n">order_id</span> <span class="nb">INT</span><span class="p">,</span>
+   <span class="n">order_date</span> <span class="k">TIMESTAMP</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+   <span class="n">customer_name</span> <span class="n">STRING</span><span class="p">,</span>
+   <span class="n">price</span> <span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+   <span class="n">product_id</span> <span class="nb">INT</span><span class="p">,</span>
+   <span class="n">order_status</span> <span class="nb">BOOLEAN</span><span class="p">,</span>
+   <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">order_id</span><span class="p">)</span> <span class="k">NOT</span> <span class="n">ENFORCED</span>
+ <span class="p">)</span> <span class="k">WITH</span> <span class="p">(</span>
+    <span class="s1">&#39;connector&#39;</span> <span class="o">=</span> <span class="s1">&#39;mysql-cdc&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;hostname&#39;</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;port&#39;</span> <span class="o">=</span> <span class="s1">&#39;8527&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;username&#39;</span> <span class="o">=</span> <span class="s1">&#39;polardbx_root&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;password&#39;</span> <span class="o">=</span> <span class="s1">&#39;123456&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;database-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;mydb&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;table-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;orders&#39;</span>
+ <span class="p">);</span>
+
+<span class="c1">-- 创建source2 -产品表</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">products</span> <span class="p">(</span>
+    <span class="n">id</span> <span class="nb">INT</span><span class="p">,</span>
+    <span class="n">name</span> <span class="n">STRING</span><span class="p">,</span>
+    <span class="n">description</span> <span class="n">STRING</span><span class="p">,</span>
+    <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span> <span class="k">NOT</span> <span class="n">ENFORCED</span>
+  <span class="p">)</span> <span class="k">WITH</span> <span class="p">(</span>
+	<span class="s1">&#39;connector&#39;</span> <span class="o">=</span> <span class="s1">&#39;mysql-cdc&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;hostname&#39;</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;port&#39;</span> <span class="o">=</span> <span class="s1">&#39;8527&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;username&#39;</span> <span class="o">=</span> <span class="s1">&#39;polardbx_root&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;password&#39;</span> <span class="o">=</span> <span class="s1">&#39;123456&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;database-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;mydb&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;table-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;products&#39;</span>
+<span class="p">);</span>
+
+<span class="c1">-- 创建sink - 关联后的结果表</span>
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">enriched_orders</span> <span class="p">(</span>
+   <span class="n">order_id</span> <span class="nb">INT</span><span class="p">,</span>
+   <span class="n">order_date</span> <span class="k">TIMESTAMP</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+   <span class="n">customer_name</span> <span class="n">STRING</span><span class="p">,</span>
+   <span class="n">price</span> <span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+   <span class="n">product_id</span> <span class="nb">INT</span><span class="p">,</span>
+   <span class="n">order_status</span> <span class="nb">BOOLEAN</span><span class="p">,</span>
+   <span class="n">product_name</span> <span class="n">STRING</span><span class="p">,</span>
+   <span class="n">product_description</span> <span class="n">STRING</span><span class="p">,</span>
+   <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">order_id</span><span class="p">)</span> <span class="k">NOT</span> <span class="n">ENFORCED</span>
+ <span class="p">)</span> <span class="k">WITH</span> <span class="p">(</span>
+     <span class="s1">&#39;connector&#39;</span> <span class="o">=</span> <span class="s1">&#39;elasticsearch-7&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;hosts&#39;</span> <span class="o">=</span> <span class="s1">&#39;http://localhost:9200&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;index&#39;</span> <span class="o">=</span> <span class="s1">&#39;enriched_orders&#39;</span>
+ <span class="p">);</span>
+
+<span class="c1">-- 执行读取和写入   </span>
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">enriched_orders</span>
+  <span class="k">SELECT</span> <span class="n">o</span><span class="p">.</span><span class="n">order_id</span><span class="p">,</span>
+    <span class="n">o</span><span class="p">.</span><span class="n">order_date</span><span class="p">,</span>
+    <span class="n">o</span><span class="p">.</span><span class="n">customer_name</span><span class="p">,</span>
+    <span class="n">o</span><span class="p">.</span><span class="n">price</span><span class="p">,</span>
+    <span class="n">o</span><span class="p">.</span><span class="n">product_id</span><span class="p">,</span>
+    <span class="n">o</span><span class="p">.</span><span class="n">order_status</span><span class="p">,</span>
+    <span class="n">p</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
+    <span class="n">p</span><span class="p">.</span><span class="n">description</span>
+ <span class="k">FROM</span> <span class="n">orders</span> <span class="k">AS</span> <span class="n">o</span>
+ <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">products</span> <span class="k">AS</span> <span class="n">p</span> <span class="k">ON</span> <span class="n">o</span><span class="p">.</span><span class="n">product_id</span> <span class="o">=</span> <span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="kibana">
+<h2>在 Kibana 中查看数据<a class="headerlink" href="#kibana" title="Permalink to this headline">¶</a></h2>
+<p>访问  <a class="reference external" href="http://localhost:5601/app/kibana#/management/kibana/index_pattern">http://localhost:5601/app/kibana#/management/kibana/index_pattern</a></p>
+<p>创建 index pattern <code class="docutils literal notranslate"><span class="pre">enriched_orders</span></code>，之后可以在 <a class="reference external" href="http://localhost:5601/app/kibana#/discover">http://localhost:5601/app/kibana#/discover</a> 看到写入的数据了。</p>
+</section>
+<section id="id4">
+<h2>修改监听表数据，查看增量数据变动<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>在PolarDB-X中依次执行如下修改操作，每执行一步就刷新一次 Kibana，可以看到 Kibana 中显示的订单数据将实时更新。</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">orders</span> <span class="k">VALUES</span> <span class="p">(</span><span class="k">default</span><span class="p">,</span> <span class="s1">&#39;2020-07-30 15:22:00&#39;</span><span class="p">,</span> <span class="s1">&#39;Jark&#39;</span><span class="p">,</span> <span class="mi">29</span><span class="p">.</span><span class="mi">71</span><span class="p">,</span> <span class="mi">104</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>
+
+<span class="k">UPDATE</span> <span class="n">orders</span> <span class="k">SET</span> <span class="n">order_status</span> <span class="o">=</span> <span class="k">true</span> <span class="k">WHERE</span> <span class="n">order_id</span> <span class="o">=</span> <span class="mi">10004</span><span class="p">;</span>
+
+<span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">orders</span> <span class="k">WHERE</span> <span class="n">order_id</span> <span class="o">=</span> <span class="mi">10004</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h2>环境清理<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>在 <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> 文件所在的目录下执行如下命令停止所有容器：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose down
+</pre></div>
+</div>
+<p>进入Flink的部署目录，停止 Flink 集群：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./bin/stop-cluster.sh
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="sqlserver-tutorial-zh.html" class="btn btn-neutral float-right" title="演示: SqlServer CDC 导入 Elasticsearch" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="oracle-tutorial-zh.html" class="btn btn-neutral float-left" title="演示: Oracle CDC 导入 Elasticsearch" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2024, Ververica GmbH; Apache Flink, Flink®, Apache®, the squirrel logo, and the Apache feather logo are either registered trademarks or trademarks of The Apache Software Foundation.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+
+
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      version: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        
+        <dl>
+            <dt>Versions</dt>
+            
+             <strong> 
+            <dd><a href="/flink-cdc-connectors/master/">master</a></dd>
+             </strong> 
+            
+            
+            <dd><a href="/flink-cdc-connectors/release-1.4.0-mongodb/">release-1.4.0-mongodb</a></dd>
+            
+            
+        </dl>
+        
+        
+        <hr/>
+        Free document hosting provided by <a href="http://www.readthedocs.org">Read the
+        Docs</a>.
+
+    </div>
+</div>
+
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer
+        src="https://ververica.github.io/flink-cdc-connectors/master/_static/button.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

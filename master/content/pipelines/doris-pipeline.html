@@ -1,0 +1,566 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Doris Pipeline Connector &mdash; CDC Connectors for Apache Flink®  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/theme_overrides.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Doris Pipeline 连接器" href="doris-pipeline%28ZH%29.html" />
+    <link rel="prev" title="MySQL CDC Pipeline 连接器" href="mysql-pipeline%28ZH%29.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> CDC Connectors for Apache Flink®
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                master
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview/index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../connectors/index.html">Connectors</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Pipeline Connectors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mysql-pipeline.html">MySQL CDC Pipeline Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mysql-pipeline%28ZH%29.html">MySQL CDC Pipeline 连接器</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Doris Pipeline Connector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pipeline-options">Pipeline options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#faq">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="doris-pipeline%28ZH%29.html">Doris Pipeline 连接器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="starrocks-pipeline.html">StarRocks Pipeline Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="starrocks-pipeline%28ZH%29.html">StarRocks Pipeline 连接器</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../formats/index.html">Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../downloads.html">Downloads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../githublink.html"><a class="github-button" href="https://github.com/ververica/flink-cdc-connectors" data-color-scheme="no-preference: dark_high_contrast; light: dark_high_contrast; dark: dark_high_contrast;" data-size="large" data-show-count="true" aria-label="Star ververica/flink-cdc-connectors on GitHub">Star</a></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CDC Connectors for Apache Flink®</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+<!-- Extend the RTD template to support user defined "Edit on Github" URL -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Pipeline Connectors</a> &raquo;</li>
+        
+      <li>Doris Pipeline Connector</li>
+    
+    
+            <li class="wy-breadcrumbs-aside">
+                
+                    
+                        <a href="http://github.com/ververica/flink-cdc-connectors/blob/master/docs/content/pipelines/doris-pipeline.md" class="fa fa-github"> Edit on GitHub</a>
+                    
+                
+            </li>
+        
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="doris-pipeline-connector">
+<h1>Doris Pipeline Connector<a class="headerlink" href="#doris-pipeline-connector" title="Permalink to this headline">¶</a></h1>
+<p>This article introduces of Doris Pipeline Connector</p>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<hr class="docutils" />
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">source</span><span class="p">:</span>
+   <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">values</span>
+   <span class="l l-Scalar l-Scalar-Plain">name:ValuesSource</span>
+
+<span class="nt">sink</span><span class="p">:</span>
+   <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">doris</span>
+   <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Doris Sink</span>
+   <span class="nt">fenodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">127.0.0.1:8030</span>
+   <span class="nt">username</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">root</span>
+   <span class="nt">password</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+   <span class="nt">table.create.properties.replication_num</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+
+<span class="nt">pipeline</span><span class="p">:</span>
+   <span class="nt">parallelism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+</pre></div>
+</div>
+</section>
+<section id="pipeline-options">
+<h2>Pipeline options<a class="headerlink" href="#pipeline-options" title="Permalink to this headline">¶</a></h2>
+<hr class="docutils" />
+<div class="highlight">
+<table class="colwidths-auto docutils">
+     <thead>
+       <tr>
+         <th class="text-left" style="width: 10%">Option</th>
+         <th class="text-left" style="width: 8%">Required</th>
+         <th class="text-left" style="width: 7%">Default</th>
+         <th class="text-left" style="width: 10%">Type</th>
+         <th class="text-left" style="width: 65%">Description</th>
+       </tr>
+     </thead>
+     <tbody>
+     <tr>
+       <td>type</td>
+       <td>required</td>
+       <td style="word-wrap: break-word;">(none)</td>
+       <td>String</td>
+       <td>Specify the Sink to use, here is <code>'doris'</code>.</td>
+     </tr>
+     <tr>
+       <td>name</td>
+       <td>optional</td>
+       <td style="word-wrap: break-word;">(none)</td>
+       <td>String</td>
+       <td> Name of PipeLine </td>
+     </tr>
+      <tr>
+       <td>fenodes</td>
+       <td>required</td>
+       <td style="word-wrap: break-word;">(none)</td>
+       <td>String</td>
+       <td>Http address of Doris cluster FE, such as 127.0.0.1:8030 </td>
+     </tr>
+      <tr>
+       <td>benodes</td>
+       <td>optional</td>
+       <td style="word-wrap: break-word;">(none)</td>
+       <td>String</td>
+       <td>Http address of Doris cluster BE, such as 127.0.0.1:8040 </td>
+     </tr>
+     <tr>
+       <td>jdbc-url</td>
+       <td>optional</td>
+       <td style="word-wrap: break-word;">(none)</td>
+       <td>String</td>
+       <td>JDBC address of Doris cluster, for example: jdbc:mysql://127.0.0.1:9030/db</td>
+     </tr>
+     <tr>
+       <td>username</td>
+       <td>required</td>
+       <td style="word-wrap: break-word;">(none)</td>
+       <td>String</td>
+       <td>Username of Doris cluster</td>
+     </tr>
+     <tr>
+       <td>password</td>
+       <td>optional</td>
+       <td style="word-wrap: break-word;">(none)</td>
+       <td>String</td>
+       <td>Password for Doris cluster</td>
+     </tr>
+     <tr>
+       <td>auto-redirect</td>
+       <td>optional</td>
+       <td style="word-wrap: break-word;">false</td>
+       <td>String</td>
+       <td> Whether to write through FE redirection and directly connect to BE to write </td>
+     </tr>
+     <tr>
+       <td>sink.enable.batch-mode</td>
+       <td>optional</td>
+       <td style="word-wrap: break-word;">true</td>
+       <td>Boolean</td>
+       <td> Whether to use the batch method to write to Doris </td>
+     </tr>
+     <tr>
+       <td>sink.flush.queue-size</td>
+       <td>optional</td>
+       <td style="word-wrap: break-word;">2</td>
+       <td>Integer</td>
+       <td> Queue size for batch writing
+       </td>
+     </tr>
+     <tr>
+       <td>sink.buffer-flush.max-rows</td>
+       <td>optional</td>
+       <td style="word-wrap: break-word;">50000</td>
+       <td>Integer</td>
+       <td>Maximum number of Flush records in a single batch</td>
+     </tr>
+     <tr>
+       <td>sink.buffer-flush.max-bytes</td>
+       <td>optional</td>
+       <td style="word-wrap: break-word;">10485760(10MB)</td>
+       <td>Integer</td>
+       <td>Maximum number of bytes flushed in a single batch</td>
+     </tr>
+     <tr>
+       <td>sink.buffer-flush.interval</td>
+       <td>optional</td>
+       <td style="word-wrap: break-word;">10s</td>
+       <td>String</td>
+       <td>Flush interval duration. If this time is exceeded, the data will be flushed asynchronously</td>
+     </tr>
+     <tr>
+       <td>sink.properties.</td>
+       <td>optional</td>
+       <td style="word-wrap: break-word;">(none)</td>
+       <td>String</td>
+       <td> Parameters of StreamLoad.
+         For example: <code> sink.properties.strict_mode: true</code>.
+         See more about <a href="https://doris.apache.org/zh-CN/docs/dev/sql-manual/sql-reference/Data-Manipulation-Statements/Load/STREAM-LOAD/"> StreamLoad Properties properties</a></td>
+       </td>
+     </tr>
+     <tr>
+       <td>table.create.properties.*</td>
+       <td>optional</td>
+       <td style="word-wrap: break-word;">(none)</td>
+       <td>String</td>
+       <td>Create the Properties configuration of the table.
+         For example: <code> table.create.properties.replication_num: 1</code>.
+         See more about <a href="https://doris.apache.org/zh-CN/docs/dev/sql-manual/sql-reference/Data-Definition-Statements/Create/CREATE-TABLE/"> Doris Table Properties properties</a></td>
+       </td>
+     </tr>
+     </tbody>
+</table>
+</div>
+## Data Type Mapping
+<hr class="docutils" />
+<div class="wy-table-responsive">
+<table class="colwidths-auto docutils">
+    <thead>
+      <tr>
+        <th class="text-left" style="width:10%;">CDC type</th>
+        <th class="text-left" style="width:30%;">Doris type<a href="https://doris.apache.org/docs/dev/sql-manual/sql-reference/Data-Types/BOOLEAN/"></a></th>
+        <th class="text-left" style="width:60%;">NOTE</th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>TINYINT</td>
+      <td>TINYINT</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>SMALLINT</td>
+      <td>SMALLINT</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>INT</td>
+      <td>INT</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>BIGINT</td>
+      <td>BIGINT</td>
+      <td></td>
+    </tr>
+   <tr>
+      <td>DECIMAL</td>
+      <td>DECIMAL</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>FLOAT</td>
+      <td>FLOAT</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>DOUBLE</td>
+      <td>DOUBLE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>BOOLEAN</td>
+      <td>BOOLEAN</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>DATE</td>
+      <td>DATE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>TIMESTAMP [(p)]</td>
+      <td>DATETIME [(p)]</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>TIMESTAMP_LTZ [(p)]
+      </td>
+      <td>DATETIME [(p)]
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>CHAR(n)</td>
+      <td>CHAR(n*3)</td>
+      <td>In Doris, strings are stored in UTF-8 encoding, so English characters occupy 1 byte and Chinese characters occupy 3 bytes. The length here is multiplied by 3. The maximum length of CHAR is 255. Once exceeded, it will automatically be converted to VARCHAR type.</td>
+    </tr>
+    <tr>
+      <td>VARCHAR(n)</td>
+      <td>VARCHAR(n*3)</td>
+      <td>Same as above. The length here is multiplied by 3. The maximum length of VARCHAR is 65533. Once exceeded, it will automatically be converted to STRING type.</td>
+    </tr>
+    <tr>
+      <td>
+        BINARY(n)
+      </td>
+      <td>STRING</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        VARBINARY(N)
+      </td>
+      <td>STRING</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>STRING</td>
+      <td>STRING</td>
+      <td></td>
+    </tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="faq">
+<h2>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h2>
+<hr class="docutils" />
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/ververica/flink-cdc-connectors/wiki/FAQ">FAQ(English)</a></p></li>
+<li><p><a class="reference external" href="https://github.com/ververica/flink-cdc-connectors/wiki/FAQ(ZH)">FAQ(Chinese)</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="doris-pipeline%28ZH%29.html" class="btn btn-neutral float-right" title="Doris Pipeline 连接器" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="mysql-pipeline%28ZH%29.html" class="btn btn-neutral float-left" title="MySQL CDC Pipeline 连接器" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2024, Ververica GmbH; Apache Flink, Flink®, Apache®, the squirrel logo, and the Apache feather logo are either registered trademarks or trademarks of The Apache Software Foundation.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+
+
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      version: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        
+        <dl>
+            <dt>Versions</dt>
+            
+             <strong> 
+            <dd><a href="/flink-cdc-connectors/master/">master</a></dd>
+             </strong> 
+            
+            
+            <dd><a href="/flink-cdc-connectors/release-1.4.0-mongodb/">release-1.4.0-mongodb</a></dd>
+            
+            
+        </dl>
+        
+        
+        <hr/>
+        Free document hosting provided by <a href="http://www.readthedocs.org">Read the
+        Docs</a>.
+
+    </div>
+</div>
+
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer
+        src="https://ververica.github.io/flink-cdc-connectors/master/_static/button.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

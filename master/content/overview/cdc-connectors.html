@@ -1,0 +1,802 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>CDC Connectors for Apache Flink &mdash; CDC Connectors for Apache Flink®  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/theme_overrides.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="CDC Streaming ELT Framework" href="cdc-pipeline.html" />
+    <link rel="prev" title="Overview" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> CDC Connectors for Apache Flink®
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                master
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Overview</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">CDC Connectors for Apache Flink</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#supported-connectors">Supported Connectors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#supported-flink-versions">Supported Flink Versions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#features">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usage-for-table-sql-api">Usage for Table/SQL API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usage-for-datastream-api">Usage for DataStream API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#deserialization">Deserialization</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#building-from-source">Building from source</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#code-contribute">Code Contribute</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#code-style">Code Style</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#documentation-contribute">Documentation Contribute</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#license">License</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cdc-pipeline.html">CDC Streaming ELT Framework</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../connectors/index.html">Connectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pipelines/index.html">Pipeline Connectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../formats/index.html">Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../downloads.html">Downloads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../githublink.html"><a class="github-button" href="https://github.com/ververica/flink-cdc-connectors" data-color-scheme="no-preference: dark_high_contrast; light: dark_high_contrast; dark: dark_high_contrast;" data-size="large" data-show-count="true" aria-label="Star ververica/flink-cdc-connectors on GitHub">Star</a></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CDC Connectors for Apache Flink®</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+<!-- Extend the RTD template to support user defined "Edit on Github" URL -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Overview</a> &raquo;</li>
+        
+      <li>CDC Connectors for Apache Flink</li>
+    
+    
+            <li class="wy-breadcrumbs-aside">
+                
+                    
+                        <a href="http://github.com/ververica/flink-cdc-connectors/blob/master/docs/content/overview/cdc-connectors.md" class="fa fa-github"> Edit on GitHub</a>
+                    
+                
+            </li>
+        
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="cdc-connectors-for-apache-flink">
+<h1>CDC Connectors for Apache Flink<a class="headerlink" href="#cdc-connectors-for-apache-flink" title="Permalink to this headline">¶</a></h1>
+<p>CDC Connectors for Apache Flink<sup>®</sup> is a set of source connectors for <a href="https://flink.apache.org/">Apache Flink<sup>®</sup></a>, ingesting changes from different databases using change data capture (CDC).
+The CDC Connectors for Apache Flink<sup>®</sup> integrate Debezium as the engine to capture data changes. So it can fully leverage the ability of Debezium. See more about what is <a class="reference external" href="https://github.com/debezium/debezium">Debezium</a>.</p>
+<p><img alt="Flink_CDC" src="../../_images/flinkcdc.png" /></p>
+<section id="supported-connectors">
+<h2>Supported Connectors<a class="headerlink" href="#supported-connectors" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Connector</p></th>
+<th class="head"><p>Database</p></th>
+<th class="head"><p>Driver</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="../connectors/mongodb-cdc.html"><span class="doc std std-doc">mongodb-cdc</span></a></p></td>
+<td><p><li> <a class="reference external" href="https://www.mongodb.com">MongoDB</a>: 3.6, 4.x, 5.0</p></td>
+<td><p>MongoDB Driver: 4.3.4</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../connectors/mysql-cdc.html"><span class="doc std std-doc">mysql-cdc</span></a></p></td>
+<td><p><li> <a class="reference external" href="https://dev.mysql.com/doc">MySQL</a>: 5.6, 5.7, 8.0.x <li> <a class="reference external" href="https://www.aliyun.com/product/rds/mysql">RDS MySQL</a>: 5.6, 5.7, 8.0.x <li> <a class="reference external" href="https://www.aliyun.com/product/polardb">PolarDB MySQL</a>: 5.6, 5.7, 8.0.x <li> <a class="reference external" href="https://aws.amazon.com/cn/rds/aurora">Aurora MySQL</a>: 5.6, 5.7, 8.0.x <li> <a class="reference external" href="https://mariadb.org">MariaDB</a>: 10.x <li> <a class="reference external" href="https://github.com/ApsaraDB/galaxysql">PolarDB X</a>: 2.0.1</p></td>
+<td><p>JDBC Driver: 8.0.28</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../connectors/oceanbase-cdc.html"><span class="doc std std-doc">oceanbase-cdc</span></a></p></td>
+<td><p><li> <a class="reference external" href="https://open.oceanbase.com">OceanBase CE</a>: 3.1.x, 4.x <li> <a class="reference external" href="https://www.oceanbase.com/product/oceanbase">OceanBase EE</a>: 2.x, 3.x, 4.x</p></td>
+<td><p>OceanBase Driver: 2.4.x</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../connectors/oracle-cdc.html"><span class="doc std std-doc">oracle-cdc</span></a></p></td>
+<td><p><li> <a class="reference external" href="https://www.oracle.com/index.html">Oracle</a>: 11, 12, 19, 21</p></td>
+<td><p>Oracle Driver: 19.3.0.0</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../connectors/postgres-cdc.html"><span class="doc std std-doc">postgres-cdc</span></a></p></td>
+<td><p><li> <a class="reference external" href="https://www.postgresql.org">PostgreSQL</a>: 9.6, 10, 11, 12, 13, 14</p></td>
+<td><p>JDBC Driver: 42.5.1</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../connectors/sqlserver-cdc.html"><span class="doc std std-doc">sqlserver-cdc</span></a></p></td>
+<td><p><li> <a class="reference external" href="https://www.microsoft.com/sql-server">Sqlserver</a>: 2012, 2014, 2016, 2017, 2019</p></td>
+<td><p>JDBC Driver: 9.4.1.jre8</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../connectors/tidb-cdc.html"><span class="doc std std-doc">tidb-cdc</span></a></p></td>
+<td><p><li> <a class="reference external" href="https://www.pingcap.com/">TiDB</a>: 5.1.x, 5.2.x, 5.3.x, 5.4.x, 6.0.0</p></td>
+<td><p>JDBC Driver: 8.0.27</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../connectors/db2-cdc.html"><span class="doc std std-doc">db2-cdc</span></a></p></td>
+<td><p><li> <a class="reference external" href="https://www.ibm.com/products/db2">Db2</a>: 11.5</p></td>
+<td><p>Db2 Driver: 11.5.0.0</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../connectors/vitess-cdc.html"><span class="doc std std-doc">vitess-cdc</span></a></p></td>
+<td><p><li> <a class="reference external" href="https://vitess.io/">Vitess</a>: 8.0.x, 9.0.x</p></td>
+<td><p>MySql JDBC Driver: 8.0.26</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="supported-flink-versions">
+<h2>Supported Flink Versions<a class="headerlink" href="#supported-flink-versions" title="Permalink to this headline">¶</a></h2>
+<p>The following table shows the version mapping between Flink<sup>®</sup> CDC Connectors and Flink<sup>®</sup>:</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="text-align:center head"><p>Flink<sup>®</sup> CDC Version</p></th>
+<th class="text-align:center head"><p>Flink<sup>®</sup> Version</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-align:center"><p><font color="DarkCyan">1.0.0</font></p></td>
+<td class="text-align:center"><p><font color="MediumVioletRed">1.11.*</font></p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p><font color="DarkCyan">1.1.0</font></p></td>
+<td class="text-align:center"><p><font color="MediumVioletRed">1.11.*</font></p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p><font color="DarkCyan">1.2.0</font></p></td>
+<td class="text-align:center"><p><font color="MediumVioletRed">1.12.*</font></p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p><font color="DarkCyan">1.3.0</font></p></td>
+<td class="text-align:center"><p><font color="MediumVioletRed">1.12.*</font></p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p><font color="DarkCyan">1.4.0</font></p></td>
+<td class="text-align:center"><p><font color="MediumVioletRed">1.13.*</font></p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p><font color="DarkCyan">2.0.*</font></p></td>
+<td class="text-align:center"><p><font color="MediumVioletRed">1.13.*</font></p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p><font color="DarkCyan">2.1.*</font></p></td>
+<td class="text-align:center"><p><font color="MediumVioletRed">1.13.*</font></p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p><font color="DarkCyan">2.2.*</font></p></td>
+<td class="text-align:center"><p><font color="MediumVioletRed">1.13.*</font>, <font color="MediumVioletRed">1.14.*</font></p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p><font color="DarkCyan">2.3.*</font></p></td>
+<td class="text-align:center"><p><font color="MediumVioletRed">1.13.*</font>, <font color="MediumVioletRed">1.14.*</font>, <font color="MediumVioletRed">1.15.*</font>, <font color="MediumVioletRed">1.16.*</font></p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p><font color="DarkCyan">2.4.*</font></p></td>
+<td class="text-align:center"><p><font color="MediumVioletRed">1.13.*</font>, <font color="MediumVioletRed">1.14.*</font>, <font color="MediumVioletRed">1.15.*</font>, <font color="MediumVioletRed">1.16.*</font>, <font color="MediumVioletRed">1.17.*</font></p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p><font color="DarkCyan">3.0.*</font></p></td>
+<td class="text-align:center"><p><font color="MediumVioletRed">1.14.*</font>, <font color="MediumVioletRed">1.15.*</font>, <font color="MediumVioletRed">1.16.*</font>, <font color="MediumVioletRed">1.17.*</font>, <font color="MediumVioletRed">1.18.*</font></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<ol class="simple">
+<li><p>Supports reading database snapshot and continues to read binlogs with <strong>exactly-once processing</strong> even failures happen.</p></li>
+<li><p>CDC connectors for DataStream API, users can consume changes on multiple databases and tables in a single job without Debezium and Kafka deployed.</p></li>
+<li><p>CDC connectors for Table/SQL API, users can use SQL DDL to create a CDC source to monitor changes on a single table.</p></li>
+</ol>
+<p>The following table shows the current features of the connector:</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Connector</p></th>
+<th class="head"><p>No-lock Read</p></th>
+<th class="head"><p>Parallel Read</p></th>
+<th class="head"><p>Exactly-once Read</p></th>
+<th class="head"><p>Incremental Snapshot Read</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="../connectors/mongodb-cdc.html"><span class="doc std std-doc">mongodb-cdc</span></a></p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../connectors/mysql-cdc.html"><span class="doc std std-doc">mysql-cdc</span></a></p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../connectors/oracle-cdc.html"><span class="doc std std-doc">oracle-cdc</span></a></p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../connectors/postgres-cdc.html"><span class="doc std std-doc">postgres-cdc</span></a></p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../connectors/sqlserver-cdc.html"><span class="doc std std-doc">sqlserver-cdc</span></a></p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../connectors/oceanbase-cdc.html"><span class="doc std std-doc">oceanbase-cdc</span></a></p></td>
+<td><p>❌</p></td>
+<td><p>❌</p></td>
+<td><p>❌</p></td>
+<td><p>❌</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../connectors/tidb-cdc.html"><span class="doc std std-doc">tidb-cdc</span></a></p></td>
+<td><p>✅</p></td>
+<td><p>❌</p></td>
+<td><p>✅</p></td>
+<td><p>❌</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../connectors/db2-cdc.html"><span class="doc std std-doc">db2-cdc</span></a></p></td>
+<td><p>❌</p></td>
+<td><p>❌</p></td>
+<td><p>✅</p></td>
+<td><p>❌</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../connectors/vitess-cdc.html"><span class="doc std std-doc">vitess-cdc</span></a></p></td>
+<td><p>✅</p></td>
+<td><p>❌</p></td>
+<td><p>✅</p></td>
+<td><p>❌</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="usage-for-table-sql-api">
+<h2>Usage for Table/SQL API<a class="headerlink" href="#usage-for-table-sql-api" title="Permalink to this headline">¶</a></h2>
+<p>We need several steps to setup a Flink cluster with the provided connector.</p>
+<ol class="simple">
+<li><p>Setup a Flink cluster with version 1.12+ and Java 8+ installed.</p></li>
+<li><p>Download the connector SQL jars from the <a class="reference internal" href="../downloads.html"><span class="doc std std-doc">Downloads</span></a> page (or <a class="reference external" href="#building-from-source">build yourself</a>).</p></li>
+<li><p>Put the downloaded jars under <code class="docutils literal notranslate"><span class="pre">FLINK_HOME/lib/</span></code>.</p></li>
+<li><p>Restart the Flink cluster.</p></li>
+</ol>
+<p>The example shows how to create a MySQL CDC source in <a class="reference external" href="https://nightlies.apache.org/flink/flink-docs-stable/docs/dev/table/sqlclient/">Flink SQL Client</a> and execute queries on it.</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- creates a mysql cdc table source</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">mysql_binlog</span> <span class="p">(</span>
+ <span class="n">id</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+ <span class="n">name</span> <span class="n">STRING</span><span class="p">,</span>
+ <span class="n">description</span> <span class="n">STRING</span><span class="p">,</span>
+ <span class="n">weight</span> <span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span>
+ <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">(</span><span class="n">id</span><span class="p">)</span> <span class="k">NOT</span> <span class="n">ENFORCED</span>
+<span class="p">)</span> <span class="k">WITH</span> <span class="p">(</span>
+ <span class="s1">&#39;connector&#39;</span> <span class="o">=</span> <span class="s1">&#39;mysql-cdc&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;hostname&#39;</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;port&#39;</span> <span class="o">=</span> <span class="s1">&#39;3306&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;username&#39;</span> <span class="o">=</span> <span class="s1">&#39;flinkuser&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;password&#39;</span> <span class="o">=</span> <span class="s1">&#39;flinkpw&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;database-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;inventory&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;table-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;products&#39;</span>
+<span class="p">);</span>
+
+<span class="c1">-- read snapshot and binlog data from mysql, and do some transformation, and show on the client</span>
+<span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="k">UPPER</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">description</span><span class="p">,</span> <span class="n">weight</span> <span class="k">FROM</span> <span class="n">mysql_binlog</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="usage-for-datastream-api">
+<h2>Usage for DataStream API<a class="headerlink" href="#usage-for-datastream-api" title="Permalink to this headline">¶</a></h2>
+<p>Include following Maven dependency (available through Maven Central):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;dependency&gt;
+  &lt;groupId&gt;com.ververica&lt;/groupId&gt;
+  &lt;!-- add the dependency matching your database --&gt;
+  &lt;artifactId&gt;flink-connector-mysql-cdc&lt;/artifactId&gt;
+  &lt;!-- The dependency is available only for stable releases, SNAPSHOT dependencies need to be built based on master or release- branches by yourself. --&gt;
+  &lt;version&gt;3.0-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;
+</pre></div>
+</div>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">org.apache.flink.streaming.api.environment.StreamExecutionEnvironment</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">com.ververica.cdc.debezium.JsonDebeziumDeserializationSchema</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">com.ververica.cdc.connectors.mysql.source.MySqlSource</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MySqlBinlogSourceExample</span> <span class="p">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+    <span class="n">MySqlSource</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">mySqlSource</span> <span class="o">=</span> <span class="n">MySqlSource</span><span class="p">.</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="n">builder</span><span class="p">()</span>
+            <span class="p">.</span><span class="na">hostname</span><span class="p">(</span><span class="s">&quot;yourHostname&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="na">port</span><span class="p">(</span><span class="n">yourPort</span><span class="p">)</span>
+            <span class="p">.</span><span class="na">databaseList</span><span class="p">(</span><span class="s">&quot;yourDatabaseName&quot;</span><span class="p">)</span> <span class="c1">// set captured database</span>
+            <span class="p">.</span><span class="na">tableList</span><span class="p">(</span><span class="s">&quot;yourDatabaseName.yourTableName&quot;</span><span class="p">)</span> <span class="c1">// set captured table</span>
+            <span class="p">.</span><span class="na">username</span><span class="p">(</span><span class="s">&quot;yourUsername&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">&quot;yourPassword&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="na">deserializer</span><span class="p">(</span><span class="k">new</span> <span class="n">JsonDebeziumDeserializationSchema</span><span class="p">())</span> <span class="c1">// converts SourceRecord to JSON String</span>
+            <span class="p">.</span><span class="na">build</span><span class="p">();</span>
+    
+    <span class="n">StreamExecutionEnvironment</span> <span class="n">env</span> <span class="o">=</span> <span class="n">StreamExecutionEnvironment</span><span class="p">.</span><span class="na">getExecutionEnvironment</span><span class="p">();</span>
+    
+    <span class="c1">// enable checkpoint</span>
+    <span class="n">env</span><span class="p">.</span><span class="na">enableCheckpointing</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
+    
+    <span class="n">env</span>
+      <span class="p">.</span><span class="na">fromSource</span><span class="p">(</span><span class="n">mySqlSource</span><span class="p">,</span> <span class="n">WatermarkStrategy</span><span class="p">.</span><span class="na">noWatermarks</span><span class="p">(),</span> <span class="s">&quot;MySQL Source&quot;</span><span class="p">)</span>
+      <span class="c1">// set 4 parallel source tasks</span>
+      <span class="p">.</span><span class="na">setParallelism</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+      <span class="p">.</span><span class="na">print</span><span class="p">().</span><span class="na">setParallelism</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// use parallelism 1 for sink to keep message ordering</span>
+    
+    <span class="n">env</span><span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="s">&quot;Print MySQL Snapshot + Binlog&quot;</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<section id="deserialization">
+<h3>Deserialization<a class="headerlink" href="#deserialization" title="Permalink to this headline">¶</a></h3>
+<p>The following JSON data show the change event in JSON format.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>{
+  &quot;before&quot;: {
+    &quot;id&quot;: 111,
+    &quot;name&quot;: &quot;scooter&quot;,
+    &quot;description&quot;: &quot;Big 2-wheel scooter&quot;,
+    &quot;weight&quot;: 5.18
+  },
+  &quot;after&quot;: {
+    &quot;id&quot;: 111,
+    &quot;name&quot;: &quot;scooter&quot;,
+    &quot;description&quot;: &quot;Big 2-wheel scooter&quot;,
+    &quot;weight&quot;: 5.15
+  },
+  &quot;source&quot;: {...},
+  &quot;op&quot;: &quot;u&quot;,  // the operation type, &quot;u&quot; means this this is an update event 
+  &quot;ts_ms&quot;: 1589362330904,  // the time at which the connector processed the event
+  &quot;transaction&quot;: null
+}
+</pre></div>
+</div>
+<p><strong>Note:</strong> Please refer <a class="reference external" href="https://debezium.io/documentation/reference/1.9/connectors/mysql.html#mysql-events">Debezium documentation</a>  to know the meaning of each field.</p>
+<p>In some cases, users can use the <code class="docutils literal notranslate"><span class="pre">JsonDebeziumDeserializationSchema(true)</span></code> Constructor to enabled include schema in the message. Then the Debezium JSON message may look like this:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>{
+  &quot;schema&quot;: {
+    &quot;type&quot;: &quot;struct&quot;,
+    &quot;fields&quot;: [
+      {
+        &quot;type&quot;: &quot;struct&quot;,
+        &quot;fields&quot;: [
+          {
+            &quot;type&quot;: &quot;int32&quot;,
+            &quot;optional&quot;: false,
+            &quot;field&quot;: &quot;id&quot;
+          },
+          {
+            &quot;type&quot;: &quot;string&quot;,
+            &quot;optional&quot;: false,
+            &quot;default&quot;: &quot;flink&quot;,
+            &quot;field&quot;: &quot;name&quot;
+          },
+          {
+            &quot;type&quot;: &quot;string&quot;,
+            &quot;optional&quot;: true,
+            &quot;field&quot;: &quot;description&quot;
+          },
+          {
+            &quot;type&quot;: &quot;double&quot;,
+            &quot;optional&quot;: true,
+            &quot;field&quot;: &quot;weight&quot;
+          }
+        ],
+        &quot;optional&quot;: true,
+        &quot;name&quot;: &quot;mysql_binlog_source.inventory_1pzxhca.products.Value&quot;,
+        &quot;field&quot;: &quot;before&quot;
+      },
+      {
+        &quot;type&quot;: &quot;struct&quot;,
+        &quot;fields&quot;: [
+          {
+            &quot;type&quot;: &quot;int32&quot;,
+            &quot;optional&quot;: false,
+            &quot;field&quot;: &quot;id&quot;
+          },
+          {
+            &quot;type&quot;: &quot;string&quot;,
+            &quot;optional&quot;: false,
+            &quot;default&quot;: &quot;flink&quot;,
+            &quot;field&quot;: &quot;name&quot;
+          },
+          {
+            &quot;type&quot;: &quot;string&quot;,
+            &quot;optional&quot;: true,
+            &quot;field&quot;: &quot;description&quot;
+          },
+          {
+            &quot;type&quot;: &quot;double&quot;,
+            &quot;optional&quot;: true,
+            &quot;field&quot;: &quot;weight&quot;
+          }
+        ],
+        &quot;optional&quot;: true,
+        &quot;name&quot;: &quot;mysql_binlog_source.inventory_1pzxhca.products.Value&quot;,
+        &quot;field&quot;: &quot;after&quot;
+      },
+      {
+        &quot;type&quot;: &quot;struct&quot;,
+        &quot;fields&quot;: {...}, 
+        &quot;optional&quot;: false,
+        &quot;name&quot;: &quot;io.debezium.connector.mysql.Source&quot;,
+        &quot;field&quot;: &quot;source&quot;
+      },
+      {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;optional&quot;: false,
+        &quot;field&quot;: &quot;op&quot;
+      },
+      {
+        &quot;type&quot;: &quot;int64&quot;,
+        &quot;optional&quot;: true,
+        &quot;field&quot;: &quot;ts_ms&quot;
+      }
+    ],
+    &quot;optional&quot;: false,
+    &quot;name&quot;: &quot;mysql_binlog_source.inventory_1pzxhca.products.Envelope&quot;
+  },
+  &quot;payload&quot;: {
+    &quot;before&quot;: {
+      &quot;id&quot;: 111,
+      &quot;name&quot;: &quot;scooter&quot;,
+      &quot;description&quot;: &quot;Big 2-wheel scooter&quot;,
+      &quot;weight&quot;: 5.18
+    },
+    &quot;after&quot;: {
+      &quot;id&quot;: 111,
+      &quot;name&quot;: &quot;scooter&quot;,
+      &quot;description&quot;: &quot;Big 2-wheel scooter&quot;,
+      &quot;weight&quot;: 5.15
+    },
+    &quot;source&quot;: {...},
+    &quot;op&quot;: &quot;u&quot;,  // the operation type, &quot;u&quot; means this this is an update event
+    &quot;ts_ms&quot;: 1589362330904,  // the time at which the connector processed the event
+    &quot;transaction&quot;: null
+  }
+}
+</pre></div>
+</div>
+<p>Usually, it is recommended to exclude schema because schema fields makes the messages very verbose which reduces parsing performance.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">JsonDebeziumDeserializationSchema</span></code> can also accept custom configuration of <code class="docutils literal notranslate"><span class="pre">JsonConverter</span></code>, for example if you want to obtain numeric output for decimal data,
+you can construct <code class="docutils literal notranslate"><span class="pre">JsonDebeziumDeserializationSchema</span></code> as following:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">customConverterConfigs</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+ <span class="n">customConverterConfigs</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">JsonConverterConfig</span><span class="p">.</span><span class="na">DECIMAL_FORMAT_CONFIG</span><span class="p">,</span> <span class="s">&quot;numeric&quot;</span><span class="p">);</span>
+ <span class="n">JsonDebeziumDeserializationSchema</span> <span class="n">schema</span> <span class="o">=</span> 
+      <span class="k">new</span> <span class="n">JsonDebeziumDeserializationSchema</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span> <span class="n">customConverterConfigs</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="building-from-source">
+<h2>Building from source<a class="headerlink" href="#building-from-source" title="Permalink to this headline">¶</a></h2>
+<p>Prerequisites:</p>
+<ul class="simple">
+<li><p>git</p></li>
+<li><p>Maven</p></li>
+<li><p>At least Java 8</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ververica</span><span class="o">/</span><span class="n">flink</span><span class="o">-</span><span class="n">cdc</span><span class="o">-</span><span class="n">connectors</span><span class="o">.</span><span class="n">git</span>
+<span class="n">cd</span> <span class="n">flink</span><span class="o">-</span><span class="n">cdc</span><span class="o">-</span><span class="n">connectors</span>
+<span class="n">mvn</span> <span class="n">clean</span> <span class="n">install</span> <span class="o">-</span><span class="n">DskipTests</span>
+</pre></div>
+</div>
+<p>The dependencies are now available in your local <code class="docutils literal notranslate"><span class="pre">.m2</span></code> repository.</p>
+<section id="code-contribute">
+<h3>Code Contribute<a class="headerlink" href="#code-contribute" title="Permalink to this headline">¶</a></h3>
+<ol>
+<li><p>Left comment under the issue that you want to take</p></li>
+<li><p>Fork Flink CDC project to your GitHub repositories
+<img alt="fork" src="../../_images/fork.png" /></p></li>
+<li><p>Clone and compile your Flink CDC project</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/your_name/flink-cdc-connectors.git
+<span class="nb">cd</span> flink-cdc-connectors
+mvn clean install -DskipTests
+</pre></div>
+</div>
+</li>
+<li><p>Check to a new branch and start your work</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git checkout -b my_feature
+-- develop and commit
+</pre></div>
+</div>
+<p><img alt="check_branch" src="../../_images/check_branch.png" /></p>
+</li>
+<li><p>Push your branch to your github</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git push origin my_feature
+</pre></div>
+</div>
+</li>
+<li><p>Open a PR to https://github.com/ververica/flink-cdc-connectors
+<img alt="open_pr" src="../../_images/open_pr.png" /></p></li>
+</ol>
+</section>
+<section id="code-style">
+<h3>Code Style<a class="headerlink" href="#code-style" title="Permalink to this headline">¶</a></h3>
+<section id="code-formatting">
+<h4>Code Formatting<a class="headerlink" href="#code-formatting" title="Permalink to this headline">¶</a></h4>
+<p>You need to install the google-java-format plugin. Spotless together with google-java-format is used to format the codes.</p>
+<p>It is recommended to automatically format your code by applying the following settings:</p>
+<ol class="simple">
+<li><p>Go to “Settings” → “Other Settings” → “google-java-format Settings”.</p></li>
+<li><p>Tick the checkbox to enable the plugin.</p></li>
+<li><p>Change the code style to “Android Open Source Project (AOSP) style”.</p></li>
+<li><p>Go to “Settings” → “Tools” → “Actions on Save”.</p></li>
+<li><p>Under “Formatting Actions”, select “Optimize imports” and “Reformat file”.</p></li>
+<li><p>From the “All file types list” next to “Reformat code”, select “Java”.</p></li>
+</ol>
+<p>For earlier IntelliJ IDEA versions, the step 4 to 7 will be changed as follows.</p>
+<ul class="simple">
+<li><p>4.Go to “Settings” → “Other Settings” → “Save Actions”.</p></li>
+<li><p>5.Under “General”, enable your preferred settings for when to format the code, e.g. “Activate save actions on save”.</p></li>
+<li><p>6.Under “Formatting Actions”, select “Optimize imports” and “Reformat file”.</p></li>
+<li><p>7.Under “File Path Inclusions”, add an entry for <code class="docutils literal notranslate"><span class="pre">.*\.java</span></code> to avoid formatting other file types.
+Then the whole project could be formatted by command <code class="docutils literal notranslate"><span class="pre">mvn</span> <span class="pre">spotless:apply</span></code>.</p></li>
+</ul>
+</section>
+<section id="checkstyle">
+<h4>Checkstyle<a class="headerlink" href="#checkstyle" title="Permalink to this headline">¶</a></h4>
+<p>Checkstyle is used to enforce static coding guidelines.</p>
+<ol class="simple">
+<li><p>Go to “Settings” → “Tools” → “Checkstyle”.</p></li>
+<li><p>Set “Scan Scope” to “Only Java sources (including tests)”.</p></li>
+<li><p>For “Checkstyle Version” select “8.14”.</p></li>
+<li><p>Under “Configuration File” click the “+” icon to add a new configuration.</p></li>
+<li><p>Set “Description” to “Flink cdc”.</p></li>
+<li><p>Select “Use a local Checkstyle file” and link it to the file <code class="docutils literal notranslate"><span class="pre">tools/maven/checkstyle.xml</span></code> which is located within your cloned repository.</p></li>
+<li><p>Select “Store relative to project location” and click “Next”.</p></li>
+<li><p>Configure the property <code class="docutils literal notranslate"><span class="pre">checkstyle.suppressions.file</span></code> with the value <code class="docutils literal notranslate"><span class="pre">suppressions.xml</span></code> and click “Next”.</p></li>
+<li><p>Click “Finish”.</p></li>
+<li><p>Select “Flink cdc” as the only active configuration file and click “Apply”.</p></li>
+</ol>
+<p>You can now import the Checkstyle configuration for the Java code formatter.</p>
+<ol class="simple">
+<li><p>Go to “Settings” → “Editor” → “Code Style” → “Java”.</p></li>
+<li><p>Click the gear icon next to “Scheme” and select “Import Scheme” → “Checkstyle Configuration”.</p></li>
+<li><p>Navigate to and select <code class="docutils literal notranslate"><span class="pre">tools/maven/checkstyle.xml</span></code> located within your cloned repository.</p></li>
+</ol>
+<p>Then you could click “View” → “Tool Windows” → “Checkstyle” and find the “Check Module” button in the opened tool window to validate checkstyle. Or you can use the command <code class="docutils literal notranslate"><span class="pre">mvn</span> <span class="pre">clean</span> <span class="pre">compile</span> <span class="pre">checkstyle:checkstyle</span></code> to validate.</p>
+</section>
+</section>
+<section id="documentation-contribute">
+<h3>Documentation Contribute<a class="headerlink" href="#documentation-contribute" title="Permalink to this headline">¶</a></h3>
+<p>Flink cdc documentations locates at <code class="docutils literal notranslate"><span class="pre">docs/content</span></code>.</p>
+<p>The contribution step is the same as the code contribution. We use markdown as the source code of the document.</p>
+</section>
+</section>
+<section id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p>The code in this repository is licensed under the <a class="reference external" href="https://github.com/ververica/flink-cdc-connectors/blob/master/LICENSE">Apache Software License 2</a>.</p>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="cdc-pipeline.html" class="btn btn-neutral float-right" title="CDC Streaming ELT Framework" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2024, Ververica GmbH; Apache Flink, Flink®, Apache®, the squirrel logo, and the Apache feather logo are either registered trademarks or trademarks of The Apache Software Foundation.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+
+
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      version: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        
+        <dl>
+            <dt>Versions</dt>
+            
+             <strong> 
+            <dd><a href="/flink-cdc-connectors/master/">master</a></dd>
+             </strong> 
+            
+            
+            <dd><a href="/flink-cdc-connectors/release-1.4.0-mongodb/">release-1.4.0-mongodb</a></dd>
+            
+            
+        </dl>
+        
+        
+        <hr/>
+        Free document hosting provided by <a href="http://www.readthedocs.org">Read the
+        Docs</a>.
+
+    </div>
+</div>
+
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer
+        src="https://ververica.github.io/flink-cdc-connectors/master/_static/button.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

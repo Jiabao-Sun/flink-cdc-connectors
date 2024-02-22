@@ -1,0 +1,979 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>MongoDB CDC Connector &mdash; CDC Connectors for Apache Flink®  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/theme_overrides.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="MongoDB CDC 连接器" href="mongodb-cdc%28ZH%29.html" />
+    <link rel="prev" title="Connectors" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> CDC Connectors for Apache Flink®
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                master
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview/index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B/index.html">快速上手</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Connectors</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">MongoDB CDC Connector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#maven-dependency">Maven dependency</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sql-client-jar">SQL Client JAR</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#setup-mongodb">Setup MongoDB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#availability">Availability</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-create-a-mongodb-cdc-table">How to create a MongoDB CDC table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#connector-options">Connector Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#available-metadata">Available Metadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#features">Features</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#exactly-once-processing">Exactly-Once Processing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#startup-reading-position">Startup Reading Position</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#change-streams">Change Streams</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#datastream-source">DataStream Source</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#full-changelog-a-name-full-changelog-id-003-a">Full Changelog<a name="Full Changelog" id="003" ></a></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#data-type-mapping">Data Type Mapping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reference">Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#faq">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mongodb-cdc%28ZH%29.html">MongoDB CDC 连接器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mysql-cdc.html">MySQL CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mysql-cdc%28ZH%29.html">MySQL CDC 连接器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oceanbase-cdc.html">OceanBase CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oceanbase-cdc%28ZH%29.html">OceanBase CDC 连接器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oracle-cdc.html">Oracle CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postgres-cdc.html">Postgres CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlserver-cdc.html">SQLServer CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tidb-cdc.html">TiDB CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="db2-cdc.html">Db2 CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vitess-cdc.html">Vitess CDC Connector</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pipelines/index.html">Pipeline Connectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../formats/index.html">Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../downloads.html">Downloads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../githublink.html"><a class="github-button" href="https://github.com/ververica/flink-cdc-connectors" data-color-scheme="no-preference: dark_high_contrast; light: dark_high_contrast; dark: dark_high_contrast;" data-size="large" data-show-count="true" aria-label="Star ververica/flink-cdc-connectors on GitHub">Star</a></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CDC Connectors for Apache Flink®</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+<!-- Extend the RTD template to support user defined "Edit on Github" URL -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Connectors</a> &raquo;</li>
+        
+      <li>MongoDB CDC Connector</li>
+    
+    
+            <li class="wy-breadcrumbs-aside">
+                
+                    
+                        <a href="http://github.com/ververica/flink-cdc-connectors/blob/master/docs/content/connectors/mongodb-cdc.md" class="fa fa-github"> Edit on GitHub</a>
+                    
+                
+            </li>
+        
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="mongodb-cdc-connector">
+<h1>MongoDB CDC Connector<a class="headerlink" href="#mongodb-cdc-connector" title="Permalink to this headline">¶</a></h1>
+<p>The MongoDB CDC connector allows for reading snapshot data and incremental data from MongoDB. This document describes how to setup the MongoDB CDC connector to run SQL queries against MongoDB.</p>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p>In order to setup the MongoDB CDC connector, the following table provides dependency information for both projects using a build automation tool (such as Maven or SBT) and SQL Client with SQL JAR bundles.</p>
+<section id="maven-dependency">
+<h3>Maven dependency<a class="headerlink" href="#maven-dependency" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;dependency&gt;
+  &lt;groupId&gt;com.ververica&lt;/groupId&gt;
+  &lt;artifactId&gt;flink-connector-mongodb-cdc&lt;/artifactId&gt;
+  &lt;!-- The dependency is available only for stable releases, SNAPSHOT dependencies need to be built based on master or release- branches by yourself. --&gt;
+  &lt;version&gt;3.0-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;
+</pre></div>
+</div>
+</section>
+<section id="sql-client-jar">
+<h3>SQL Client JAR<a class="headerlink" href="#sql-client-jar" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">Download</span> <span class="pre">link</span> <span class="pre">is</span> <span class="pre">available</span> <span class="pre">only</span> <span class="pre">for</span> <span class="pre">stable</span> <span class="pre">releases.</span></code></p>
+<p>Download <a class="reference external" href="https://repo1.maven.org/maven2/com/ververica/flink-sql-connector-mongodb-cdc/3.0-SNAPSHOT/flink-sql-connector-mongodb-cdc-3.0-SNAPSHOT.jar">flink-sql-connector-mongodb-cdc-3.0-SNAPSHOT.jar</a> and put it under <code class="docutils literal notranslate"><span class="pre">&lt;FLINK_HOME&gt;/lib/</span></code>.</p>
+<p><strong>Note:</strong> flink-sql-connector-mongodb-cdc-XXX-SNAPSHOT version is the code corresponding to the development branch. Users need to download the source code and compile the corresponding jar. Users should use the released version, such as <a class="reference external" href="https://mvnrepository.com/artifact/com.ververica/flink-sql-connector-mongodb-cdc">flink-sql-connector-mongodb-cdc-2.2.1.jar</a>, the released version will be available in the Maven central warehouse.</p>
+</section>
+</section>
+<section id="setup-mongodb">
+<h2>Setup MongoDB<a class="headerlink" href="#setup-mongodb" title="Permalink to this headline">¶</a></h2>
+<section id="availability">
+<h3>Availability<a class="headerlink" href="#availability" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>MongoDB version</p>
+<p>MongoDB version &gt;= 3.6 <br>
+We use <a class="reference external" href="https://docs.mongodb.com/manual/changeStreams/">change streams</a> feature (new in version 3.6) to capture change data.</p>
+</li>
+<li><p>Cluster Deployment</p>
+<p><a class="reference external" href="https://docs.mongodb.com/manual/replication/">replica sets</a> or <a class="reference external" href="https://docs.mongodb.com/manual/sharding/">sharded clusters</a> is required.</p>
+</li>
+<li><p>Storage Engine</p>
+<p><a class="reference external" href="https://docs.mongodb.com/manual/core/wiredtiger/#std-label-storage-wiredtiger">WiredTiger</a> storage engine is required.</p>
+</li>
+<li><p><a class="reference external" href="https://docs.mongodb.com/manual/reference/replica-configuration/#mongodb-rsconf-rsconf.protocolVersion">Replica set protocol version</a></p>
+<p>Replica set protocol version 1 <a class="reference external" href="https://docs.mongodb.com/manual/reference/replica-configuration/#mongodb-rsconf-rsconf.protocolVersion">(pv1)</a> is required. <br>
+Starting in version 4.0, MongoDB only supports pv1. pv1 is the default for all new replica sets created with MongoDB 3.2 or later.</p>
+</li>
+<li><p>Privileges</p>
+<p><code class="docutils literal notranslate"><span class="pre">changeStream</span></code> and <code class="docutils literal notranslate"><span class="pre">read</span></code> privileges are required by MongoDB Kafka Connector.</p>
+<p>You can use the following example for simple authorization.<br>
+For more detailed authorization, please refer to <a class="reference external" href="https://docs.mongodb.com/manual/reference/built-in-roles/#database-user-roles">MongoDB Database User Roles</a>.</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">use</span> <span class="nx">admin</span><span class="p">;</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">createRole</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="nx">role</span><span class="o">:</span> <span class="s2">&quot;flinkrole&quot;</span><span class="p">,</span>
+        <span class="nx">privileges</span><span class="o">:</span> <span class="p">[{</span>
+            <span class="c1">// Grant privileges on all non-system collections in all databases</span>
+            <span class="nx">resource</span><span class="o">:</span> <span class="p">{</span> <span class="nx">db</span><span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nx">collection</span><span class="o">:</span> <span class="s2">&quot;&quot;</span> <span class="p">},</span>
+            <span class="nx">actions</span><span class="o">:</span> <span class="p">[</span>
+                <span class="s2">&quot;splitVector&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;listDatabases&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;listCollections&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;collStats&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;find&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;changeStream&quot;</span> <span class="p">]</span>
+        <span class="p">}],</span>
+        <span class="nx">roles</span><span class="o">:</span> <span class="p">[</span>
+            <span class="c1">// Read config.collections and config.chunks</span>
+            <span class="c1">// for sharded cluster snapshot splitting.</span>
+            <span class="p">{</span> <span class="nx">role</span><span class="o">:</span> <span class="s1">&#39;read&#39;</span><span class="p">,</span> <span class="nx">db</span><span class="o">:</span> <span class="s1">&#39;config&#39;</span> <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">);</span>
+
+<span class="nx">db</span><span class="p">.</span><span class="nx">createUser</span><span class="p">(</span>
+  <span class="p">{</span>
+      <span class="nx">user</span><span class="o">:</span> <span class="s1">&#39;flinkuser&#39;</span><span class="p">,</span>
+      <span class="nx">pwd</span><span class="o">:</span> <span class="s1">&#39;flinkpw&#39;</span><span class="p">,</span>
+      <span class="nx">roles</span><span class="o">:</span> <span class="p">[</span>
+         <span class="p">{</span> <span class="nx">role</span><span class="o">:</span> <span class="s1">&#39;flinkrole&#39;</span><span class="p">,</span> <span class="nx">db</span><span class="o">:</span> <span class="s1">&#39;admin&#39;</span> <span class="p">}</span>
+      <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+</section>
+<section id="how-to-create-a-mongodb-cdc-table">
+<h2>How to create a MongoDB CDC table<a class="headerlink" href="#how-to-create-a-mongodb-cdc-table" title="Permalink to this headline">¶</a></h2>
+<p>The MongoDB CDC table can be defined as following:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- register a MongoDB table &#39;products&#39; in Flink SQL</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">products</span> <span class="p">(</span>
+  <span class="n">_id</span> <span class="n">STRING</span><span class="p">,</span> <span class="o">//</span> <span class="n">must</span> <span class="n">be</span> <span class="n">declared</span>
+  <span class="n">name</span> <span class="n">STRING</span><span class="p">,</span>
+  <span class="n">weight</span> <span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span>
+  <span class="n">tags</span> <span class="nb">ARRAY</span><span class="o">&lt;</span><span class="n">STRING</span><span class="o">&gt;</span><span class="p">,</span> <span class="c1">-- array</span>
+  <span class="n">price</span> <span class="k">ROW</span><span class="o">&lt;</span><span class="n">amount</span> <span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">currency</span> <span class="n">STRING</span><span class="o">&gt;</span><span class="p">,</span> <span class="c1">-- embedded document</span>
+  <span class="n">suppliers</span> <span class="nb">ARRAY</span><span class="o">&lt;</span><span class="k">ROW</span><span class="o">&lt;</span><span class="n">name</span> <span class="n">STRING</span><span class="p">,</span> <span class="n">address</span> <span class="n">STRING</span><span class="o">&gt;&gt;</span><span class="p">,</span> <span class="c1">-- embedded documents</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span> <span class="k">NOT</span> <span class="n">ENFORCED</span>
+<span class="p">)</span> <span class="k">WITH</span> <span class="p">(</span>
+  <span class="s1">&#39;connector&#39;</span> <span class="o">=</span> <span class="s1">&#39;mongodb-cdc&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;hosts&#39;</span> <span class="o">=</span> <span class="s1">&#39;localhost:27017,localhost:27018,localhost:27019&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;username&#39;</span> <span class="o">=</span> <span class="s1">&#39;flinkuser&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;password&#39;</span> <span class="o">=</span> <span class="s1">&#39;flinkpw&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;database&#39;</span> <span class="o">=</span> <span class="s1">&#39;inventory&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;collection&#39;</span> <span class="o">=</span> <span class="s1">&#39;products&#39;</span>
+<span class="p">);</span>
+
+<span class="c1">-- read snapshot and change events from products collection</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">products</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><strong>Note that</strong></p>
+<p>MongoDB’s change event record doesn’t have updated before message. So, we can only convert it to Flink’s UPSERT changelog stream.
+An upsert stream requires a unique key, so we must declare <code class="docutils literal notranslate"><span class="pre">_id</span></code> as primary key.
+We can’t declare other column as primary key, because delete operation does not contain the key and value besides <code class="docutils literal notranslate"><span class="pre">_id</span></code> and <code class="docutils literal notranslate"><span class="pre">sharding</span> <span class="pre">key</span></code>.</p>
+</section>
+<section id="connector-options">
+<h2>Connector Options<a class="headerlink" href="#connector-options" title="Permalink to this headline">¶</a></h2>
+<div class="highlight">
+<table class="colwidths-auto docutils">
+   <thead>
+      <tr>
+        <th class="text-left" style="width: 25%">Option</th>
+        <th class="text-left" style="width: 8%">Required</th>
+        <th class="text-left" style="width: 7%">Default</th>
+        <th class="text-left" style="width: 10%">Type</th>
+        <th class="text-left" style="width: 50%">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>connector</td>
+      <td>required</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>Specify what connector to use, here should be <code>mongodb-cdc</code>.</td>
+    </tr>
+    <tr>
+      <td>scheme</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">mongodb</td>
+      <td>String</td>
+      <td>The protocol connected to MongoDB. eg. <code>mongodb or mongodb+srv.</code></td>
+    </tr>
+    <tr>
+      <td>hosts</td>
+      <td>required</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>The comma-separated list of hostname and port pairs of the MongoDB servers.<br>
+          eg. <code>localhost:27017,localhost:27018</code>
+      </td>
+    </tr>
+    <tr>
+      <td>username</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>Name of the database user to be used when connecting to MongoDB.<br>
+          This is required only when MongoDB is configured to use authentication.
+      </td>
+    </tr>
+    <tr>
+      <td>password</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>Password to be used when connecting to MongoDB.<br>
+          This is required only when MongoDB is configured to use authentication.
+      </td>
+    </tr>
+    <tr>
+      <td>database</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>Name of the database to watch for changes. If not set then all databases will be captured. <br>
+          The database also supports regular expressions to monitor multiple databases matching the regular expression.</td>
+    </tr>
+    <tr>
+      <td>collection</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>Name of the collection in the database to watch for changes. If not set then all collections will be captured.<br>
+          The collection also supports regular expressions to monitor multiple collections matching fully-qualified collection identifiers.</td>
+    </tr>
+    <tr>
+      <td>connection.options</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>The ampersand-separated <a href="https://docs.mongodb.com/manual/reference/connection-string/#std-label-connections-connection-options">connection options</a> of MongoDB. eg. <br>
+          <code>replicaSet=test&connectTimeoutMS=300000</code>
+      </td>
+    </tr>
+    <tr>
+        <td>scan.startup.mode</td>
+        <td>optional</td>
+        <td style="word-wrap: break-word;">initial</td>
+        <td>String</td>
+        <td>Optional startup mode for MongoDB CDC consumer, valid enumerations are "initial", "latest-offset" and "timestamp".
+            Please see <a href="#startup-reading-position">Startup Reading Position</a> section for more detailed information.</td>
+    </tr>
+    <tr>
+        <td>scan.startup.timestamp-millis</td>
+        <td>optional</td>
+        <td style="word-wrap: break-word;">(none)</td>
+        <td>Long</td>
+        <td>Timestamp in millis of the start point, only used for <code>'timestamp'</code> startup mode.</td>
+    </tr>
+    <tr>
+      <td>copy.existing.queue.size</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">10240</td>
+      <td>Integer</td>
+      <td>The max size of the queue to use when copying data.</td>
+    </tr>
+    <tr>
+      <td>batch.size</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">1024</td>
+      <td>Integer</td>
+      <td>The cursor batch size.</td>
+    </tr>
+    <tr>
+      <td>poll.max.batch.size</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">1024</td>
+      <td>Integer</td>
+      <td>Maximum number of change stream documents to include in a single batch when polling for new data.</td>
+    </tr>
+    <tr>
+      <td>poll.await.time.ms</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">1000</td>
+      <td>Integer</td>
+      <td>The amount of time to wait before checking for new results on the change stream.</td>
+    </tr>
+    <tr>
+      <td>heartbeat.interval.ms</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">0</td>
+      <td>Integer</td>
+      <td>The length of time in milliseconds between sending heartbeat messages. Use 0 to disable.</td>
+    </tr>
+    <tr>
+      <td>scan.full-changelog</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">false</td>
+      <td>Boolean</td>
+      <td>Whether try to generate full-mode changelog based on pre- and post-images in MongoDB. Refer to <a href="#a-name-id-003-a">Full Changelog</a>  for more details. Supports MongoDB 6.0 and above only.</td>
+    </tr>
+    <tr>
+      <td>scan.incremental.snapshot.enabled</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">false</td>
+      <td>Boolean</td>
+      <td>Whether enable incremental snapshot. The incremental snapshot feature only supports after MongoDB 4.0.</td>
+    </tr>
+    <tr>
+      <td>scan.incremental.snapshot.chunk.size.mb</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">64</td>
+      <td>Integer</td>
+      <td>The chunk size mb of incremental snapshot.</td>
+    </tr>
+    <tr>
+      <td>scan.incremental.snapshot.chunk.samples</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">20</td>
+      <td>Integer</td>
+      <td>The samples count per chunk when using sample partition strategy during incremental snapshot.</td>
+    </tr>
+    <tr>
+      <td>scan.incremental.close-idle-reader.enabled</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">false</td>
+      <td>Boolean</td>
+      <td>Whether to close idle readers at the end of the snapshot phase. <br>
+          The flink version is required to be greater than or equal to 1.14 when 'execution.checkpointing.checkpoints-after-tasks-finish.enabled' is set to true.<br>
+          If the flink version is greater than or equal to 1.15, the default value of 'execution.checkpointing.checkpoints-after-tasks-finish.enabled' has been changed to true,
+          so it does not need to be explicitly configured 'execution.checkpointing.checkpoints-after-tasks-finish.enabled' = 'true'
+      </td>
+    </tr>
+    <tr>
+      <td>scan.cursor.no-timeout</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">true</td>
+      <td>Boolean</td>
+      <td>MongoDB server normally times out idle cursors after an inactivity period (10 minutes) to prevent excess memory use. Set this option to true to prevent that. Only available when parallelism snapshot is enabled.</td>
+    </tr>
+    </tbody>
+</table>
+</div>
+<p>Note: <code class="docutils literal notranslate"><span class="pre">heartbeat.interval.ms</span></code> is highly recommended setting a proper value larger than 0 <strong>if the collection changes slowly</strong>.
+The heartbeat event can push the <code class="docutils literal notranslate"><span class="pre">resumeToken</span></code> forward to avoid <code class="docutils literal notranslate"><span class="pre">resumeToken</span></code> being expired when we recover the Flink job from a checkpoint or savepoint.</p>
+</section>
+<section id="available-metadata">
+<h2>Available Metadata<a class="headerlink" href="#available-metadata" title="Permalink to this headline">¶</a></h2>
+<p>The following format metadata can be exposed as read-only (VIRTUAL) columns in a table definition.</p>
+<table class="colwidths-auto docutils">
+  <thead>
+     <tr>
+       <th class="text-left" style="width: 15%">Key</th>
+       <th class="text-left" style="width: 30%">DataType</th>
+       <th class="text-left" style="width: 55%">Description</th>
+     </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>database_name</td>
+      <td>STRING NOT NULL</td>
+      <td>Name of the database that contain the row.</td>
+    </tr>
+    <tr>
+      <td>collection_name</td>
+      <td>STRING NOT NULL</td>
+      <td>Name of the collection that contain the row.</td>
+    </tr>
+    <tr>
+      <td>op_ts</td>
+      <td>TIMESTAMP_LTZ(3) NOT NULL</td>
+      <td>It indicates the time that the change was made in the database. <br>If the record is read from snapshot of the table instead of the change stream, the value is always 0.</td>
+    </tr>
+  </tbody>
+</table>
+<p>The extended CREATE TABLE example demonstrates the syntax for exposing these metadata fields:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">products</span> <span class="p">(</span>
+    <span class="n">db_name</span> <span class="n">STRING</span> <span class="n">METADATA</span> <span class="k">FROM</span> <span class="s1">&#39;database_name&#39;</span> <span class="n">VIRTUAL</span><span class="p">,</span>
+    <span class="n">collection_name</span> <span class="n">STRING</span> <span class="n">METADATA</span>  <span class="k">FROM</span> <span class="s1">&#39;collection_name&#39;</span> <span class="n">VIRTUAL</span><span class="p">,</span>
+    <span class="n">operation_ts</span> <span class="n">TIMESTAMP_LTZ</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="n">METADATA</span> <span class="k">FROM</span> <span class="s1">&#39;op_ts&#39;</span> <span class="n">VIRTUAL</span><span class="p">,</span>
+    <span class="n">_id</span> <span class="n">STRING</span><span class="p">,</span> <span class="o">//</span> <span class="n">must</span> <span class="n">be</span> <span class="n">declared</span>
+    <span class="n">name</span> <span class="n">STRING</span><span class="p">,</span>
+    <span class="n">weight</span> <span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span>
+    <span class="n">tags</span> <span class="nb">ARRAY</span><span class="o">&lt;</span><span class="n">STRING</span><span class="o">&gt;</span><span class="p">,</span> <span class="c1">-- array</span>
+    <span class="n">price</span> <span class="k">ROW</span><span class="o">&lt;</span><span class="n">amount</span> <span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">currency</span> <span class="n">STRING</span><span class="o">&gt;</span><span class="p">,</span> <span class="c1">-- embedded document</span>
+    <span class="n">suppliers</span> <span class="nb">ARRAY</span><span class="o">&lt;</span><span class="k">ROW</span><span class="o">&lt;</span><span class="n">name</span> <span class="n">STRING</span><span class="p">,</span> <span class="n">address</span> <span class="n">STRING</span><span class="o">&gt;&gt;</span><span class="p">,</span> <span class="c1">-- embedded documents</span>
+    <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span> <span class="k">NOT</span> <span class="n">ENFORCED</span>
+<span class="p">)</span> <span class="k">WITH</span> <span class="p">(</span>
+    <span class="s1">&#39;connector&#39;</span> <span class="o">=</span> <span class="s1">&#39;mongodb-cdc&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;hosts&#39;</span> <span class="o">=</span> <span class="s1">&#39;localhost:27017,localhost:27018,localhost:27019&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;username&#39;</span> <span class="o">=</span> <span class="s1">&#39;flinkuser&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;password&#39;</span> <span class="o">=</span> <span class="s1">&#39;flinkpw&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;database&#39;</span> <span class="o">=</span> <span class="s1">&#39;inventory&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;collection&#39;</span> <span class="o">=</span> <span class="s1">&#39;products&#39;</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<section id="exactly-once-processing">
+<h3>Exactly-Once Processing<a class="headerlink" href="#exactly-once-processing" title="Permalink to this headline">¶</a></h3>
+<p>The MongoDB CDC connector is a Flink Source connector which will read database snapshot first and then continues to read change stream events with <strong>exactly-once processing</strong> even failures happen.</p>
+</section>
+<section id="startup-reading-position">
+<h3>Startup Reading Position<a class="headerlink" href="#startup-reading-position" title="Permalink to this headline">¶</a></h3>
+<p>The config option <code class="docutils literal notranslate"><span class="pre">scan.startup.mode</span></code> specifies the startup mode for MongoDB CDC consumer. The valid enumerations are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">initial</span></code> (default): Performs an initial snapshot on the monitored database tables upon first startup, and continue to read the latest oplog.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">latest-offset</span></code>: Never to perform snapshot on the monitored database tables upon first startup, just read from
+the end of the oplog which means only have the changes since the connector was started.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">timestamp</span></code>: Skip snapshot phase and start reading oplog events from a specific timestamp.</p></li>
+</ul>
+<p>For example in DataStream API:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">MongoDBSource</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+    <span class="p">.</span><span class="na">startupOptions</span><span class="p">(</span><span class="n">StartupOptions</span><span class="p">.</span><span class="na">latest</span><span class="p">())</span> <span class="c1">// Start from latest offset</span>
+    <span class="p">.</span><span class="na">startupOptions</span><span class="p">(</span><span class="n">StartupOptions</span><span class="p">.</span><span class="na">timestamp</span><span class="p">(</span><span class="mi">1667232000000L</span><span class="p">)</span> <span class="c1">// Start from timestamp</span>
+    <span class="p">.</span><span class="na">build</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>and with SQL:</p>
+<div class="highlight-SQL notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">mongodb_source</span> <span class="p">(...)</span> <span class="k">WITH</span> <span class="p">(</span>
+    <span class="s1">&#39;connector&#39;</span> <span class="o">=</span> <span class="s1">&#39;mongodb-cdc&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;scan.startup.mode&#39;</span> <span class="o">=</span> <span class="s1">&#39;latest-offset&#39;</span><span class="p">,</span> <span class="c1">-- Start from latest offset</span>
+    <span class="p">...</span>
+    <span class="s1">&#39;scan.startup.mode&#39;</span> <span class="o">=</span> <span class="s1">&#39;timestamp&#39;</span><span class="p">,</span> <span class="c1">-- Start from timestamp</span>
+    <span class="s1">&#39;scan.startup.timestamp-millis&#39;</span> <span class="o">=</span> <span class="s1">&#39;1667232000000&#39;</span> <span class="c1">-- Timestamp under timestamp startup mode</span>
+    <span class="p">...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="change-streams">
+<h3>Change Streams<a class="headerlink" href="#change-streams" title="Permalink to this headline">¶</a></h3>
+<p>We integrate the <a class="reference external" href="https://docs.mongodb.com/kafka-connector/current/kafka-source/">MongoDB’s official Kafka Connector</a> to read snapshot or change events from MongoDB and drive it by Debezium’s <code class="docutils literal notranslate"><span class="pre">EmbeddedEngine</span></code>.</p>
+<p>Debezium’s <code class="docutils literal notranslate"><span class="pre">EmbeddedEngine</span></code> provides a mechanism for running a single Kafka Connect <code class="docutils literal notranslate"><span class="pre">SourceConnector</span></code> within an application’s process, and it can drive any standard Kafka Connect <code class="docutils literal notranslate"><span class="pre">SourceConnector</span></code> properly even which is not provided by Debezium.</p>
+<p>We choose <strong>MongoDB’s official Kafka Connector</strong> instead of the <strong>Debezium’s MongoDB Connector</strong> because they use a different change data capture mechanism.</p>
+<ul class="simple">
+<li><p>For Debezium’s MongoDB Connector, it reads the <code class="docutils literal notranslate"><span class="pre">oplog.rs</span></code> collection of each replica-set’s master node.</p></li>
+<li><p>For MongoDB’s Kafka Connector, it subscribes <code class="docutils literal notranslate"><span class="pre">Change</span> <span class="pre">Stream</span></code> of MongoDB.</p></li>
+</ul>
+<p>MongoDB’s <code class="docutils literal notranslate"><span class="pre">oplog.rs</span></code> collection doesn’t keep the changed record’s update before state, so it’s hard to extract the full document state by a single <code class="docutils literal notranslate"><span class="pre">oplog.rs</span></code> record and convert it to change log stream accepted by Flink (Insert Only, Upsert, All).
+Additionally, MongoDB 5 (released in July 2021) has changed the oplog format, so the current Debezium connector cannot be used with it.</p>
+<p><strong>Change Stream</strong> is a new feature provided by MongoDB 3.6 for replica sets and sharded clusters that allows applications to access real-time data changes without the complexity and risk of tailing the oplog.<br>
+Applications can use change streams to subscribe to all data changes on a single collection, a database, or an entire deployment, and immediately react to them.</p>
+<p><strong>Lookup Full Document for Update Operations</strong> is a feature provided by <strong>Change Stream</strong> which can configure the change stream to return the most current majority-committed version of the updated document. Because of this feature, we can easily collect the latest full document and convert the change log to Flink’s <strong>Upsert Changelog Stream</strong>.</p>
+<p>By the way, Debezium’s MongoDB change streams exploration mentioned by <a class="reference external" href="https://issues.redhat.com/browse/DBZ-435">DBZ-435</a> is on roadmap.<br>
+If it’s done, we can consider integrating two kinds of source connector for users to choose.</p>
+</section>
+<section id="datastream-source">
+<h3>DataStream Source<a class="headerlink" href="#datastream-source" title="Permalink to this headline">¶</a></h3>
+<p>The MongoDB CDC connector can also be a DataStream source. You can create a SourceFunction as the following shows:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">org.apache.flink.streaming.api.environment.StreamExecutionEnvironment</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.streaming.api.functions.source.SourceFunction</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">com.ververica.cdc.debezium.JsonDebeziumDeserializationSchema</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">com.ververica.cdc.connectors.mongodb.MongoDBSource</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MongoDBSourceExample</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">SourceFunction</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">sourceFunction</span> <span class="o">=</span> <span class="n">MongoDBSource</span><span class="p">.</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="n">builder</span><span class="p">()</span>
+                <span class="p">.</span><span class="na">hosts</span><span class="p">(</span><span class="s">&quot;localhost:27017&quot;</span><span class="p">)</span>
+                <span class="p">.</span><span class="na">username</span><span class="p">(</span><span class="s">&quot;flink&quot;</span><span class="p">)</span>
+                <span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">&quot;flinkpw&quot;</span><span class="p">)</span>
+                <span class="p">.</span><span class="na">databaseList</span><span class="p">(</span><span class="s">&quot;inventory&quot;</span><span class="p">)</span> <span class="c1">// set captured database, support regex</span>
+                <span class="p">.</span><span class="na">collectionList</span><span class="p">(</span><span class="s">&quot;inventory.products&quot;</span><span class="p">,</span> <span class="s">&quot;inventory.orders&quot;</span><span class="p">)</span> <span class="c1">//set captured collections, support regex</span>
+                <span class="p">.</span><span class="na">deserializer</span><span class="p">(</span><span class="k">new</span> <span class="n">JsonDebeziumDeserializationSchema</span><span class="p">())</span>
+                <span class="p">.</span><span class="na">build</span><span class="p">();</span>
+
+        <span class="n">StreamExecutionEnvironment</span> <span class="n">env</span> <span class="o">=</span> <span class="n">StreamExecutionEnvironment</span><span class="p">.</span><span class="na">getExecutionEnvironment</span><span class="p">();</span>
+
+        <span class="n">env</span><span class="p">.</span><span class="na">addSource</span><span class="p">(</span><span class="n">sourceFunction</span><span class="p">)</span>
+                <span class="p">.</span><span class="na">print</span><span class="p">().</span><span class="na">setParallelism</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// use parallelism 1 for sink to keep message ordering</span>
+
+        <span class="n">env</span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The MongoDB CDC incremental connector (after 2.3.0) can be used as the following shows:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">org.apache.flink.api.common.eventtime.WatermarkStrategy</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.streaming.api.environment.StreamExecutionEnvironment</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">com.ververica.cdc.connectors.mongodb.source.MongoDBSource</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">com.ververica.cdc.debezium.JsonDebeziumDeserializationSchema</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MongoDBIncrementalSourceExample</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+        <span class="n">MongoDBSource</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">mongoSource</span> <span class="o">=</span>
+                <span class="n">MongoDBSource</span><span class="p">.</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="n">builder</span><span class="p">()</span>
+                        <span class="p">.</span><span class="na">hosts</span><span class="p">(</span><span class="s">&quot;localhost:27017&quot;</span><span class="p">)</span>
+                        <span class="p">.</span><span class="na">databaseList</span><span class="p">(</span><span class="s">&quot;inventory&quot;</span><span class="p">)</span> <span class="c1">// set captured database, support regex</span>
+                        <span class="p">.</span><span class="na">collectionList</span><span class="p">(</span><span class="s">&quot;inventory.products&quot;</span><span class="p">,</span> <span class="s">&quot;inventory.orders&quot;</span><span class="p">)</span> <span class="c1">//set captured collections, support regex</span>
+                        <span class="p">.</span><span class="na">username</span><span class="p">(</span><span class="s">&quot;flink&quot;</span><span class="p">)</span>
+                        <span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">&quot;flinkpw&quot;</span><span class="p">)</span>
+                        <span class="p">.</span><span class="na">deserializer</span><span class="p">(</span><span class="k">new</span> <span class="n">JsonDebeziumDeserializationSchema</span><span class="p">())</span>
+                        <span class="p">.</span><span class="na">build</span><span class="p">();</span>
+
+        <span class="n">StreamExecutionEnvironment</span> <span class="n">env</span> <span class="o">=</span> <span class="n">StreamExecutionEnvironment</span><span class="p">.</span><span class="na">getExecutionEnvironment</span><span class="p">();</span>
+        <span class="c1">// enable checkpoint</span>
+        <span class="n">env</span><span class="p">.</span><span class="na">enableCheckpointing</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
+        <span class="c1">// set the source parallelism to 2</span>
+        <span class="n">env</span><span class="p">.</span><span class="na">fromSource</span><span class="p">(</span><span class="n">mongoSource</span><span class="p">,</span> <span class="n">WatermarkStrategy</span><span class="p">.</span><span class="na">noWatermarks</span><span class="p">(),</span> <span class="s">&quot;MongoDBIncrementalSource&quot;</span><span class="p">)</span>
+                <span class="p">.</span><span class="na">setParallelism</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                <span class="p">.</span><span class="na">print</span><span class="p">()</span>
+                <span class="p">.</span><span class="na">setParallelism</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+        <span class="n">env</span><span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="s">&quot;Print MongoDB Snapshot + Change Stream&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Note:</strong></p>
+<ul class="simple">
+<li><p>If database regex is used, <code class="docutils literal notranslate"><span class="pre">readAnyDatabase</span></code> role is required.</p></li>
+<li><p>The incremental snapshot feature only supports after MongoDB 4.0.</p></li>
+</ul>
+</section>
+<section id="full-changelog-a-name-full-changelog-id-003-a">
+<h3>Full Changelog<a name="Full Changelog" id="003" ></a><a class="headerlink" href="#full-changelog-a-name-full-changelog-id-003-a" title="Permalink to this headline">¶</a></h3>
+<p>MongoDB 6.0 and above supports emitting change stream events containing document before and after the change was made (aka. pre- and post-images).</p>
+<ul class="simple">
+<li><p>The pre-image is the document before it was replaced, updated, or deleted. There is no pre-image for an inserted document.</p></li>
+<li><p>The post-image is the document after it was inserted, replaced, or updated. There is no post-image for a deleted document.</p></li>
+</ul>
+<p>MongoDB CDC could make uses of pre-image and post-images to generate full-mode changelog stream including Insert, Update Before, Update After, and Delete data rows, thereby avoiding additional <code class="docutils literal notranslate"><span class="pre">ChangelogNormalize</span></code> downstream node.</p>
+<p>To enable this feature, here’s some prerequisites:</p>
+<ul class="simple">
+<li><p>MongoDB version must be 6.0 or above;</p></li>
+<li><p>Enable <code class="docutils literal notranslate"><span class="pre">preAndPostImages</span></code> feature at the database level:</p></li>
+</ul>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">db</span><span class="p">.</span><span class="nx">runCommand</span><span class="p">({</span>
+  <span class="nx">setClusterParameter</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">changeStreamOptions</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">preAndPostImages</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">expireAfterSeconds</span><span class="o">:</span> <span class="s1">&#39;off&#39;</span> <span class="c1">// replace with custom image expiration time</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Enable <code class="docutils literal notranslate"><span class="pre">changeStreamPreAndPostImages</span></code> feature for collections to be monitored:</p></li>
+</ul>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">db</span><span class="p">.</span><span class="nx">runCommand</span><span class="p">({</span>
+  <span class="nx">collMod</span><span class="o">:</span> <span class="s2">&quot;&lt;&lt; collection name &gt;&gt;&quot;</span><span class="p">,</span> 
+  <span class="nx">changeStreamPreAndPostImages</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">enabled</span><span class="o">:</span> <span class="kc">true</span> 
+  <span class="p">}</span> 
+<span class="p">})</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Enable MongoDB CDC’s <code class="docutils literal notranslate"><span class="pre">scan.full-changelog</span></code> feature:</p></li>
+</ul>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">MongoDBSource</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+    <span class="p">.</span><span class="na">scanFullChangelog</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+    <span class="p">...</span>
+    <span class="p">.</span><span class="na">build</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>or with Flink SQL:</p>
+<div class="highlight-SQL notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">mongodb_source</span> <span class="p">(...)</span> <span class="k">WITH</span> <span class="p">(</span>
+    <span class="s1">&#39;connector&#39;</span> <span class="o">=</span> <span class="s1">&#39;mongodb-cdc&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;scan.full-changelog&#39;</span> <span class="o">=</span> <span class="s1">&#39;true&#39;</span><span class="p">,</span>
+    <span class="p">...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="data-type-mapping">
+<h2>Data Type Mapping<a class="headerlink" href="#data-type-mapping" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://docs.mongodb.com/manual/reference/bson-types/">BSON</a> short for <strong>Binary JSON</strong> is a binary-encoded serialization of JSON-like format used to store documents and make remote procedure calls in MongoDB.</p>
+<p><a class="reference external" href="https://nightlies.apache.org/flink/flink-docs-release-1.17/docs/dev/table/types/">Flink SQL Data Type</a> is similar to the SQL standard’s data type terminology which describes the logical type of a value in the table ecosystem. It can be used to declare input and/or output types of operations.</p>
+<p>In order to enable Flink SQL to process data from heterogeneous data sources, the data types of heterogeneous data sources need to be uniformly converted to Flink SQL data types.</p>
+<p>The following is the mapping of BSON type and Flink SQL type.</p>
+<div class="wy-table-responsive">
+<table class="colwidths-auto docutils">
+    <thead>
+      <tr>
+        <th class="text-left">BSON type<a href="https://docs.mongodb.com/manual/reference/bson-types/"></a></th>
+        <th class="text-left">Flink SQL type<a href="{% link dev/table/types.md %}"></a></th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td></td>
+      <td>TINYINT</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>SMALLINT</td>
+    </tr>
+    <tr>
+      <td>
+        Int<br>
+      <td>INT</td>
+    </tr>
+    <tr>
+      <td>Long</td>
+      <td>BIGINT</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>FLOAT</td>
+    </tr>
+    <tr>
+      <td>Double</td>
+      <td>DOUBLE</td>
+    </tr>
+    <tr>
+      <td>Decimal128</td>
+      <td>DECIMAL(p, s)</td>
+    </tr>
+    <tr>
+      <td>Boolean</td>
+      <td>BOOLEAN</td>
+    </tr>
+    <tr>
+      <td>Date</br>Timestamp</td>
+      <td>DATE</td>
+    </tr>
+    <tr>
+      <td>Date</br>Timestamp</td>
+      <td>TIME</td>
+    </tr>
+    <tr>
+      <td>Date</td>
+      <td>TIMESTAMP(3)</br>TIMESTAMP_LTZ(3)</td>
+    </tr>
+    <tr>
+      <td>Timestamp</td>
+      <td>TIMESTAMP(0)</br>TIMESTAMP_LTZ(0)
+      </td>
+    </tr>
+    <tr>
+      <td>
+        String<br>
+        ObjectId<br>
+        UUID<br>
+        Symbol<br>
+        MD5<br>
+        JavaScript</br>
+        Regex</td>
+      <td>STRING</td>
+    </tr>
+    <tr>
+      <td>BinData</td>
+      <td>BYTES</td>
+    </tr>
+    <tr>
+      <td>Object</td>
+      <td>ROW</td>
+    </tr>
+    <tr>
+      <td>Array</td>
+      <td>ARRAY</td>
+    </tr>
+    <tr>
+      <td>DBPointer</td>
+      <td>ROW&lt;$ref STRING, $id STRING&gt;</td>
+    </tr>
+    <tr>
+      <td>
+        <a href="https://docs.mongodb.com/manual/reference/geojson/">GeoJSON</a>
+      </td>
+      <td>
+        Point : ROW&lt;type STRING, coordinates ARRAY&lt;DOUBLE&gt;&gt;</br>
+        Line  : ROW&lt;type STRING, coordinates ARRAY&lt;ARRAY&lt; DOUBLE&gt;&gt;&gt;</br>
+        ...
+      </td>
+    </tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.mongodb.com/kafka-connector/current/kafka-source/">MongoDB Kafka Connector</a></p></li>
+<li><p><a class="reference external" href="https://docs.mongodb.com/manual/changeStreams/">Change Streams</a></p></li>
+<li><p><a class="reference external" href="https://docs.mongodb.com/manual/replication/">Replication</a></p></li>
+<li><p><a class="reference external" href="https://docs.mongodb.com/manual/sharding/">Sharding</a></p></li>
+<li><p><a class="reference external" href="https://docs.mongodb.com/manual/reference/built-in-roles/#database-user-roles">Database User Roles</a></p></li>
+<li><p><a class="reference external" href="https://docs.mongodb.com/manual/core/wiredtiger/#std-label-storage-wiredtiger">WiredTiger</a></p></li>
+<li><p><a class="reference external" href="https://docs.mongodb.com/manual/reference/replica-configuration/#mongodb-rsconf-rsconf.protocolVersion">Replica set protocol</a></p></li>
+<li><p><a class="reference external" href="https://docs.mongodb.com/manual/reference/connection-string/#std-label-connections-connection-options">Connection String Options</a></p></li>
+<li><p><a class="reference external" href="https://www.mongodb.com/docs/v6.0/changeStreams/#change-streams-with-document-pre--and-post-images">Document Pre- and Post-Images</a></p></li>
+<li><p><a class="reference external" href="https://docs.mongodb.com/manual/reference/bson-types/">BSON Types</a></p></li>
+<li><p><a class="reference external" href="https://nightlies.apache.org/flink/flink-docs-release-1.17/docs/dev/table/types/">Flink DataTypes</a></p></li>
+</ul>
+</section>
+<section id="faq">
+<h2>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/ververica/flink-cdc-connectors/wiki/FAQ">FAQ(English)</a></p></li>
+<li><p><a class="reference external" href="https://github.com/ververica/flink-cdc-connectors/wiki/FAQ(ZH)">FAQ(中文)</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="mongodb-cdc%28ZH%29.html" class="btn btn-neutral float-right" title="MongoDB CDC 连接器" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Connectors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2024, Ververica GmbH; Apache Flink, Flink®, Apache®, the squirrel logo, and the Apache feather logo are either registered trademarks or trademarks of The Apache Software Foundation.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+
+
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      version: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        
+        <dl>
+            <dt>Versions</dt>
+            
+             <strong> 
+            <dd><a href="/flink-cdc-connectors/master/">master</a></dd>
+             </strong> 
+            
+            
+            <dd><a href="/flink-cdc-connectors/release-1.4.0-mongodb/">release-1.4.0-mongodb</a></dd>
+            
+            
+        </dl>
+        
+        
+        <hr/>
+        Free document hosting provided by <a href="http://www.readthedocs.org">Read the
+        Docs</a>.
+
+    </div>
+</div>
+
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer
+        src="https://ververica.github.io/flink-cdc-connectors/master/_static/button.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

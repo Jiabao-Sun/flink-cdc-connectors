@@ -1,0 +1,839 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>MySQL CDC Pipeline 连接器 &mdash; CDC Connectors for Apache Flink®  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/theme_overrides.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Doris Pipeline Connector" href="doris-pipeline.html" />
+    <link rel="prev" title="MySQL CDC Pipeline Connector" href="mysql-pipeline.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> CDC Connectors for Apache Flink®
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                master
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview/index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../connectors/index.html">Connectors</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Pipeline Connectors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mysql-pipeline.html">MySQL CDC Pipeline Connector</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">MySQL CDC Pipeline 连接器</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pipeline">如何创建 Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Pipeline 连接器选项</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">启动模式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">数据类型映射</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#a-name-id-003-a">空间数据类型映射<a name="空间数据类型映射" id="003"></a></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">常见问题</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="doris-pipeline.html">Doris Pipeline Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doris-pipeline%28ZH%29.html">Doris Pipeline 连接器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="starrocks-pipeline.html">StarRocks Pipeline Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="starrocks-pipeline%28ZH%29.html">StarRocks Pipeline 连接器</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../formats/index.html">Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../downloads.html">Downloads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../githublink.html"><a class="github-button" href="https://github.com/ververica/flink-cdc-connectors" data-color-scheme="no-preference: dark_high_contrast; light: dark_high_contrast; dark: dark_high_contrast;" data-size="large" data-show-count="true" aria-label="Star ververica/flink-cdc-connectors on GitHub">Star</a></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CDC Connectors for Apache Flink®</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+<!-- Extend the RTD template to support user defined "Edit on Github" URL -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Pipeline Connectors</a> &raquo;</li>
+        
+      <li>MySQL CDC Pipeline 连接器</li>
+    
+    
+            <li class="wy-breadcrumbs-aside">
+                
+                    
+                        <a href="http://github.com/ververica/flink-cdc-connectors/blob/master/docs/content/pipelines/mysql-pipeline(ZH).md" class="fa fa-github"> Edit on GitHub</a>
+                    
+                
+            </li>
+        
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="mysql-cdc-pipeline">
+<h1>MySQL CDC Pipeline 连接器<a class="headerlink" href="#mysql-cdc-pipeline" title="Permalink to this headline">¶</a></h1>
+<p>MySQL CDC Pipeline 连接器允许从 MySQL 数据库读取快照数据和增量数据，并提供端到端的整库数据同步能力。
+本文描述了如何设置 MySQL CDC Pipeline 连接器。</p>
+<section id="pipeline">
+<h2>如何创建 Pipeline<a class="headerlink" href="#pipeline" title="Permalink to this headline">¶</a></h2>
+<p>从 MySQL 读取数据同步到 Doris 的 Pipeline 可以定义如下：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">source</span><span class="p">:</span>
+   <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mysql</span>
+   <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MySQL Source</span>
+   <span class="nt">hostname</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">127.0.0.1</span>
+   <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3306</span>
+   <span class="nt">username</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">admin</span>
+   <span class="nt">password</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pass</span>
+   <span class="nt">tables</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">adb.\.*, bdb.user_table_[0-9]+, [app|web].order_\.*</span>
+   <span class="nt">server-id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5401-5404</span>
+
+<span class="nt">sink</span><span class="p">:</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">doris</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Doris Sink</span>
+  <span class="nt">fenodes</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">127.0.0.1:8030</span>
+  <span class="nt">username</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">root</span>
+  <span class="nt">password</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pass</span>
+
+<span class="nt">pipeline</span><span class="p">:</span>
+   <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MySQL to Doris Pipeline</span>
+   <span class="nt">parallelism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">4</span>
+</pre></div>
+</div>
+</section>
+<section id="id1">
+<h2>Pipeline 连接器选项<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="highlight">
+<table class="colwidths-auto docutils">
+    <thead>
+      <tr>
+        <th class="text-left" style="width: 10%">Option</th>
+        <th class="text-left" style="width: 8%">Required</th>
+        <th class="text-left" style="width: 7%">Default</th>
+        <th class="text-left" style="width: 10%">Type</th>
+        <th class="text-left" style="width: 65%">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>hostname</td>
+      <td>required</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td> MySQL 数据库服务器的 IP 地址或主机名。</td>
+    </tr>
+    <tr>
+      <td>port</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">3306</td>
+      <td>Integer</td>
+      <td>MySQL 数据库服务器的整数端口号。</td>
+    </tr>
+    <tr>
+      <td>username</td>
+      <td>required</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>连接到 MySQL 数据库服务器时要使用的 MySQL 用户的名称。</td>
+    </tr>
+    <tr>
+      <td>password</td>
+      <td>required</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>连接 MySQL 数据库服务器时使用的密码。</td>
+    </tr>
+    <tr>
+      <td>tables</td>
+      <td>required</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>需要监视的 MySQL 数据库的表名。表名支持正则表达式，以监视满足正则表达式的多个表。<br>
+          需要注意的是，点号（.）被视为数据库和表名的分隔符。 如果需要在正则表达式中使用点（.）来匹配任何字符，必须使用反斜杠对点进行转义。<br>
+          例如，db0.\.*, db1.user_table_[0-9]+, db[1-2].[app|web]order_\.*</td>
+    </tr>
+    <tr>
+      <td>schema-change.enabled</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">true</td>
+      <td>Boolean</td>
+      <td>是否发送模式更改事件，下游 sink 可以响应模式变更事件实现表结构同步，默认为true。</td>
+    </tr>
+    <tr>
+      <td>server-id</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>读取数据使用的 server id，server id 可以是个整数或者一个整数范围，比如 '5400' 或 '5400-5408', 
+      建议在 'scan.incremental.snapshot.enabled' 参数为启用时，配置成整数范围。因为在当前 MySQL 集群中运行的所有 slave 节点，标记每个 salve 节点的 id 都必须是唯一的。 所以当连接器加入 MySQL 集群作为另一个 slave 节点（并且具有唯一 id 的情况下），它就可以读取 binlog。 默认情况下，连接器会在 5400 和 6400 之间生成一个随机数，但是我们建议用户明确指定 Server id。
+      </td>
+    </tr>
+    <tr>
+      <td>scan.incremental.snapshot.chunk.size</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">8096</td>
+      <td>Integer</td>
+      <td>表快照的块大小（行数），读取表的快照时，捕获的表被拆分为多个块。</td>
+    </tr>
+    <tr>
+      <td>scan.snapshot.fetch.size</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">1024</td>
+      <td>Integer</td>
+      <td>读取表快照时每次读取数据的最大条数。</td>
+    </tr>
+    <tr>
+      <td>scan.startup.mode</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">initial</td>
+      <td>String</td>
+      <td> MySQL CDC 消费者可选的启动模式，
+         合法的模式为 "initial"，"earliest-offset"，"latest-offset"，"specific-offset" 和 "timestamp"。
+           请查阅 <a href="#a-name-id-002-a">启动模式</a> 章节了解更多详细信息。</td>
+    </tr>
+    <tr>
+      <td>scan.startup.specific-offset.file</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>在 "specific-offset" 启动模式下，启动位点的 binlog 文件名。</td>
+    </tr>
+    <tr>
+      <td>scan.startup.specific-offset.pos</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>Long</td>
+      <td>在 "specific-offset" 启动模式下，启动位点的 binlog 文件位置。</td>
+    </tr>
+    <tr>
+      <td>scan.startup.specific-offset.gtid-set</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>在 "specific-offset" 启动模式下，启动位点的 GTID 集合。</td>
+    </tr>
+    <tr>
+      <td>scan.startup.specific-offset.skip-events</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>Long</td>
+      <td>在指定的启动位点后需要跳过的事件数量。</td>
+    </tr>
+    <tr>
+      <td>scan.startup.specific-offset.skip-rows</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>Long</td>
+      <td>在指定的启动位点后需要跳过的数据行数量。</td>
+    </tr>
+    <tr>
+      <td>connect.timeout</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">30s</td>
+      <td>Duration</td>
+      <td>连接器在尝试连接到 MySQL 数据库服务器后超时前应等待的最长时间。</td>
+    </tr>    
+    <tr>
+      <td>connect.max-retries</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">3</td>
+      <td>Integer</td>
+      <td>连接器应重试以建立 MySQL 数据库服务器连接的最大重试次数。</td>
+    </tr>
+    <tr>
+      <td>connection.pool.size</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">20</td>
+      <td>Integer</td>
+      <td>连接池大小。</td>
+    </tr>
+    <tr>
+      <td>jdbc.properties.*</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">20</td>
+      <td>String</td>
+      <td>传递自定义 JDBC URL 属性的选项。用户可以传递自定义属性，如 'jdbc.properties.useSSL' = 'false'.</td>
+    </tr>
+    <tr>
+      <td>heartbeat.interval</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">30s</td>
+      <td>Duration</td>
+      <td>用于跟踪最新可用 binlog 偏移的发送心跳事件的间隔。</td>
+    </tr>
+    <tr>
+      <td>debezium.*</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>将 Debezium 的属性传递给 Debezium 嵌入式引擎，该引擎用于从 MySQL 服务器捕获数据更改。
+          例如: <code>'debezium.snapshot.mode' = 'never'</code>.
+          查看更多关于 <a href="https://debezium.io/documentation/reference/1.9/connectors/mysql.html#mysql-connector-properties"> Debezium 的  MySQL 连接器属性</a></td> 
+    </tr>
+    <tr>
+      <td>scan.incremental.close-idle-reader.enabled</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">false</td>
+      <td>Boolean</td>
+      <td>是否在快照结束后关闭空闲的 Reader。 此特性需要 flink 版本大于等于 1.14 并且 'execution.checkpointing.checkpoints-after-tasks-finish.enabled' 需要设置为 true。<br>
+          若 flink 版本大于等于 1.15，'execution.checkpointing.checkpoints-after-tasks-finish.enabled' 默认值变更为 true，可以不用显式配置 'execution.checkpointing.checkpoints-after-tasks-finish.enabled' = true。</td>
+    </tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="id2">
+<h2>启动模式<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>配置选项<code class="docutils literal notranslate"><span class="pre">scan.startup.mode</span></code>指定 MySQL CDC 使用者的启动模式。有效枚举包括：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">initial</span></code> （默认）：在第一次启动时对受监视的数据库表执行初始快照，并继续读取最新的 binlog。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">earliest-offset</span></code>：跳过快照阶段，从可读取的最早 binlog 位点开始读取</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">latest-offset</span></code>：首次启动时，从不对受监视的数据库表执行快照， 连接器仅从 binlog 的结尾处开始读取，这意味着连接器只能读取在连接器启动之后的数据更改。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">specific-offset</span></code>：跳过快照阶段，从指定的 binlog 位点开始读取。位点可通过 binlog 文件名和位置指定，或者在 GTID 在集群上启用时通过 GTID 集合指定。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">timestamp</span></code>：跳过快照阶段，从指定的时间戳开始读取 binlog 事件。</p></li>
+</ul>
+</section>
+<section id="id3">
+<h2>数据类型映射<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="wy-table-responsive">
+<table class="colwidths-auto docutils">
+    <thead>
+      <tr>
+        <th class="text-left" style="width:30%;">MySQL type<a href="https://dev.mysql.com/doc/man/8.0/en/data-types.html"></a></th>
+        <th class="text-left" style="width:10%;">CDC type</th>
+        <th class="text-left" style="width:60%;">NOTE</th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>TINYINT(n)</td>
+      <td>TINYINT</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        SMALLINT<br>
+        TINYINT UNSIGNED<br>
+        TINYINT UNSIGNED ZEROFILL
+      </td>
+      <td>SMALLINT</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        INT<br>
+        YEAR<br>
+        MEDIUMINT<br>
+        MEDIUMINT UNSIGNED<br>
+        MEDIUMINT UNSIGNED ZEROFILL<br>
+        SMALLINT UNSIGNED<br>
+        SMALLINT UNSIGNED ZEROFILL
+      </td>
+      <td>INT</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        BIGINT<br>
+        INT UNSIGNED<br>
+        INT UNSIGNED ZEROFILL
+      </td>
+      <td>BIGINT</td>
+      <td></td>
+    </tr>
+   <tr>
+      <td>
+        BIGINT UNSIGNED<br>
+        BIGINT UNSIGNED ZEROFILL<br>
+        SERIAL
+      </td>
+      <td>DECIMAL(20, 0)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        FLOAT<br>
+        FLOAT UNSIGNED<br>
+        FLOAT UNSIGNED ZEROFILL
+        </td>
+      <td>FLOAT</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        REAL<br>
+        REAL UNSIGNED<br>
+        REAL UNSIGNED ZEROFILL<br>
+        DOUBLE<br>
+        DOUBLE UNSIGNED<br>
+        DOUBLE UNSIGNED ZEROFILL<br>
+        DOUBLE PRECISION<br>
+        DOUBLE PRECISION UNSIGNED<br>
+        DOUBLE PRECISION UNSIGNED ZEROFILL
+      </td>
+      <td>DOUBLE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        NUMERIC(p, s)<br>
+        NUMERIC(p, s) UNSIGNED<br>
+        NUMERIC(p, s) UNSIGNED ZEROFILL<br>
+        DECIMAL(p, s)<br>
+        DECIMAL(p, s) UNSIGNED<br>
+        DECIMAL(p, s) UNSIGNED ZEROFILL<br>
+        FIXED(p, s)<br>
+        FIXED(p, s) UNSIGNED<br>
+        FIXED(p, s) UNSIGNED ZEROFILL<br>
+        where p <= 38<br>
+      </td>
+      <td>DECIMAL(p, s)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        NUMERIC(p, s)<br>
+        NUMERIC(p, s) UNSIGNED<br>
+        NUMERIC(p, s) UNSIGNED ZEROFILL<br>
+        DECIMAL(p, s)<br>
+        DECIMAL(p, s) UNSIGNED<br>
+        DECIMAL(p, s) UNSIGNED ZEROFILL<br>
+        FIXED(p, s)<br>
+        FIXED(p, s) UNSIGNED<br>
+        FIXED(p, s) UNSIGNED ZEROFILL<br>
+        where 38 < p <= 65<br>
+      </td>
+      <td>STRING</td>
+      <td>在 MySQL 中，十进制数据类型的精度高达 65，但在 Flink 中，十进制数据类型的精度仅限于 38。所以，如果定义精度大于 38 的十进制列，则应将其映射到字符串以避免精度损失。</td>
+    </tr>
+    <tr>
+      <td>
+        BOOLEAN<br>
+        TINYINT(1)<br>
+        BIT(1)
+        </td>
+      <td>BOOLEAN</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>DATE</td>
+      <td>DATE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>TIME [(p)]</td>
+      <td>TIME [(p)]</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>TIMESTAMP [(p)]
+      </td>
+      <td>TIMESTAMP_LTZ [(p)]
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>DATETIME [(p)]
+      </td>
+      <td>TIMESTAMP [(p)]
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        CHAR(n)
+      </td>
+      <td>CHAR(n)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        VARCHAR(n)
+      </td>
+      <td>VARCHAR(n)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        BIT(n)
+      </td>
+      <td>BINARY(⌈(n + 7) / 8⌉)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        BINARY(n)
+      </td>
+      <td>BINARY(n)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        VARBINARY(N)
+      </td>
+      <td>VARBINARY(N)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        TINYTEXT<br>
+        TEXT<br>
+        MEDIUMTEXT<br>
+        LONGTEXT<br>
+      </td>
+      <td>STRING</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        TINYBLOB<br>
+        BLOB<br>
+        MEDIUMBLOB<br>
+        LONGBLOB<br>
+      </td>
+      <td>BYTES</td>
+      <td>目前，对于 MySQL 中的 BLOB 数据类型，仅支持长度不大于 2147483647（2**31-1）的 blob。 </td>
+    </tr>
+    <tr>
+      <td>
+        ENUM
+      </td>
+      <td>STRING</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        JSON
+      </td>
+      <td>STRING</td>
+      <td> JSON 数据类型将在 Flink 中转换为 JSON 格式的字符串。</td>
+    </tr>
+    <tr>
+      <td>
+        SET
+      </td>
+      <td>-</td>
+      <td> 暂不支持 </td>
+    </tr>
+    <tr>
+      <td>
+       GEOMETRY<br>
+       POINT<br>
+       LINESTRING<br>
+       POLYGON<br>
+       MULTIPOINT<br>
+       MULTILINESTRING<br>
+       MULTIPOLYGON<br>
+       GEOMETRYCOLLECTION<br>
+      </td>
+      <td>
+        STRING
+      </td>
+      <td>
+      MySQL 中的空间数据类型将转换为具有固定 Json 格式的字符串。
+      请参考 MySQL <a href="#a-name-id-003-a">空间数据类型映射</a> 章节了解更多详细信息。
+      </td>
+    </tr>
+    </tbody>
+</table>
+</div>
+<section id="a-name-id-003-a">
+<h3>空间数据类型映射<a name="空间数据类型映射" id="003"></a><a class="headerlink" href="#a-name-id-003-a" title="Permalink to this headline">¶</a></h3>
+<p>MySQL中除<code class="docutils literal notranslate"><span class="pre">GEOMETRYCOLLECTION</span></code>之外的空间数据类型都会转换为 Json 字符串，格式固定，如：<br></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;srid&quot;</span><span class="p">:</span> <span class="mi">0</span> <span class="p">,</span> <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;xxx&quot;</span><span class="p">,</span> <span class="nt">&quot;coordinates&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]}</span>
+</pre></div>
+</div>
+<p>字段<code class="docutils literal notranslate"><span class="pre">srid</span></code>标识定义几何体的 SRS，如果未指定 SRID，则 SRID 0 是新几何体值的默认值。
+由于 MySQL 8+ 在定义空间数据类型时只支持特定的 SRID，因此在版本较低的MySQL中，字段<code class="docutils literal notranslate"><span class="pre">srid</span></code>将始终为 0。</p>
+<p>字段<code class="docutils literal notranslate"><span class="pre">type</span></code>标识空间数据类型，例如<code class="docutils literal notranslate"><span class="pre">POINT</span></code>/<code class="docutils literal notranslate"><span class="pre">LINESTRING</span></code>/<code class="docutils literal notranslate"><span class="pre">POLYGON</span></code>。</p>
+<p>字段<code class="docutils literal notranslate"><span class="pre">coordinates</span></code>表示空间数据的<code class="docutils literal notranslate"><span class="pre">坐标</span></code>。</p>
+<p>对于<code class="docutils literal notranslate"><span class="pre">GEOMETRYCOLLECTION</span></code>，它将转换为 Json 字符串，格式固定，如：<br></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;srid&quot;</span><span class="p">:</span> <span class="mi">0</span> <span class="p">,</span> <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;GeometryCollection&quot;</span><span class="p">,</span> <span class="nt">&quot;geometries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Point&quot;</span><span class="p">,</span><span class="nt">&quot;coordinates&quot;</span><span class="p">:[</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">]}]}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Geometrics</span></code>字段是一个包含所有空间数据的数组。</p>
+<p>不同空间数据类型映射的示例如下：</p>
+<div class="wy-table-responsive">
+<table class="colwidths-auto docutils">
+    <thead>
+      <tr>
+        <th class="text-left">Spatial data in MySQL</th>
+        <th class="text-left">Json String converted in Flink</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>POINT(1 1)</td>
+        <td>{"coordinates":[1,1],"type":"Point","srid":0}</td>
+      </tr>
+      <tr>
+        <td>LINESTRING(3 0, 3 3, 3 5)</td>
+        <td>{"coordinates":[[3,0],[3,3],[3,5]],"type":"LineString","srid":0}</td>
+      </tr>
+      <tr>
+        <td>POLYGON((1 1, 2 1, 2 2,  1 2, 1 1))</td>
+        <td>{"coordinates":[[[1,1],[2,1],[2,2],[1,2],[1,1]]],"type":"Polygon","srid":0}</td>
+      </tr>
+      <tr>
+        <td>MULTIPOINT((1 1),(2 2))</td>
+        <td>{"coordinates":[[1,1],[2,2]],"type":"MultiPoint","srid":0}</td>
+      </tr>
+      <tr>
+        <td>MultiLineString((1 1,2 2,3 3),(4 4,5 5))</td>
+        <td>{"coordinates":[[[1,1],[2,2],[3,3]],[[4,4],[5,5]]],"type":"MultiLineString","srid":0}</td>
+      </tr>
+      <tr>
+        <td>MULTIPOLYGON(((0 0, 10 0, 10 10, 0 10, 0 0)), ((5 5, 7 5, 7 7, 5 7, 5 5)))</td>
+        <td>{"coordinates":[[[[0,0],[10,0],[10,10],[0,10],[0,0]]],[[[5,5],[7,5],[7,7],[5,7],[5,5]]]],"type":"MultiPolygon","srid":0}</td>
+      </tr>
+      <tr>
+        <td>GEOMETRYCOLLECTION(POINT(10 10), POINT(30 30), LINESTRING(15 15, 20 20))</td>
+        <td>{"geometries":[{"type":"Point","coordinates":[10,10]},{"type":"Point","coordinates":[30,30]},{"type":"LineString","coordinates":[[15,15],[20,20]]}],"type":"GeometryCollection","srid":0}</td>
+      </tr>
+    </tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="id4">
+<h2>常见问题<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/ververica/flink-cdc-connectors/wiki/FAQ">FAQ(English)</a></p></li>
+<li><p><a class="reference external" href="https://github.com/ververica/flink-cdc-connectors/wiki/FAQ(ZH)">FAQ(中文)</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="doris-pipeline.html" class="btn btn-neutral float-right" title="Doris Pipeline Connector" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="mysql-pipeline.html" class="btn btn-neutral float-left" title="MySQL CDC Pipeline Connector" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2024, Ververica GmbH; Apache Flink, Flink®, Apache®, the squirrel logo, and the Apache feather logo are either registered trademarks or trademarks of The Apache Software Foundation.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+
+
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      version: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        
+        <dl>
+            <dt>Versions</dt>
+            
+             <strong> 
+            <dd><a href="/flink-cdc-connectors/master/">master</a></dd>
+             </strong> 
+            
+            
+            <dd><a href="/flink-cdc-connectors/release-1.4.0-mongodb/">release-1.4.0-mongodb</a></dd>
+            
+            
+        </dl>
+        
+        
+        <hr/>
+        Free document hosting provided by <a href="http://www.readthedocs.org">Read the
+        Docs</a>.
+
+    </div>
+</div>
+
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer
+        src="https://ververica.github.io/flink-cdc-connectors/master/_static/button.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

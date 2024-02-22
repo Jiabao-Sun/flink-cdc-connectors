@@ -1,0 +1,695 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Db2 CDC Connector &mdash; CDC Connectors for Apache Flink®  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/theme_overrides.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Vitess CDC Connector" href="vitess-cdc.html" />
+    <link rel="prev" title="TiDB CDC Connector" href="tidb-cdc.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> CDC Connectors for Apache Flink®
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                master
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview/index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B/index.html">快速上手</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Connectors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mongodb-cdc.html">MongoDB CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mongodb-cdc%28ZH%29.html">MongoDB CDC 连接器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mysql-cdc.html">MySQL CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mysql-cdc%28ZH%29.html">MySQL CDC 连接器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oceanbase-cdc.html">OceanBase CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oceanbase-cdc%28ZH%29.html">OceanBase CDC 连接器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="oracle-cdc.html">Oracle CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postgres-cdc.html">Postgres CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlserver-cdc.html">SQLServer CDC Connector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tidb-cdc.html">TiDB CDC Connector</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Db2 CDC Connector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#supported-databases">Supported Databases</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#maven-dependency">Maven dependency</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sql-client-jar">SQL Client JAR</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#setup-db2-server">Setup Db2 server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#notes">Notes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#not-support-boolean-type-in-sql-replication-on-db2">Not support BOOLEAN type in SQL Replication on Db2</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-create-a-db2-cdc-table">How to create a Db2 CDC table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#connector-options">Connector Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#features">Features</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#startup-reading-position">Startup Reading Position</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#datastream-source">DataStream Source</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#data-type-mapping">Data Type Mapping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#faq">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="vitess-cdc.html">Vitess CDC Connector</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pipelines/index.html">Pipeline Connectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../formats/index.html">Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../downloads.html">Downloads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../githublink.html"><a class="github-button" href="https://github.com/ververica/flink-cdc-connectors" data-color-scheme="no-preference: dark_high_contrast; light: dark_high_contrast; dark: dark_high_contrast;" data-size="large" data-show-count="true" aria-label="Star ververica/flink-cdc-connectors on GitHub">Star</a></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CDC Connectors for Apache Flink®</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+<!-- Extend the RTD template to support user defined "Edit on Github" URL -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Connectors</a> &raquo;</li>
+        
+      <li>Db2 CDC Connector</li>
+    
+    
+            <li class="wy-breadcrumbs-aside">
+                
+                    
+                        <a href="http://github.com/ververica/flink-cdc-connectors/blob/master/docs/content/connectors/db2-cdc.md" class="fa fa-github"> Edit on GitHub</a>
+                    
+                
+            </li>
+        
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="db2-cdc-connector">
+<h1>Db2 CDC Connector<a class="headerlink" href="#db2-cdc-connector" title="Permalink to this headline">¶</a></h1>
+<p>The Db2 CDC connector allows for reading snapshot data and incremental data from Db2 database. This document
+describes how to setup the db2 CDC connector to run SQL queries against Db2 databases.</p>
+<section id="supported-databases">
+<h2>Supported Databases<a class="headerlink" href="#supported-databases" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Connector</p></th>
+<th class="head"><p>Database</p></th>
+<th class="head"><p>Driver</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="#"><span class="doc std std-doc">Db2-cdc</span></a></p></td>
+<td><p><li> <a class="reference external" href="https://www.ibm.com/products/db2">Db2</a>: 11.5</p></td>
+<td><p>Db2 Driver: 11.5.0.0</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p>In order to set up the Db2 CDC connector, the following table provides dependency information for both projects
+using a build automation tool (such as Maven or SBT) and SQL Client with SQL JAR bundles.</p>
+<section id="maven-dependency">
+<h3>Maven dependency<a class="headerlink" href="#maven-dependency" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;dependency&gt;
+  &lt;groupId&gt;com.ververica&lt;/groupId&gt;
+  &lt;artifactId&gt;flink-connector-db2-cdc&lt;/artifactId&gt;
+  &lt;!-- The dependency is available only for stable releases, SNAPSHOT dependencies need to be built based on master or release- branches by yourself. --&gt;
+  &lt;version&gt;3.0-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;
+</pre></div>
+</div>
+</section>
+<section id="sql-client-jar">
+<h3>SQL Client JAR<a class="headerlink" href="#sql-client-jar" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">Download</span> <span class="pre">link</span> <span class="pre">is</span> <span class="pre">available</span> <span class="pre">only</span> <span class="pre">for</span> <span class="pre">stable</span> <span class="pre">releases.</span></code></p>
+<p>Download flink-sql-connector-db2-cdc-3.0-SNAPSHOT.jar and
+put it under <code class="docutils literal notranslate"><span class="pre">&lt;FLINK_HOME&gt;/lib/</span></code>.</p>
+<p><strong>Note:</strong> flink-sql-connector-db2-cdc-XXX-SNAPSHOT version is the code corresponding to the development branch. Users
+need to download the source code and compile the corresponding jar. Users should use the released version, such as
+<a class="reference external" href="https://mvnrepository.com/artifact/com.ververica/flink-connector-db2-cdc">flink-sql-connector-db2-cdc-2.3.0.jar</a>,
+the released version will be available in the Maven central warehouse.</p>
+</section>
+</section>
+<section id="setup-db2-server">
+<h2>Setup Db2 server<a class="headerlink" href="#setup-db2-server" title="Permalink to this headline">¶</a></h2>
+<p>Follow the steps in the <a class="reference external" href="https://debezium.io/documentation/reference/1.9/connectors/db2.html#setting-up-db2">Debezium Db2 Connector</a>.</p>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<section id="not-support-boolean-type-in-sql-replication-on-db2">
+<h3>Not support BOOLEAN type in SQL Replication on Db2<a class="headerlink" href="#not-support-boolean-type-in-sql-replication-on-db2" title="Permalink to this headline">¶</a></h3>
+<p>Only snapshots can be taken from tables with BOOLEAN type columns. Currently, SQL Replication on Db2 does not support BOOLEAN, so Debezium can not perform CDC on those tables.
+Consider using another type to replace BOOLEAN type.</p>
+</section>
+</section>
+<section id="how-to-create-a-db2-cdc-table">
+<h2>How to create a Db2 CDC table<a class="headerlink" href="#how-to-create-a-db2-cdc-table" title="Permalink to this headline">¶</a></h2>
+<p>The Db2 CDC table can be defined as following:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- checkpoint every 3 seconds                     </span>
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">SET</span> <span class="s1">&#39;execution.checkpointing.interval&#39;</span> <span class="o">=</span> <span class="s1">&#39;3s&#39;</span><span class="p">;</span>   
+
+<span class="c1">-- register a Db2 table &#39;products&#39; in Flink SQL</span>
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">products</span> <span class="p">(</span>
+     <span class="n">ID</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+     <span class="n">NAME</span> <span class="n">STRING</span><span class="p">,</span>
+     <span class="n">DESCRIPTION</span> <span class="n">STRING</span><span class="p">,</span>
+     <span class="n">WEIGHT</span> <span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+     <span class="p">)</span> <span class="k">WITH</span> <span class="p">(</span>
+     <span class="s1">&#39;connector&#39;</span> <span class="o">=</span> <span class="s1">&#39;db2-cdc&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;hostname&#39;</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;port&#39;</span> <span class="o">=</span> <span class="s1">&#39;50000&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;username&#39;</span> <span class="o">=</span> <span class="s1">&#39;root&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;password&#39;</span> <span class="o">=</span> <span class="s1">&#39;123456&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;database-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;mydb&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;schema-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;myschema&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;table-name&#39;</span> <span class="o">=</span> <span class="s1">&#39;products&#39;</span><span class="p">);</span>
+  
+<span class="c1">-- read snapshot and binlogs from products table</span>
+<span class="n">Flink</span> <span class="k">SQL</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">products</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="connector-options">
+<h2>Connector Options<a class="headerlink" href="#connector-options" title="Permalink to this headline">¶</a></h2>
+<div class="highlight">
+<table class="colwidths-auto docutils">
+    <thead>
+      <tr>
+        <th class="text-left" style="width: 10%">Option</th>
+        <th class="text-left" style="width: 8%">Required</th>
+        <th class="text-left" style="width: 7%">Default</th>
+        <th class="text-left" style="width: 10%">Type</th>
+        <th class="text-left" style="width: 65%">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>connector</td>
+      <td>required</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>Specify what connector to use, here should be <code>'db2-cdc'</code>.</td>
+    </tr>
+    <tr>
+      <td>hostname</td>
+      <td>required</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>IP address or hostname of the Db2 database server.</td>
+    </tr>
+    <tr>
+      <td>username</td>
+      <td>required</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>Name of the Db2 database to use when connecting to the Db2 database server.</td>
+    </tr>
+    <tr>
+      <td>password</td>
+      <td>required</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>Password to use when connecting to the Db2 database server.</td>
+    </tr>
+    <tr>
+      <td>database-name</td>
+      <td>required</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>Database name of the Db2 server to monitor.</td>
+    </tr> 
+    <tr>
+      <td>schema-name</td>
+      <td>required</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>Schema name of the Db2 database to monitor.</td>
+    </tr>
+    <tr>
+      <td>table-name</td>
+      <td>required</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>Table name of the Db2 database to monitor.</td>
+    </tr>
+    <tr>
+      <td>port</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">50000</td>
+      <td>Integer</td>
+      <td>Integer port number of the Db2 database server.</td>
+    </tr>
+    <tr>
+      <td>scan.startup.mode</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">initial</td>
+      <td>String</td>
+      <td>Optional startup mode for Db2 CDC consumer, valid enumerations are "initial"
+           and "latest-offset". Please see <a href="#startup-reading-position">Startup Reading Position</a> section 
+for more detailed information.</td>
+    </tr> 
+    <tr>
+      <td>server-time-zone</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>The session time zone in database server, e.g. "Asia/Shanghai". 
+          It controls how the TIMESTAMP type in Db2 converted to STRING.
+          See more <a href="https://debezium.io/documentation/reference/1.9/connectors/db2.html#db2-temporal-types">here</a>.
+          If not set, then ZoneId.systemDefault() is used to determine the server time zone.
+      </td>
+    </tr>
+    <tr>
+      <td>debezium.*</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>Pass-through Debezium's properties to Debezium Embedded Engine which is used to capture data changes from 
+Db2 server.
+          For example: <code>'debezium.snapshot.mode' = 'never'</code>.
+          See more about the <a href="https://debezium.io/documentation/reference/1.9/connectors/db2.html#db2-connector-properties">Debezium's Db2 Connector properties</a></td> 
+    </tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<section id="startup-reading-position">
+<h3>Startup Reading Position<a class="headerlink" href="#startup-reading-position" title="Permalink to this headline">¶</a></h3>
+<p>The config option <code class="docutils literal notranslate"><span class="pre">scan.startup.mode</span></code> specifies the startup mode for DB2 CDC consumer. The valid enumerations are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">initial</span></code> (default): Performs an initial snapshot on the monitored database tables upon first startup, and continue to read the latest binlog.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">latest-offset</span></code>: Never to perform snapshot on the monitored database tables upon first startup, just read from
+the end of the binlog which means only have the changes since the connector was started.</p></li>
+</ul>
+<p><em>Note: the mechanism of <code class="docutils literal notranslate"><span class="pre">scan.startup.mode</span></code> option relying on Debezium’s <code class="docutils literal notranslate"><span class="pre">snapshot.mode</span></code> configuration. So please do not using them together. If you speicifying both <code class="docutils literal notranslate"><span class="pre">scan.startup.mode</span></code> and <code class="docutils literal notranslate"><span class="pre">debezium.snapshot.mode</span></code> options in the table DDL, it may make <code class="docutils literal notranslate"><span class="pre">scan.startup.mode</span></code> doesn’t work.</em></p>
+</section>
+<section id="datastream-source">
+<h3>DataStream Source<a class="headerlink" href="#datastream-source" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">org.apache.flink.streaming.api.environment.StreamExecutionEnvironment</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.streaming.api.functions.source.SourceFunction</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">com.ververica.cdc.debezium.JsonDebeziumDeserializationSchema</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Db2SourceExample</span> <span class="p">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
+    <span class="n">SourceFunction</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">db2Source</span> <span class="o">=</span>
+            <span class="n">Db2Source</span><span class="p">.</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="n">builder</span><span class="p">()</span>
+                    <span class="p">.</span><span class="na">hostname</span><span class="p">(</span><span class="s">&quot;yourHostname&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="na">port</span><span class="p">(</span><span class="mi">50000</span><span class="p">)</span>
+                    <span class="p">.</span><span class="na">database</span><span class="p">(</span><span class="s">&quot;yourDatabaseName&quot;</span><span class="p">)</span> <span class="c1">// set captured database</span>
+                    <span class="p">.</span><span class="na">tableList</span><span class="p">(</span><span class="s">&quot;yourSchemaName.yourTableName&quot;</span><span class="p">)</span> <span class="c1">// set captured table</span>
+                    <span class="p">.</span><span class="na">username</span><span class="p">(</span><span class="s">&quot;yourUsername&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">&quot;yourPassword&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="na">deserializer</span><span class="p">(</span>
+                            <span class="k">new</span> <span class="n">JsonDebeziumDeserializationSchema</span><span class="p">())</span> <span class="c1">// converts SourceRecord to</span>
+                    <span class="c1">// JSON String</span>
+                    <span class="p">.</span><span class="na">build</span><span class="p">();</span>
+
+    <span class="n">StreamExecutionEnvironment</span> <span class="n">env</span> <span class="o">=</span> <span class="n">StreamExecutionEnvironment</span><span class="p">.</span><span class="na">getExecutionEnvironment</span><span class="p">();</span>
+
+    <span class="c1">// enable checkpoint</span>
+    <span class="n">env</span><span class="p">.</span><span class="na">enableCheckpointing</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
+
+    <span class="n">env</span><span class="p">.</span><span class="na">addSource</span><span class="p">(</span><span class="n">db2Source</span><span class="p">)</span>
+            <span class="p">.</span><span class="na">print</span><span class="p">()</span>
+            <span class="p">.</span><span class="na">setParallelism</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// use parallelism 1 for sink to keep message ordering</span>
+
+    <span class="n">env</span><span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="s">&quot;Print Db2 Snapshot + Change Stream&quot;</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Note:</strong> Please refer <a class="reference external" href="../about.html#deserialization">Deserialization</a> for more details about the JSON deserialization.</p>
+</section>
+</section>
+<section id="data-type-mapping">
+<h2>Data Type Mapping<a class="headerlink" href="#data-type-mapping" title="Permalink to this headline">¶</a></h2>
+<div class="wy-table-responsive">
+<table class="colwidths-auto docutils">
+    <thead>
+      <tr>
+        <th class="text-left" style="width:30%;"><a href="https://www.ibm.com/docs/en/db2/11.5?topic=elements-data-types">Db2 type</a></th>
+        <th class="text-left" style="width:10%;">Flink SQL type<a href="{% link dev/table/types.md %}"></a></th>
+        <th class="text-left" style="width:60%;">NOTE</th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>
+        SMALLINT<br>
+      </td>
+      <td>SMALLINT</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        INTEGER
+      </td>
+      <td>INT</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        BIGINT
+      </td>
+      <td>BIGINT</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        REAL
+        </td>
+      <td>FLOAT</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        DOUBLE
+      </td>
+      <td>DOUBLE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        NUMERIC(p, s)<br>
+        DECIMAL(p, s)
+      </td>
+      <td>DECIMAL(p, s)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>DATE</td>
+      <td>DATE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>TIME</td>
+      <td>TIME</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>TIMESTAMP [(p)]
+      </td>
+      <td>TIMESTAMP [(p)]
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        CHARACTER(n)
+      </td>
+      <td>CHAR(n)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        VARCHAR(n)
+      </td>
+      <td>VARCHAR(n)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        BINARY(n)
+      </td>
+      <td>BINARY(n)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        VARBINARY(N)
+      </td>
+      <td>VARBINARY(N)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        BLOB<br>
+        CLOB<br>
+        DBCLOB<br>
+      </td>
+      <td>BYTES</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        VARGRAPHIC<br>
+        XML
+      </td>
+      <td>STRING</td>
+      <td></td>
+    </tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="faq">
+<h2>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/ververica/flink-cdc-connectors/wiki/FAQ">FAQ(English)</a></p></li>
+<li><p><a class="reference external" href="https://github.com/ververica/flink-cdc-connectors/wiki/FAQ(ZH)">FAQ(中文)</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="vitess-cdc.html" class="btn btn-neutral float-right" title="Vitess CDC Connector" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="tidb-cdc.html" class="btn btn-neutral float-left" title="TiDB CDC Connector" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2024, Ververica GmbH; Apache Flink, Flink®, Apache®, the squirrel logo, and the Apache feather logo are either registered trademarks or trademarks of The Apache Software Foundation.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  <!--
+ ~ Copyright 2023 Ververica Inc.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+
+
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      version: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        
+        <dl>
+            <dt>Versions</dt>
+            
+             <strong> 
+            <dd><a href="/flink-cdc-connectors/master/">master</a></dd>
+             </strong> 
+            
+            
+            <dd><a href="/flink-cdc-connectors/release-1.4.0-mongodb/">release-1.4.0-mongodb</a></dd>
+            
+            
+        </dl>
+        
+        
+        <hr/>
+        Free document hosting provided by <a href="http://www.readthedocs.org">Read the
+        Docs</a>.
+
+    </div>
+</div>
+
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer
+        src="https://ververica.github.io/flink-cdc-connectors/master/_static/button.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
